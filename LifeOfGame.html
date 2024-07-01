@@ -17,16 +17,32 @@
 // ==== 全域變數 ===============================
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');
-const CELL_SIZE = 30;
-const ROWS = 15;
-const COLS = 12 ;
+const CELL_SIZE = 14;
+const ROWS = 20;
+const COLS = 50;
 // ======  函數  ================================
 //畫出螢幕上的格子
 function drawCells() {
+  ctx.beginPath() ;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "orange";
+
+  for (let j=0; j<ROWS+1;j++) {
+    ctx.moveTo(0,CELL_SIZE*j);
+    ctx.lineTo( CELL_SIZE*COLS,CELL_SIZE*j);
+  }
+  for (let j=0; j<COLS+1;j++) {
+    ctx.moveTo(CELL_SIZE*j,0 );
+    ctx.lineTo(CELL_SIZE*j,CELL_SIZE*ROWS);
+  }
+  ctx.stroke();
+}
+
+function drawFrog(row, col) {
+  let img = document.getElementById('frogImg');
+  ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
 
 }
-drawCells() ;
-
 
 // ==== Example  ===================================
 let andyHeigh =0;
@@ -43,24 +59,9 @@ console.log( "ret=" + ret ) ;
 // =============================================
 window.onload = function() {
   console.log("Hi Befoo");
-  let img = document.getElementById('frogImg');
-  ctx.drawImage(img, 10, 20 ); 
-
-  ctx.beginPath() ;
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "orange";
-
-  for (let j=0; j<10;j++) {
-      
-    ctx.moveTo(20, 100-(5*j));
-    ctx.lineTo(65, 100-(5*j));
-    ctx.stroke();
-
-    ctx.moveTo(20+(5*j), 55);
-    ctx.lineTo(20+(5*j), 100);
-    ctx.stroke();
-  }
-
+  drawCells() ;
+  drawFrog(3,2) ;
+  drawFrog(4,3) ;
 
 }
  
