@@ -17,8 +17,29 @@
 // ==== 全域變數 ===============================
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');
-// ==== 函數 ===================================
+const CELL_SIZE = 30;
+const ROWS = 15;
+const COLS = 12 ;
+// ======  函數  ================================
+//畫出螢幕上的格子
+function drawCells() {
 
+}
+drawCells() ;
+
+
+// ==== Example  ===================================
+let andyHeigh =0;
+let name = "Andy Lin";
+for ( let i=0; i<10; i++ ) {
+}
+
+function coord( row, col) {
+  return row*10+col;
+}
+
+let ret = coord( 3, 4) ;
+console.log( "ret=" + ret ) ;
 // =============================================
 window.onload = function() {
   console.log("Hi Befoo");
@@ -28,16 +49,16 @@ window.onload = function() {
   ctx.beginPath() ;
   ctx.lineWidth = 2;
   ctx.strokeStyle = "orange";
-  
+
   for (let j=0; j<10;j++) {
-    for ( let i=0; i<10; i++ ) {
-      ctx.moveTo(20, 100-(5*i));
-      ctx.lineTo(65, 100-(5*i));
-      ctx.stroke();
-    }
+      
+    ctx.moveTo(20, 100-(5*j));
+    ctx.lineTo(65, 100-(5*j));
+    ctx.stroke();
+
     ctx.moveTo(20+(5*j), 55);
-      ctx.lineTo(20+(5*j), 100);
-      ctx.stroke();
+    ctx.lineTo(20+(5*j), 100);
+    ctx.stroke();
   }
 
 
