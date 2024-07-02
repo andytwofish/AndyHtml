@@ -22,6 +22,7 @@ class Tree {
   static BORN_PROBABILITY = 0.25 ;
   nowHeigh = 50 ; 
   limitHeight ; //亂數100~300
+  lackSunLightCount = 0 ; //大於4次則死
 
   constructor() {
     this.limitHeight = 100 + Math.floor( Math.random()*201 );
@@ -61,6 +62,33 @@ function drawFrog(row, col) {
   ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
 
 }
+//傳回空地周圍九宮格樹的陣列
+function getTreesAound( row, col ) {
+  let trees = [] ;
+  for( let j=-1; j<2; j++ ) {
+    for( let i=-1; i<2; i++ ) {
+      if ( matrix[row+j][col+i] instanceof Tree ) {
+        trees[trees.length] =  matrix[row+j][col+i] ;
+      }
+    }
+  }
+  return trees ;
+}
+
+//檢查空地，周圍九宮格是否有樹，有的話回傳true否則回傳false
+function haveTreeAound( row, col ) {
+  for( let j=-1; j<2; j++ ) {
+    for( let i=-1; i<2; i++ ) {
+      if ( matrix[row+j][col+i] instanceof Tree ) {
+        return true ;
+      }
+    }
+  }
+}
+
+//檢查所有空地，看看是否要生出小樹
+function bornTree() {
+}
 
 window.onload = function() {
   console.log("Hi Befoo");
@@ -88,9 +116,13 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
 }
 matrix[3][2] = new Tree() ;
 matrix[4][3] = new Tree() ;
+console.log( "haveTreeAround(4,4):" + haveTreeAound(4,4) );
+console.log( "haveTreeAround(6,6):" + haveTreeAound(6,6) );
 console.log( matrix[4][3].limitHeight ) ;
 console.log( matrix ) ;
 
+let trees = getTreesAound(4,4) ;
+console.log( trees ) ;
 
 // ====== Example  ======
 let andyHeigh =0;
@@ -129,4 +161,4 @@ console.log( frog2 ) ;
 
 // =============================================
  
-</script> 
+</script>
