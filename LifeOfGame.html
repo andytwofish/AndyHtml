@@ -28,7 +28,7 @@ class Tree {
   }
 
   nextRun(){
-    this.nowHeigh=this.nowHeigh+GROW_UP_HEIGHT;
+    this.nowHeigh=this.nowHeigh+Tree.GROW_UP_HEIGHT;
     if (this.nowHeigh>this.limitHeight){
       this.nowHeigh=this.limitHeight ;
     }
@@ -43,7 +43,13 @@ class Deer {
 
 class World {
   static nextRun() {
-
+    for (let i=0; i<WORLD_ROWS;i++) {
+      for (let j=0; j<WORLD_COLS;j++) {
+        if( matrix[i][j] instanceof Tree){
+          matrix[i][j].nextRun();
+        } 
+      }
+    }
   }
 }
 
@@ -134,12 +140,11 @@ matrix[4][3] = new Tree() ;
 console.log( "haveTreeAround(4,4):" + haveTreeAound(4,4) );
 console.log( "haveTreeAround(6,6):" + haveTreeAound(6,6) );
 console.log( matrix[4][3].limitHeight ) ;
-console.log( matrix ) ;
 
 let trees = getTreesAound(4,4) ;
 console.log( trees ) ;
 
-for( let i=0; i<1; i++ ) {
+for( let i=0; i<30; i++ ) {
   World.nextRun() ;
 }
 console.log( matrix ) ;
