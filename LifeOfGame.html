@@ -8,7 +8,7 @@
   </style>
 </head>
 <body>
-  <canvas id="_Canvas" width="800" height="400"></canvas>
+  <canvas id="_Canvas" width="800" height="800"></canvas>
   <img id="frogImg" src="./frog.png" alt="Source Image" style="display:none;">
 </body>
 </html>
@@ -20,7 +20,8 @@
 class Tree {
   static GROW_UP_HEIGHT = 10 ;
   static BORN_PROBABILITY = 0.25 ;
-  nowHeigh = 50 ; 
+  static INIT_HEIGHT = 50 ;
+  nowHeigh = Tree.INIT_HEIGHT ; 
   limitHeight ; //亂數100~300
   lackSunLightCount = 0 ; //大於4次則死
   constructor() {
@@ -43,11 +44,57 @@ class Deer {
 
 class World {
   static nextRun() {
-    for (let i=0; i<WORLD_ROWS;i++) {
-      for (let j=0; j<WORLD_COLS;j++) {
-        if( matrix[i][j] instanceof Tree){
-          matrix[i][j].nextRun();
+    for (let row=0; row<WORLD_ROWS;row++) {
+      for (let col=0; col<WORLD_COLS;col++) {
+        if( matrix[row][col] instanceof Tree){
+          matrix[row][col].nextRun();
         } 
+      }
+    }
+    World.bornTrees();
+  }
+
+  //傳回空地周圍九宮格樹的陣列
+  static getTreesAound( row, col ) {
+    let trees = [] ;
+    for( let j=-1; j<2; j++ ) {
+      for( let i=-1; i<2; i++ ) {
+        if ( matrix[row+j][col+i] instanceof Tree ) {
+          if (matrix[row+j][col+i].nowHeigh!= Tree.INIT_HEIGHT ){
+            trees[trees.length] =  matrix[row+j][col+i] ;
+          }
+        }
+      }
+    }
+    return trees ;
+  }
+
+  static bornTrees() {
+    for (let row=1; row<WORLD_ROWS-1;row++) {
+      for (let col=1; col<WORLD_COLS-1;col++) {
+        if( matrix[row][col] == 0 ){
+          let trees = World.getTreesAound( row, col ) ;
+          let random = Math.floor( 1+Math.random()*8 );  //return 1~8
+          if ( random <= trees.length ) {
+            //要種了
+            let random2 = Math.floor( Math.random()*trees.length ); 
+            matrix[row][col] = new Tree() ;
+            matrix[row][col].limitHeight = trees[random2].limitHeight ;
+          }
+        } 
+      }
+    }
+  }
+
+  static drawWorld() {
+    cleanScreen();
+    drawCells();
+    //
+    for(let row=0; row<WINDOW_ROWS;row++) {
+      for(let col=0; col<WINDOW_COLS;col++) {
+        if( matrix[row][col] instanceof Tree){
+          drawFrog(row,col) ;
+        }
       }
     }
   }
@@ -61,6 +108,12 @@ console.log( t instanceof Deer ) ;
 //=============================
 //==========  function ===========
 //=============================
+
+function cleanScreen() {
+  ctx.fillStyle = "white" ;
+  ctx.fillRect(0,0,canvas.width, canvas.height) ;
+}
+
 //畫出螢幕上的格子
 function drawCells() {
   ctx.beginPath() ;
@@ -83,18 +136,7 @@ function drawFrog(row, col) {
   ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
 
 }
-//傳回空地周圍九宮格樹的陣列
-function getTreesAound( row, col ) {
-  let trees = [] ;
-  for( let j=-1; j<2; j++ ) {
-    for( let i=-1; i<2; i++ ) {
-      if ( matrix[row+j][col+i] instanceof Tree ) {
-        trees[trees.length] =  matrix[row+j][col+i] ;
-      }
-    }
-  }
-  return trees ;
-}
+
 
 //檢查空地，周圍九宮格是否有樹，有的話回傳true否則回傳false
 function haveTreeAound( row, col ) {
@@ -112,20 +154,35 @@ function bornTree() {
 }
 
 window.onload = function() {
-  console.log("Hi Befoo");
   drawCells() ;
-  drawFrog(3,2) ;
-  drawFrog(4,3) ;
+  drawFrog(5,5) ;
+  drawFrog(5,45) ;
+  drawFrog(45,5) ;
+  drawFrog(45,45) ;
+  drawFrog(25,25) ;
 }
+
+function keydownEvent(event) {
+  switch(event.code) {
+    case 'Space':
+      World.nextRun() ;
+      //console.log( matrix ) ;
+      World.drawWorld();
+      break;
+  }
+}
+
+document.addEventListener("keydown", keydownEvent );
+
 
 // ==== 全域變數 ===============================
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');
 const CELL_SIZE = 14;
-const WINDOW_ROWS = 20;
+const WINDOW_ROWS = 50;
 const WINDOW_COLS = 50;
-const WORLD_ROWS = 100;
-const WORLD_COLS = 100;
+const WORLD_ROWS = 50;
+const WORLD_COLS = 50;
 
 //初始化matrix陣列，每個陣列可能是鹿或樹
 let matrix = [] ; 
@@ -135,18 +192,15 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
     matrix[row][col] = 0 ;
   }
 }
-matrix[3][2] = new Tree() ;
-matrix[4][3] = new Tree() ;
+matrix[5][5] = new Tree() ;
+matrix[5][45] = new Tree() ;
+matrix[45][5] = new Tree() ;
+matrix[45][45] = new Tree() ;
+matrix[25][25] = new Tree() ;
 console.log( "haveTreeAround(4,4):" + haveTreeAound(4,4) );
 console.log( "haveTreeAround(6,6):" + haveTreeAound(6,6) );
 console.log( matrix[4][3].limitHeight ) ;
 
-let trees = getTreesAound(4,4) ;
-console.log( trees ) ;
-
-for( let i=0; i<30; i++ ) {
-  World.nextRun() ;
-}
 console.log( matrix ) ;
 // ====== Example  ======
 let andyHeigh =0;
