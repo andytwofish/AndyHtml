@@ -18,8 +18,23 @@
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');
 const CELL_SIZE = 14;
-const ROWS = 20;
-const COLS = 50;
+const WINDOW_ROWS = 20;
+const WINDOW_COLS = 50;
+const WORLD_ROWS = 100;
+const WORLD_COLS = 100;
+
+let matrix = [] ; //宣告matrix是陣列
+for( let row=0; row<WORLD_ROWS; row++ ) {
+  matrix[row] = [];
+  for( let col=0; col<WORLD_COLS; col++ ) {
+    matrix[row][col] = 0 ;
+  }
+}
+matrix[3][2] = 1;
+console.log( "matrix[3][2]=" + matrix[3][2] )
+console.log( matrix ) ;
+
+
 // ======  函數  ================================
 //畫出螢幕上的格子
 function drawCells() {
@@ -27,13 +42,13 @@ function drawCells() {
   ctx.lineWidth = 2;
   ctx.strokeStyle = "orange";
 
-  for (let j=0; j<ROWS+1;j++) {
+  for (let j=0; j<WINDOW_ROWS+1;j++) {
     ctx.moveTo(0,CELL_SIZE*j);
-    ctx.lineTo( CELL_SIZE*COLS,CELL_SIZE*j);
+    ctx.lineTo( CELL_SIZE*WINDOW_COLS,CELL_SIZE*j);
   }
-  for (let j=0; j<COLS+1;j++) {
+  for (let j=0; j<WINDOW_COLS+1;j++) {
     ctx.moveTo(CELL_SIZE*j,0 );
-    ctx.lineTo(CELL_SIZE*j,CELL_SIZE*ROWS);
+    ctx.lineTo(CELL_SIZE*j,CELL_SIZE*WINDOW_ROWS);
   }
   ctx.stroke();
 }
@@ -56,6 +71,39 @@ function coord( row, col) {
 
 let ret = coord( 3, 4) ;
 console.log( "ret=" + ret ) ;
+
+let abc = [] ;
+abc[0] = 0;
+abc[1] = 2;
+console.log(abc) ;
+
+class Frog {
+  color = "red" ;
+  jump(step) {
+    console.log( "jump="+ step ) ;
+  }
+}
+
+let frog1 = new Frog() ;
+console.log( frog1.color ) ;
+frog1.color = "black" ;
+console.log( frog1.color ) ;
+frog1.jump(5) ;
+
+let frog2 = new Frog() ;
+console.log( frog2 ) ;
+
+
+// let obj = new Object() ;
+// obj.enabled = true;
+// console.log( obj.enabled );
+// console.log( obj ) ;
+// obj.enabled = false;
+// console.log(obj.enabled );
+// console.log( obj ) ;
+
+
+
 // =============================================
 window.onload = function() {
   console.log("Hi Befoo");
