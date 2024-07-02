@@ -10,6 +10,7 @@
 <body>
   <canvas id="_Canvas" width="800" height="800"></canvas>
   <img id="frogImg" src="./frog.png" alt="Source Image" style="display:none;">
+  <DIV id="display">test test</DIV>
 </body>
 </html>
 
@@ -123,7 +124,9 @@ class World {
     for(let row=0; row<WINDOW_ROWS;row++) {
       for(let col=0; col<WINDOW_COLS;col++) {
         if( matrix[row][col] instanceof Tree){
-          drawFrog(row,col) ;
+            ctx.fillStyle = `rgb(0,${255-matrix[row][col].nowHeigh},0)` ;
+            ctx.fillRect(col*CELL_SIZE+1,row*CELL_SIZE+1,
+                 CELL_SIZE-2, CELL_SIZE-2 ) ;
         }
       }
     }
@@ -140,7 +143,7 @@ console.log( t instanceof Deer ) ;
 //=============================
 
 function cleanScreen() {
-  ctx.fillStyle = "white" ;
+  ctx.fillStyle = `rgb(255,255,255)` ;
   ctx.fillRect(0,0,canvas.width, canvas.height) ;
 }
 
@@ -162,8 +165,8 @@ function drawCells() {
 }
 
 function drawFrog(row, col) {
-  let img = document.getElementById('frogImg');
-  ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
+  //let img = document.getElementById('frogImg');
+  //ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
 
 }
 
@@ -202,7 +205,14 @@ function keydownEvent(event) {
   }
 }
 
-document.addEventListener("keydown", keydownEvent );
+function mouseEvent(event) {
+  const rect = canvas.getBoundingClientRect();
+  let row = Math.floor( (event.clientY-rect.top) / CELL_SIZE) ;
+  let col = Math.floor( (event.clientX-rect.left) / CELL_SIZE) ;
+  let panel = document.getElementById('display') ;
+  panel.innerText = `row=${row}, col=${col}<BR>tree height:${matrix[row][col].nowHeigh}, limitHeight:${matrix[row][col].limitHeight}`;
+}
+
 
 
 // ==== 全域變數 ===============================
@@ -232,6 +242,12 @@ console.log( "haveTreeAround(6,6):" + haveTreeAound(6,6) );
 console.log( matrix[4][3].limitHeight ) ;
 
 console.log( matrix ) ;
+
+document.addEventListener("keydown", keydownEvent );
+canvas.addEventListener("mousemove", mouseEvent ) ;
+
+
+
 // ====== Example  ======
 let andyHeigh =0;
 let name = "Andy Lin";
