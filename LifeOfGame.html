@@ -23,8 +23,7 @@ class Tree {
   static INIT_HEIGHT = 50 ;
   nowHeigh = Tree.INIT_HEIGHT ; 
   limitHeight ; //亂數100~300
-  lackSunLightCount = 0 ; //大於4次則死
-  constructor() {
+    constructor() {
     this.limitHeight = 100 + Math.floor( Math.random()*201 );
   }
 
@@ -48,22 +47,46 @@ class World {
       for (let col=0; col<WORLD_COLS;col++) {
         if( matrix[row][col] instanceof Tree){
           matrix[row][col].nextRun();
+          World.treeDeadRule(row, col);
         } 
       }
     }
     World.bornTrees();
   }
 
-  //傳回空地周圍九宮格樹的陣列
-  static getTreesAound( row, col ) {
+  static treeDeadRule( row, col) {
+    let trees = World.getTreesAround( row, col ) ;
+    let deadTree=0
+    for( let j=0; j<trees.length; j++ ) {
+      if (trees[j].nowHeigh>matrix[row][col].nowHeigh){
+        deadTree=deadTree+1;
+        }
+    }
+    if (deadTree>=3){
+     matrix[row][col] =0;
+    }
+  }
+
+  //傳回空地周圍九宮格的樹陣列
+  static getTreesAround( row, col ) {
     let trees = [] ;
     for( let j=-1; j<2; j++ ) {
       for( let i=-1; i<2; i++ ) {
         if ( matrix[row+j][col+i] instanceof Tree ) {
-          if (matrix[row+j][col+i].nowHeigh!= Tree.INIT_HEIGHT ){
-            trees[trees.length] =  matrix[row+j][col+i] ;
-          }
+          trees[trees.length] =  matrix[row+j][col+i] ;
         }
+      }
+    }
+    return trees ;
+  }
+
+  //傳回空地周圍九宮格的老樹陣列
+  static getOldTreesAound( row, col ) {
+    let trees = World.getTreesAround( row, col ) ;
+    for( let i=0; i<trees.length; i++ ) {
+      if ( trees[i].nowHeigh == Tree.INIT_HEIGHT ) {
+        trees.splice(i,1) ;
+        i--;
       }
     }
     return trees ;
@@ -73,7 +96,7 @@ class World {
     for (let row=1; row<WORLD_ROWS-1;row++) {
       for (let col=1; col<WORLD_COLS-1;col++) {
         if( matrix[row][col] == 0 ){
-          let trees = World.getTreesAound( row, col ) ;
+          let trees = World.getOldTreesAound( row, col ) ;
           let random = Math.floor( 1+Math.random()*8 );  //return 1~8
           if ( random <= trees.length ) {
             //要種了
