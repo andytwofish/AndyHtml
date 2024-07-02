@@ -23,15 +23,30 @@ class Tree {
   nowHeigh = 50 ; 
   limitHeight ; //亂數100~300
   lackSunLightCount = 0 ; //大於4次則死
-
   constructor() {
     this.limitHeight = 100 + Math.floor( Math.random()*201 );
   }
+
+  nextRun(){
+    this.nowHeigh=this.nowHeigh+GROW_UP_HEIGHT;
+    if (this.nowHeigh>this.limitHeight){
+      this.nowHeigh=this.limitHeight ;
+    }
+  }
+ 
+
 }
 class Deer {
   isMale ;
   heigh ;  //短100cm , 高200cm 
 }
+
+class World {
+  static nextRun() {
+
+  }
+}
+
 let t = new Tree() ;
 let d = new Deer() ;
 console.log( t instanceof Tree ) ;
@@ -124,6 +139,10 @@ console.log( matrix ) ;
 let trees = getTreesAound(4,4) ;
 console.log( trees ) ;
 
+for( let i=0; i<1; i++ ) {
+  World.nextRun() ;
+}
+console.log( matrix ) ;
 // ====== Example  ======
 let andyHeigh =0;
 let name = "Andy Lin";
