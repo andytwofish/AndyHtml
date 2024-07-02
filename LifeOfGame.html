@@ -14,28 +14,31 @@
 </html>
 
 <script>
-// ==== 全域變數 ===============================
-const canvas = document.getElementById('_Canvas');
-const ctx = canvas.getContext('2d');
-const CELL_SIZE = 14;
-const WINDOW_ROWS = 20;
-const WINDOW_COLS = 50;
-const WORLD_ROWS = 100;
-const WORLD_COLS = 100;
+//=============================
+//==========  class ===========
+//=============================
+class Tree {
+  static GROW_UP_HEIGHT = 10 ;
+  static BORN_PROBABILITY = 0.25 ;
+  nowHeigh = 50 ; 
+  limitHeight ; //亂數100~300
 
-let matrix = [] ; //宣告matrix是陣列
-for( let row=0; row<WORLD_ROWS; row++ ) {
-  matrix[row] = [];
-  for( let col=0; col<WORLD_COLS; col++ ) {
-    matrix[row][col] = 0 ;
+  constructor() {
+    this.limitHeight = 100 + Math.floor( Math.random()*201 );
   }
 }
-matrix[3][2] = 1;
-console.log( "matrix[3][2]=" + matrix[3][2] )
-console.log( matrix ) ;
+class Deer {
+  isMale ;
+  heigh ;  //短100cm , 高200cm 
+}
+let t = new Tree() ;
+let d = new Deer() ;
+console.log( t instanceof Tree ) ;
+console.log( t instanceof Deer ) ;
 
-
-// ======  函數  ================================
+//=============================
+//==========  function ===========
+//=============================
 //畫出螢幕上的格子
 function drawCells() {
   ctx.beginPath() ;
@@ -59,7 +62,37 @@ function drawFrog(row, col) {
 
 }
 
-// ==== Example  ===================================
+window.onload = function() {
+  console.log("Hi Befoo");
+  drawCells() ;
+  drawFrog(3,2) ;
+  drawFrog(4,3) ;
+}
+
+// ==== 全域變數 ===============================
+const canvas = document.getElementById('_Canvas');
+const ctx = canvas.getContext('2d');
+const CELL_SIZE = 14;
+const WINDOW_ROWS = 20;
+const WINDOW_COLS = 50;
+const WORLD_ROWS = 100;
+const WORLD_COLS = 100;
+
+//初始化matrix陣列，每個陣列可能是鹿或樹
+let matrix = [] ; 
+for( let row=0; row<WORLD_ROWS; row++ ) {
+  matrix[row] = [];
+  for( let col=0; col<WORLD_COLS; col++ ) {
+    matrix[row][col] = 0 ;
+  }
+}
+matrix[3][2] = new Tree() ;
+console.log( matrix ) ;
+
+
+
+
+// ====== Example  ======
 let andyHeigh =0;
 let name = "Andy Lin";
 for ( let i=0; i<10; i++ ) {
@@ -94,23 +127,6 @@ let frog2 = new Frog() ;
 console.log( frog2 ) ;
 
 
-// let obj = new Object() ;
-// obj.enabled = true;
-// console.log( obj.enabled );
-// console.log( obj ) ;
-// obj.enabled = false;
-// console.log(obj.enabled );
-// console.log( obj ) ;
-
-
-
 // =============================================
-window.onload = function() {
-  console.log("Hi Befoo");
-  drawCells() ;
-  drawFrog(3,2) ;
-  drawFrog(4,3) ;
-
-}
  
 </script> 
