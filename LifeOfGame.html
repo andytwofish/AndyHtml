@@ -18,6 +18,7 @@
 //==========  class ===========
 //=============================
 class Tree {
+  deadFrequency=0 ;
   static GROW_UP_HEIGHT = 10 ;
   static BORN_PROBABILITY = 0.25 ;
   static INIT_HEIGHT = 50 ;
@@ -62,7 +63,13 @@ class World {
         deadTree=deadTree+1;
         }
     }
-    if (deadTree>=3){
+    if (deadTree>=3){  
+     matrix[row][col].deadFrequency+=1;
+    } else {
+      matrix[row][col].deadFrequency=0
+    }
+
+    if (matrix[row][col].deadFrequency>=3){
      matrix[row][col] =0;
     }
   }
