@@ -44,6 +44,16 @@ class Tree {
     }
 }
 
+class Land {
+    location_row ;
+    location_col ;
+    constructor(row, col) {
+        this.location_row = row ;
+        this.location_col = col ;
+        matrix[row][col] = this ;
+    }
+}
+
 class Deer {
     isMale = true ;
     height ;  //短100cm , 高200cm 
@@ -62,7 +72,12 @@ class Deer {
     }
 
     move() {
-
+        let trees = World.getTreesAround( this.location_row, this.location_col ) ;
+        if ( trees.length == 0 ) {
+            let deers = World.getDeersAround( this.location_row, this.location_col ) ;
+            if ( deers.length < 8 ) {
+            }
+        }
     }
 
     nextRun() {
@@ -113,8 +128,21 @@ class World {
     }
 
     if (matrix[row][col].deadFrequency>4){
-     matrix[row][col] =0;
+        new Land(row, col) ;
     }
+  }
+
+  //傳回空地周圍九宮格的鹿陣列
+  static getDeersAround( row, col ) {
+    let deers = [] ;
+    for( let j=-1; j<2; j++ ) {
+      for( let i=-1; i<2; i++ ) {
+        if ( matrix[row+j][col+i] instanceof Deer ) {
+          deers[deers.length] =  matrix[row+j][col+i] ;
+        }
+      }
+    }
+    return deers ;
   }
 
   //傳回空地周圍九宮格的樹陣列
@@ -145,7 +173,7 @@ class World {
   static bornTrees() {
     for (let row=1; row<WORLD_ROWS-1;row++) {
       for (let col=1; col<WORLD_COLS-1;col++) {
-        if( matrix[row][col] == 0 ){
+        if( matrix[row][col] instanceof Land ){
           let trees = World.getOldTreesAound( row, col ) ;
           let random = Math.floor( 1+Math.random()*8 );  //return 1~8
           if ( random <= trees.length ) {
@@ -168,29 +196,24 @@ class World {
     }
   }
 
-  static drawWorld() {
-    cleanScreen();
-    drawCells();
-    //
-    for(let row=0; row<WINDOW_ROWS;row++) {
-      for(let col=0; col<WINDOW_COLS;col++) {
-        if( matrix[row][col] instanceof Tree){
-            ctx.fillStyle = `rgb(0,${255+Tree.INIT_HEIGHT-matrix[row][col].nowHeight},0)` ;
-            ctx.fillRect(col*CELL_SIZE+1,row*CELL_SIZE+1,
-                 CELL_SIZE-2, CELL_SIZE-2 ) ;
+    static drawWorld() {
+        cleanScreen();
+        drawCells();
+        //
+        for(let row=0; row<WINDOW_ROWS;row++) {
+            for(let col=0; col<WINDOW_COLS;col++) {
+                if( matrix[row][col] instanceof Tree){
+                    ctx.fillStyle = `rgb(0,${255+Tree.INIT_HEIGHT-matrix[row][col].nowHeight},0)` ;
+                    ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                }
+                if( matrix[row][col] instanceof Deer){
+                    ctx.fillStyle = `rgb(80,0,0)` ;
+                    ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                }
+            }
         }
-      }
     }
-   for(let row=0; row<WINDOW_ROWS;row++) {
-      for(let col=0; col<WINDOW_COLS;col++) {
-        if( matrix[row][col] instanceof Deer){
-            ctx.fillStyle = `rgb(80,0,0)` ;
-            ctx.fillRect(col*CELL_SIZE+1,row*CELL_SIZE+1,
-                 CELL_SIZE-2, CELL_SIZE-2 ) ;
-        }
-      }
-    }
-  }
+
 }
 
 //=============================
@@ -224,35 +247,14 @@ function drawFrog(row, col) {
   ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
 }
 
-//檢查空地，周圍九宮格是否有樹，有的話回傳true否則回傳false
-function haveTreeAound( row, col ) {
-  for( let j=-1; j<2; j++ ) {
-    for( let i=-1; i<2; i++ ) {
-      if ( matrix[row+j][col+i] instanceof Tree ) {
-        return true ;
-      }
-    }
-  }
-}
-
-//檢查所有空地，看看是否要生出小樹
-function bornTree() {
-}
-
 window.onload = function() {
-  drawCells() ;
-  drawFrog(5,5) ;
-  drawFrog(5,45) ;
-  drawFrog(45,5) ;
-  drawFrog(45,45) ;
-  drawFrog(25,25) ;
+    drawCells() ;
 }
 
 function keydownEvent(event) {
     switch(event.code) {
         case 'Space':
             World.nextRun() ;
-            //console.log( matrix ) ;
             World.drawWorld();
             displayInfo(lastInfoRow, lastInfoCol) ;
             break;
@@ -302,57 +304,16 @@ let matrix = [] ;
 for( let row=0; row<WORLD_ROWS; row++ ) {
   matrix[row] = [];
   for( let col=0; col<WORLD_COLS; col++ ) {
-    matrix[row][col] = 0 ;
+    new Land( row, col ) ;
   }
 }
 
 new Tree(25,25) ;
 new Deer(2,2) ;
 
-console.log( "haveTreeAround(4,4):" + haveTreeAound(4,4) );
-console.log( "haveTreeAround(6,6):" + haveTreeAound(6,6) );
-console.log( matrix[4][3].limitHeight ) ;
-
-console.log( matrix ) ;
-
 document.addEventListener("keydown", keydownEvent );
 canvas.addEventListener("mousemove", mouseEvent ) ;
 canvas.style.cursor = "pointer";
-
-
-// ====== Example  ======
-let andyHeigh =0;
-let name = "Andy Lin";
-for ( let i=0; i<10; i++ ) {
-}
-
-function coord( row, col) {
-  return row*10+col;
-}
-
-let ret = coord( 3, 4) ;
-console.log( "ret=" + ret ) ;
-
-let abc = [] ;
-abc[0] = 0;
-abc[1] = 2;
-console.log(abc) ;
-
-class Frog {
-  color = "red" ;
-  jump(step) {
-    console.log( "jump="+ step ) ;
-  }
-}
-
-let frog1 = new Frog() ;
-console.log( frog1.color ) ;
-frog1.color = "black" ;
-console.log( frog1.color ) ;
-frog1.jump(5) ;
-
-let frog2 = new Frog() ;
-console.log( frog2 ) ;
 
 
 // =============================================
