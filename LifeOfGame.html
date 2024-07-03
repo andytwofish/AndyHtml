@@ -10,7 +10,7 @@
 <body>
   <canvas id="_Canvas" width="800" height="800"></canvas>
   <img id="frogImg" src="./frog.png" alt="Source Image" style="display:none;">
-  <DIV id="display">test test</DIV>
+  <DIV id="display" style="border: 1px solid #000;position: absolute; width: 130px; height: 80px; background-color: white;top: 10px;left: 10px;">test test</DIV>
 </body>
 </html>
 
@@ -23,16 +23,16 @@ class Tree {
   static GROW_UP_HEIGHT = 10 ;
   static BORN_PROBABILITY = 0.25 ;
   static INIT_HEIGHT = 50 ;
-  nowHeigh = Tree.INIT_HEIGHT ; 
+  nowHeight = Tree.INIT_HEIGHT ; 
   limitHeight ; //亂數100~300
     constructor() {
     this.limitHeight = 100 + Math.floor( Math.random()*201 );
   }
 
   nextRun(){
-    this.nowHeigh=this.nowHeigh+Tree.GROW_UP_HEIGHT;
-    if (this.nowHeigh>this.limitHeight){
-      this.nowHeigh=this.limitHeight ;
+    this.nowHeight=this.nowHeight+Tree.GROW_UP_HEIGHT;
+    if (this.nowHeight>this.limitHeight){
+      this.nowHeight=this.limitHeight ;
     }
   }
  
@@ -60,7 +60,7 @@ class World {
     let trees = World.getTreesAround( row, col ) ;
     let deadTree=0
     for( let j=0; j<trees.length; j++ ) {
-      if (trees[j].nowHeigh>matrix[row][col].nowHeigh){
+      if (trees[j].nowHeight>matrix[row][col].nowHeight){
         deadTree=deadTree+1;
         }
     }
@@ -92,7 +92,7 @@ class World {
   static getOldTreesAound( row, col ) {
     let trees = World.getTreesAround( row, col ) ;
     for( let i=0; i<trees.length; i++ ) {
-      if ( trees[i].nowHeigh == Tree.INIT_HEIGHT ) {
+      if ( trees[i].nowHeight == Tree.INIT_HEIGHT ) {
         trees.splice(i,1) ;
         i--;
       }
@@ -124,7 +124,7 @@ class World {
     for(let row=0; row<WINDOW_ROWS;row++) {
       for(let col=0; col<WINDOW_COLS;col++) {
         if( matrix[row][col] instanceof Tree){
-            ctx.fillStyle = `rgb(0,${255-matrix[row][col].nowHeigh},0)` ;
+            ctx.fillStyle = `rgb(0,${255-matrix[row][col].nowHeight},0)` ;
             ctx.fillRect(col*CELL_SIZE+1,row*CELL_SIZE+1,
                  CELL_SIZE-2, CELL_SIZE-2 ) ;
         }
@@ -196,26 +196,43 @@ window.onload = function() {
 }
 
 function keydownEvent(event) {
-  switch(event.code) {
-    case 'Space':
-      World.nextRun() ;
-      //console.log( matrix ) ;
-      World.drawWorld();
-      break;
-  }
+    switch(event.code) {
+        case 'Space':
+            World.nextRun() ;
+            //console.log( matrix ) ;
+            World.drawWorld();
+            displayInfo(lastInfoRow, lastInfoCol) ;
+            break;
+        }
+}
+
+function displayInfo(row, col) {
+    let panel = document.getElementById('display') ;
+    const rect = canvas.getBoundingClientRect();
+    panel.style.top = `${event.clientY-rect.top}px` ;
+    panel.style.left = `${event.clientX-rect.left+30}px`;
+    panel.innerText="";
+    if ( row >= WINDOW_ROWS || col >= WINDOW_COLS ) {
+        return;
+    }
+    if ( matrix[row][col] instanceof Tree ) {
+        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}`;
+    } 
+    lastInfoRow = row ;
+    lastInfoCol = col ;
 }
 
 function mouseEvent(event) {
-  const rect = canvas.getBoundingClientRect();
-  let row = Math.floor( (event.clientY-rect.top) / CELL_SIZE) ;
-  let col = Math.floor( (event.clientX-rect.left) / CELL_SIZE) ;
-  let panel = document.getElementById('display') ;
-  panel.innerText = `row=${row}, col=${col}<BR>tree height:${matrix[row][col].nowHeigh}, limitHeight:${matrix[row][col].limitHeight}`;
+    const rect = canvas.getBoundingClientRect();
+    let row = Math.floor( (event.clientY-rect.top) / CELL_SIZE) ;
+    let col = Math.floor( (event.clientX-rect.left) / CELL_SIZE) ;
+    displayInfo(row, col) ;
 }
 
 
-
-// ==== 全域變數 ===============================
+//===========================================
+// ============= 主程式 =====================
+//===========================================
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');
 const CELL_SIZE = 14;
@@ -223,6 +240,9 @@ const WINDOW_ROWS = 50;
 const WINDOW_COLS = 50;
 const WORLD_ROWS = 50;
 const WORLD_COLS = 50;
+
+let lastInfoRow = 0 ;
+let lastInfoCol = 0 ;
 
 //初始化matrix陣列，每個陣列可能是鹿或樹
 let matrix = [] ; 
@@ -245,7 +265,7 @@ console.log( matrix ) ;
 
 document.addEventListener("keydown", keydownEvent );
 canvas.addEventListener("mousemove", mouseEvent ) ;
-
+canvas.style.cursor = "pointer";
 
 
 // ====== Example  ======
