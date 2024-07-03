@@ -71,7 +71,7 @@ class World {
         deadTree=deadTree+1;
         }
     }
-    if (deadTree>=3){  
+    if (deadTree>=4){  
      matrix[row][col].deadFrequency+=1;
     } else {
       matrix[row][col].deadFrequency=0
@@ -136,7 +136,7 @@ class World {
     for(let row=0; row<WINDOW_ROWS;row++) {
       for(let col=0; col<WINDOW_COLS;col++) {
         if( matrix[row][col] instanceof Tree){
-            ctx.fillStyle = `rgb(0,${255-matrix[row][col].nowHeight},0)` ;
+            ctx.fillStyle = `rgb(0,${255-INIT_HEIGHT-matrix[row][col].nowHeight},0)` ;
             ctx.fillRect(col*CELL_SIZE+1,row*CELL_SIZE+1,
                  CELL_SIZE-2, CELL_SIZE-2 ) ;
         }
