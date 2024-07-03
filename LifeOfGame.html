@@ -78,7 +78,7 @@ class World {
       matrix[row][col].deadFrequency=0
     }
 
-    if (matrix[row][col].deadFrequency>=3){
+    if (matrix[row][col].deadFrequency>=4){
      matrix[row][col] =0;
     }
   }
@@ -271,13 +271,11 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
     matrix[row][col] = 0 ;
   }
 }
-matrix[5][5] = new Tree() ;
-matrix[5][45] = new Tree() ;
-matrix[45][5] = new Tree() ;
-matrix[45][45] = new Tree() ;
-matrix[25][25] = new Tree() ;
-matrix[2][2] = new Deer() ;
-matrix[25][28] = new Deer() ;
+matrix[1][1] = new Tree() ;
+
+
+//matrix[2][2] = new Deer() ;
+
 console.log( "haveTreeAround(4,4):" + haveTreeAound(4,4) );
 console.log( "haveTreeAround(6,6):" + haveTreeAound(6,6) );
 console.log( matrix[4][3].limitHeight ) ;
