@@ -23,10 +23,11 @@ class Tree {
   static GROW_UP_HEIGHT = 10 ;
   static BORN_PROBABILITY = 0.25 ;
   static INIT_HEIGHT = 50 ;
+  static TREE_MAX=300;
   nowHeight = Tree.INIT_HEIGHT ; 
   limitHeight ; //亂數100~300
     constructor() {
-    this.limitHeight = 100 + Math.floor( Math.random()*201 );
+    this.limitHeight = 101 + Math.floor( Math.random()*(Tree.TREE_MAX-100) );
   }
 
   nextRun(){
@@ -121,7 +122,11 @@ class World {
             let i= Math.floor( Math.random()*3 );
             if (i==0){
                 //基因凸變
-                matrix[row][col].limitHeight=matrix[row][col].limitHeight+Math.floor( Math.random()*100 )-(100/2);
+                let diffHeight = Math.floor( Math.random()*100 )-(100/2) ;
+                matrix[row][col].limitHeight += diffHeight ;
+                if ( matrix[row][col].limitHeight > Tree.TREE_MAX ){
+                    matrix[row][col].limitHeight=Tree.TREE_MAX ;
+                }
             }
           }
         } 
@@ -136,7 +141,16 @@ class World {
     for(let row=0; row<WINDOW_ROWS;row++) {
       for(let col=0; col<WINDOW_COLS;col++) {
         if( matrix[row][col] instanceof Tree){
-            ctx.fillStyle = `rgb(0,${255-INIT_HEIGHT-matrix[row][col].nowHeight},0)` ;
+            ctx.fillStyle = `rgb(0,${255+Tree.INIT_HEIGHT-matrix[row][col].nowHeight},0)` ;
+            ctx.fillRect(col*CELL_SIZE+1,row*CELL_SIZE+1,
+                 CELL_SIZE-2, CELL_SIZE-2 ) ;
+        }
+      }
+    }
+   for(let row=0; row<WINDOW_ROWS;row++) {
+      for(let col=0; col<WINDOW_COLS;col++) {
+        if( matrix[row][col] instanceof Deer){
+            ctx.fillStyle = `rgb(${255+Deer.INIT_HEIGHT-matrix[row][col].nowHeight},0,0)` ;
             ctx.fillRect(col*CELL_SIZE+1,row*CELL_SIZE+1,
                  CELL_SIZE-2, CELL_SIZE-2 ) ;
         }
@@ -262,6 +276,7 @@ matrix[5][45] = new Tree() ;
 matrix[45][5] = new Tree() ;
 matrix[45][45] = new Tree() ;
 matrix[25][25] = new Tree() ;
+matrix[2][2] = new Deer() ;
 console.log( "haveTreeAround(4,4):" + haveTreeAound(4,4) );
 console.log( "haveTreeAround(6,6):" + haveTreeAound(6,6) );
 console.log( matrix[4][3].limitHeight ) ;
