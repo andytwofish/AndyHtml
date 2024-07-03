@@ -71,12 +71,36 @@ class Deer {
         this.height = 80 + Math.floor( Math.random()*121 ) ;
     }
 
+    _move(row, col) {
+        matrix[row][col] = this ;
+        new Land(this.location_row, this.location_col) ;
+        this.location_row = row ;
+        this.location_col = col ;
+    }
+
+    //過濾比自己高的樹
+    filteTree( trees ) {
+        for( let i=0; i<trees.length; i++ ) {
+            if ( trees[i].nowHeight > this.height ) {
+                trees.splice(i,1) ;
+                i--;
+            }
+        }
+        return trees ;
+    }
+
     move() {
         let trees = World.getTreesAround( this.location_row, this.location_col ) ;
         if ( trees.length == 0 ) {
-            let deers = World.getDeersAround( this.location_row, this.location_col ) ;
-            if ( deers.length < 8 ) {
+            let lands = World.getLandsAround( this.location_row, this.location_col ) ;
+            if ( lands.length > 0 ) {
+                let land = lands[ Math.floor( Math.random()*lands.length) ] ;
+                this._move( land.location_row, land.location_col ) ;
             }
+        } else {
+            trees = this.filteTree( trees ) ;
+            let tree = trees[ Math.floor( Math.random()*trees.length) ] ;
+            this._move( tree.location_row, tree.location_col ) ;
         }
     }
 
@@ -132,31 +156,51 @@ class World {
     }
   }
 
-  //傳回空地周圍九宮格的鹿陣列
-  static getDeersAround( row, col ) {
-    let deers = [] ;
-    for( let j=-1; j<2; j++ ) {
-      for( let i=-1; i<2; i++ ) {
-        if ( matrix[row+j][col+i] instanceof Deer ) {
-          deers[deers.length] =  matrix[row+j][col+i] ;
-        }
-      }
-    }
-    return deers ;
-  }
 
-  //傳回空地周圍九宮格的樹陣列
-  static getTreesAround( row, col ) {
-    let trees = [] ;
-    for( let j=-1; j<2; j++ ) {
-      for( let i=-1; i<2; i++ ) {
-        if ( matrix[row+j][col+i] instanceof Tree ) {
-          trees[trees.length] =  matrix[row+j][col+i] ;
+    //傳回空地周圍九宮格的鹿陣列
+    static getLandsAround( row, col ) {
+        let lands = [] ;
+        for( let j=-1; j<2; j++ ) {
+            for( let i=-1; i<2; i++ ) {
+                if ( row+j > 0 && row+j < WORLD_ROWS && col+j > 0 && col+j < WINDOW_COLS ) {
+                    if ( matrix[row+j][col+i] instanceof Land ) {
+                        lands[lands.length] =  matrix[row+j][col+i] ;
+                    }
+                }
+            }
         }
-      }
+        return lands ;
     }
-    return trees ;
-  }
+
+    //傳回空地周圍九宮格的鹿陣列
+    static getDeersAround( row, col ) {
+        let deers = [] ;
+        for( let j=-1; j<2; j++ ) {
+            for( let i=-1; i<2; i++ ) {
+                if ( row+j > 0 && row+j < WORLD_ROWS && col+j > 0 && col+j < WINDOW_COLS ) {
+                    if ( matrix[row+j][col+i] instanceof Deer ) {
+                        deers[deers.length] =  matrix[row+j][col+i] ;
+                    }
+                }
+            }
+        }
+        return deers ;
+    }
+
+    //傳回空地周圍九宮格的樹陣列
+    static getTreesAround( row, col ) {
+        let trees = [] ;
+        for( let j=-1; j<2; j++ ) {
+            for( let i=-1; i<2; i++ ) {
+                if ( row+j > 0 && row+j < WORLD_ROWS && col+j > 0 && col+j < WINDOW_COLS ) {
+                    if ( matrix[row+j][col+i] instanceof Tree ) {
+                        trees[trees.length] =  matrix[row+j][col+i] ;
+                    }
+                }
+            }
+        }
+        return trees ;
+    }
 
   //傳回空地周圍九宮格的老樹陣列
   static getOldTreesAound( row, col ) {
