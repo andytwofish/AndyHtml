@@ -133,18 +133,13 @@ class World {
   }
 }
 
-let t = new Tree() ;
-let d = new Deer() ;
-console.log( t instanceof Tree ) ;
-console.log( t instanceof Deer ) ;
-
 //=============================
 //==========  function ===========
 //=============================
 
 function cleanScreen() {
-  ctx.fillStyle = `rgb(255,255,255)` ;
-  ctx.fillRect(0,0,canvas.width, canvas.height) ;
+    ctx.fillStyle = `rgb(255,255,255)` ;
+    ctx.fillRect(0,0,canvas.width, canvas.height) ;
 }
 
 //畫出螢幕上的格子
@@ -165,11 +160,9 @@ function drawCells() {
 }
 
 function drawFrog(row, col) {
-  //let img = document.getElementById('frogImg');
-  //ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
-
+  let img = document.getElementById('frogImg');
+  ctx.drawImage(img, col*CELL_SIZE, row*CELL_SIZE ); 
 }
-
 
 //檢查空地，周圍九宮格是否有樹，有的話回傳true否則回傳false
 function haveTreeAound( row, col ) {
