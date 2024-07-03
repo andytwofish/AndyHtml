@@ -49,11 +49,18 @@ class World {
       for (let col=0; col<WORLD_COLS;col++) {
         if( matrix[row][col] instanceof Tree){
           matrix[row][col].nextRun();
+       } 
+      }
+    }
+    World.bornTrees();
+ 
+   for (let row=0; row<WORLD_ROWS;row++) {
+      for (let col=0; col<WORLD_COLS;col++) {
+        if( matrix[row][col] instanceof Tree){
           World.treeDeadRule(row, col);
         } 
       }
     }
-    World.bornTrees();
   }
 
   static treeDeadRule( row, col) {
@@ -111,6 +118,11 @@ class World {
             let random2 = Math.floor( Math.random()*trees.length ); 
             matrix[row][col] = new Tree() ;
             matrix[row][col].limitHeight = trees[random2].limitHeight ;
+            let i= Math.floor( Math.random()*3 );
+            if (i==0){
+                //基因凸變
+                matrix[row][col].limitHeight=matrix[row][col].limitHeight+Math.floor( Math.random()*100 )-(100/2);
+            }
           }
         } 
       }
