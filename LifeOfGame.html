@@ -8,7 +8,7 @@
   </style>
 </head>
 <body>
-  <canvas id="_Canvas" width="800" height="800"></canvas>
+  <canvas id="_Canvas" width="700" height="700"></canvas>
   <img id="frogImg" src="./frog.png" alt="Source Image" style="display:none;">
   <DIV id="display" style="border: 1px solid #000;position: absolute; width: 130px; height: 80px; background-color: white;top: 10px;left: 10px;">test test</DIV>
 </body>
@@ -23,6 +23,7 @@ class Tree {
     static BORN_PROBABILITY = 0.25 ;
     static INIT_HEIGHT = 50 ;
     static TREE_MAX=300;
+    days=0
     location_row ;
     location_col ; 
     deadFrequency=0 ;
@@ -36,7 +37,8 @@ class Tree {
         this.limitHeight = 101 + Math.floor( Math.random()*(Tree.TREE_MAX-100) );
     }
 
-    nextRun(){
+    nextDay(){
+        this.days+=1
         this.nowHeight=this.nowHeight+Tree.GROW_UP_HEIGHT;
         if (this.nowHeight>this.limitHeight){
             this.nowHeight=this.limitHeight ;
@@ -59,6 +61,7 @@ class Deer {
     height ;  //短100cm , 高200cm 
     INIT_HP=9
     hp=this.INIT_HP;  
+    days=0
     location_row ;
     location_col ;
     flag = false ;
@@ -120,7 +123,8 @@ class Deer {
         }
     }
 
-    nextRun() {
+    nextDay() {
+        this.days+=1
         if ( this.flag == false ) {
             this.flag = true ;
             this.move() ;
@@ -133,11 +137,12 @@ class Deer {
 }
 
 class World {
-    static nextRun() {
+    static nextDay() {
+        worldDays+=1;
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Tree){
-                    matrix[row][col].nextRun();
+                    matrix[row][col].nextDay();
                 } 
             }
         }
@@ -155,7 +160,7 @@ class World {
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Deer){
-                    matrix[row][col].nextRun();
+                    matrix[row][col].nextDay();
                 } 
             }
         }
@@ -230,7 +235,7 @@ class World {
   static getOldTreesAound( row, col ) {
     let trees = World.getTreesAround( row, col ) ;
     for( let i=0; i<trees.length; i++ ) {
-      if ( trees[i].nowHeight == Tree.INIT_HEIGHT ) {
+      if ( trees[i].days == 0 ) {
         trees.splice(i,1) ;
         i--;
       }
@@ -243,7 +248,7 @@ class World {
       for (let col=1; col<WORLD_COLS-1;col++) {
         if( matrix[row][col] instanceof Land ){
           let trees = World.getOldTreesAound( row, col ) ;
-          let random = Math.floor( 1+Math.random()*8*5 );  //return 1~8
+          let random = Math.floor( 1+Math.random()*8*8 );  //return 1~8
           if ( random <= trees.length ) {
             //要種了
             let random2 = Math.floor( Math.random()*trees.length ); 
@@ -276,16 +281,15 @@ class World {
                 }
                 if( matrix[row][col] instanceof Deer){
                 if( matrix[row][col].isMale){
-                    ctx.fillStyle = `rgb(0,0,${(255-matrix[row][col].height)+120})` ;
+                    ctx.fillStyle = `rgb(0,0,255)` ;
                 }else{
-                    ctx.fillStyle = `rgb(${(255-matrix[row][col].height)+120},0,0)` ;
+                    ctx.fillStyle = `rgb(255,0,0)` ;
                 }
                     ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
                 }
             }
         }
     }
-
 }
 
 //=============================
@@ -326,7 +330,7 @@ window.onload = function() {
 function keydownEvent(event) {
     switch(event.code) {
         case 'Space':
-            World.nextRun() ;
+            World.nextDay() ;
             World.drawWorld();
             displayInfo(lastInfoRow, lastInfoCol) ;
             break;
@@ -343,10 +347,10 @@ function displayInfo(row, col) {
         return;
     }
     if ( matrix[row][col] instanceof Tree ) {
-        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}`;
+        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}<BR>Days:${matrix[row][col].days}`;
     } 
     if ( matrix[row][col] instanceof Deer ) {
-        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${matrix[row][col].INIT_HP-1}`;
+        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${matrix[row][col].INIT_HP-1}<BR>Days:${matrix[row][col].days}`;
     } 
     lastInfoRow = row ;
     lastInfoCol = col ;
@@ -363,6 +367,7 @@ function mouseEvent(event) {
 //===========================================
 // ============= 主程式 =====================
 //===========================================
+
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');
 const CELL_SIZE = 14;
@@ -371,6 +376,7 @@ const WINDOW_COLS = 50;
 const WORLD_ROWS = 50;
 const WORLD_COLS = 50;
 
+let worldDays = 0;
 let lastInfoRow = 0 ;
 let lastInfoCol = 0 ;
 
@@ -382,11 +388,11 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
     new Land( row, col ) ;
   }
 }
-for  (let i=0; i<1000;i++) {
+for  (let i=0; i<400;i++) {
     new Tree(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
 
-for  (let i=0; i<80;i++) {
+for  (let i=0; i<40;i++) {
     new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
 document.addEventListener("keydown", keydownEvent );
