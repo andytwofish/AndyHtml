@@ -8,7 +8,10 @@
   </style>
 </head>
 <body>
-  <canvas id="_Canvas" width="700" height="700"></canvas>
+  <table><TR>
+    <TD><canvas id="_Canvas" width="700" height="700"></canvas></TD>
+    <TD style="vertical-align: super;"><DIV id="sidePanel" style="border-style: solid;border-width:1px;border-color:#000">abc<br>abc<br>abc</DIV></TD></TR></table>
+  
   <img id="frogImg" src="./frog.png" alt="Source Image" style="display:none;">
   <DIV id="display" style="border: 1px solid #000;position: absolute; width: 130px; height: 80px; background-color: white;top: 10px;left: 10px;">test test</DIV>
 </body>
@@ -164,6 +167,7 @@ class World {
                 } 
             }
         }
+        updateSidePanel() ;
     }
 
   static treeDeadRule( row, col) {
@@ -337,15 +341,38 @@ function keydownEvent(event) {
         }
 }
 
+function updateSidePanel() {
+    let html = "";
+    for( let row=0; row<WORLD_ROWS; row++ ) {
+        for( let col=0; col<WORLD_COLS; col++ ) {
+            if ( matrix[row][col] instanceof Deer ) {
+                if ( matrix[row][col].isMale ) {
+                    html += "Sex:公";
+                } else {
+                    html += "Sex:母";
+                }
+                html += `, Height:${matrix[row][col].height}` ;
+                html += `, HP：${matrix[row][col].hp}/${matrix[row][col].INIT_HP-1}`;
+                html += `, Days:${matrix[row][col].days}` ;
+                html += "<BR>" ;
+            }
+        }
+    }
+    let sidePanel = document.getElementById("sidePanel") ;
+    sidePanel.innerHTML = html ;
+}
+
 function displayInfo(row, col) {
     let panel = document.getElementById('display') ;
     const rect = canvas.getBoundingClientRect();
     panel.style.top = `${event.clientY-rect.top}px` ;
     panel.style.left = `${event.clientX-rect.left+30}px`;
     panel.innerText="";
-    if ( row >= WINDOW_ROWS || col >= WINDOW_COLS ) {
+    if ( row < 0 || col < 0 || row >= WINDOW_ROWS || col >= WINDOW_COLS ) {
+        panel.style.display = 'none';
         return;
     }
+    panel.style.display = 'inline-block';
     if ( matrix[row][col] instanceof Tree ) {
         panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}<BR>Days:${matrix[row][col].days}`;
     } 
@@ -396,7 +423,7 @@ for  (let i=0; i<40;i++) {
     new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
 document.addEventListener("keydown", keydownEvent );
-canvas.addEventListener("mousemove", mouseEvent ) ;
+document.addEventListener("mousemove", mouseEvent ) ;
 canvas.style.cursor = "pointer";
 
 
