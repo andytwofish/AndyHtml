@@ -59,6 +59,7 @@ class Deer {
     height ;  //短100cm , 高200cm 
     location_row ;
     location_col ;
+    flag = false ;
 
     constructor(row, col) {
         this.location_row = row ;
@@ -89,28 +90,46 @@ class Deer {
         return trees ;
     }
 
+    static flagToFalse() {
+        for( let row=0; row<WORLD_ROWS; row++ ) {
+            for( let col=0; col<WORLD_COLS; col++ ) {
+                if ( matrix[row][col] instanceof Deer ) {
+                    matrix[row][col].flag = false ;
+                }
+            }
+        }
+    }
+
     move() {
         let trees = World.getTreesAround( this.location_row, this.location_col ) ;
-        if ( trees.length == 0 ) {
-            let lands = World.getLandsAround( this.location_row, this.location_col ) ;
-            if ( lands.length > 0 ) {
-                let land = lands[ Math.floor( Math.random()*lands.length) ] ;
-                this._move( land.location_row, land.location_col ) ;
-            }
-        } else {
+        if ( trees.length > 0 ) {
             trees = this.filteTree( trees ) ;
-            let tree = trees[ Math.floor( Math.random()*trees.length) ] ;
-            this._move( tree.location_row, tree.location_col ) ;
+            if ( trees.length > 0 ) {
+                let tree = trees[ Math.floor( Math.random()*trees.length) ] ;
+                console.log( tree ) ;
+                this._move( tree.location_row, tree.location_col ) ;
+                return ;
+            }
+        }
+        let lands = World.getLandsAround( this.location_row, this.location_col ) ;
+        if ( lands.length > 0 ) {
+            let land = lands[ Math.floor( Math.random()*lands.length) ] ;
+            this._move( land.location_row, land.location_col ) ;
         }
     }
 
     nextRun() {
-        this.move() ;
+        console.log("Deer nextRun()");
+        if ( this.flag == false ) {
+            this.flag = true ;
+            this.move() ;
+        }
     }
 }
 
 class World {
     static nextRun() {
+        console.log("World nextRun()");
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Tree){
@@ -128,6 +147,7 @@ class World {
             }
         }
 
+        Deer.flagToFalse() ;
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Deer){
@@ -162,7 +182,7 @@ class World {
         let lands = [] ;
         for( let j=-1; j<2; j++ ) {
             for( let i=-1; i<2; i++ ) {
-                if ( row+j > 0 && row+j < WORLD_ROWS && col+j > 0 && col+j < WINDOW_COLS ) {
+                if ( row+j > 0 && row+j < WORLD_ROWS && col+i > 0 && col+i < WINDOW_COLS ) {
                     if ( matrix[row+j][col+i] instanceof Land ) {
                         lands[lands.length] =  matrix[row+j][col+i] ;
                     }
@@ -177,7 +197,7 @@ class World {
         let deers = [] ;
         for( let j=-1; j<2; j++ ) {
             for( let i=-1; i<2; i++ ) {
-                if ( row+j > 0 && row+j < WORLD_ROWS && col+j > 0 && col+j < WINDOW_COLS ) {
+                if ( row+j > 0 && row+j < WORLD_ROWS && col+i > 0 && col+i < WINDOW_COLS ) {
                     if ( matrix[row+j][col+i] instanceof Deer ) {
                         deers[deers.length] =  matrix[row+j][col+i] ;
                     }
@@ -192,7 +212,7 @@ class World {
         let trees = [] ;
         for( let j=-1; j<2; j++ ) {
             for( let i=-1; i<2; i++ ) {
-                if ( row+j > 0 && row+j < WORLD_ROWS && col+j > 0 && col+j < WINDOW_COLS ) {
+                if ( row+j > 0 && row+j < WORLD_ROWS && col+i > 0 && col+i < WINDOW_COLS ) {
                     if ( matrix[row+j][col+i] instanceof Tree ) {
                         trees[trees.length] =  matrix[row+j][col+i] ;
                     }
@@ -219,7 +239,7 @@ class World {
       for (let col=1; col<WORLD_COLS-1;col++) {
         if( matrix[row][col] instanceof Land ){
           let trees = World.getOldTreesAound( row, col ) ;
-          let random = Math.floor( 1+Math.random()*8 );  //return 1~8
+          let random = Math.floor( 1+Math.random()*8*2 );  //return 1~8
           if ( random <= trees.length ) {
             //要種了
             let random2 = Math.floor( Math.random()*trees.length ); 
@@ -296,6 +316,7 @@ window.onload = function() {
 }
 
 function keydownEvent(event) {
+    console.log("keydownEvent()");
     switch(event.code) {
         case 'Space':
             World.nextRun() ;
@@ -315,7 +336,10 @@ function displayInfo(row, col) {
         return;
     }
     if ( matrix[row][col] instanceof Tree ) {
-        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}`;
+        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}`;
+    } 
+    if ( matrix[row][col] instanceof Deer ) {
+        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}`;
     } 
     lastInfoRow = row ;
     lastInfoCol = col ;
