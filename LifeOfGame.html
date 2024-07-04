@@ -69,7 +69,7 @@ class Deer {
         if ( Math.floor( Math.random()*2 )==0 ) {
             this.isMale = false ;
         }
-        this.height = 80 + Math.floor( Math.random()*121 ) ;
+        this.height = 121 + Math.floor( Math.random()*251 ) ;
     }
 
     _move(row, col) {
@@ -239,7 +239,7 @@ class World {
       for (let col=1; col<WORLD_COLS-1;col++) {
         if( matrix[row][col] instanceof Land ){
           let trees = World.getOldTreesAound( row, col ) ;
-          let random = Math.floor( 1+Math.random()*8*2 );  //return 1~8
+          let random = Math.floor( 1+Math.random()*8*5 );  //return 1~8
           if ( random <= trees.length ) {
             //要種了
             let random2 = Math.floor( Math.random()*trees.length ); 
@@ -271,7 +271,7 @@ class World {
                     ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
                 }
                 if( matrix[row][col] instanceof Deer){
-                    ctx.fillStyle = `rgb(80,0,0)` ;
+                    ctx.fillStyle = `rgb(255,0,0)` ;
                     ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
                 }
             }
@@ -336,7 +336,7 @@ function displayInfo(row, col) {
         return;
     }
     if ( matrix[row][col] instanceof Tree ) {
-        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}`;
+        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}`;
     } 
     if ( matrix[row][col] instanceof Deer ) {
         panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}`;
@@ -375,10 +375,13 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
     new Land( row, col ) ;
   }
 }
+for  (let i=0; i<10;i++) {
+    new Tree(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
+}
 
-new Tree(25,25) ;
-new Deer(2,2) ;
-
+for  (let i=0; i<10;i++) {
+    new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
+}
 document.addEventListener("keydown", keydownEvent );
 canvas.addEventListener("mousemove", mouseEvent ) ;
 canvas.style.cursor = "pointer";
