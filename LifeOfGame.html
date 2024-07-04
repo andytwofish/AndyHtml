@@ -57,6 +57,8 @@ class Land {
 class Deer {
     isMale = true ;
     height ;  //短100cm , 高200cm 
+    INIT_HP=9
+    hp=this.INIT_HP;  
     location_row ;
     location_col ;
     flag = false ;
@@ -71,7 +73,7 @@ class Deer {
         }
         this.height = 121 + Math.floor( Math.random()*281 ) ;
     }
-
+    
     _move(row, col) {
         matrix[row][col] = this ;
         new Land(this.location_row, this.location_col) ;
@@ -106,7 +108,7 @@ class Deer {
             trees = this.filteTree( trees ) ;
             if ( trees.length > 0 ) {
                 let tree = trees[ Math.floor( Math.random()*trees.length) ] ;
-                console.log( tree ) ;
+                this.hp=this.INIT_HP;
                 this._move( tree.location_row, tree.location_col ) ;
                 return ;
             }
@@ -119,17 +121,19 @@ class Deer {
     }
 
     nextRun() {
-        console.log("Deer nextRun()");
         if ( this.flag == false ) {
             this.flag = true ;
             this.move() ;
+            this.hp-=1;
+            if (this.hp==0){
+                new Land( this.location_row, this.location_col) ;
+            }
         }
     }
 }
 
 class World {
     static nextRun() {
-        console.log("World nextRun()");
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Tree){
@@ -320,7 +324,6 @@ window.onload = function() {
 }
 
 function keydownEvent(event) {
-    console.log("keydownEvent()");
     switch(event.code) {
         case 'Space':
             World.nextRun() ;
@@ -343,7 +346,7 @@ function displayInfo(row, col) {
         panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}`;
     } 
     if ( matrix[row][col] instanceof Deer ) {
-        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}`;
+        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${matrix[row][col].INIT_HP-1}`;
     } 
     lastInfoRow = row ;
     lastInfoCol = col ;
@@ -379,11 +382,11 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
     new Land( row, col ) ;
   }
 }
-for  (let i=0; i<10;i++) {
+for  (let i=0; i<1000;i++) {
     new Tree(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
 
-for  (let i=0; i<10;i++) {
+for  (let i=0; i<80;i++) {
     new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
 document.addEventListener("keydown", keydownEvent );
