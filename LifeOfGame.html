@@ -65,10 +65,11 @@ class Land {
         let males = [] ;
         let females = [] ;
         for( let i=0; i<deers.length; i++ ) {
-            if (deers[i].isMale == true && deers[i].days>Deer.INIT_HP*2  ){
+            //console.log(deers[i].days > Deer.INI)
+            if (deers[i].isMale == true && deers[i].days>Deer.INIT_HP*0  ){
                 males [males.length] = deers[i];
             }
-            if (deers[i].isMale == false && deers[i].days>Deer.INIT_HP*2  ){
+            if (deers[i].isMale == false && deers[i].days>Deer.INIT_HP*0  ){
                 females [females.length] = deers[i];
             }
         }
@@ -76,6 +77,7 @@ class Land {
         if (males.length==0||females.length==0){
             return ;
         }
+        console.log(`hi`);
         if ( Math.floor( Math.random()*10 )>0 ){
             return ;
         }
@@ -97,9 +99,9 @@ class Land {
 class Deer {
     isMale = true ;
     height ;
-    INIT_HP=11
+    INIT_HP=11;
     hp=this.INIT_HP;  
-    days=0
+    days=0;
     location_row ;
     location_col ;
     flag = false ;
