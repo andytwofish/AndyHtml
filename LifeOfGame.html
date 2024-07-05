@@ -65,11 +65,13 @@ class Land {
         let males = [] ;
         let females = [] ;
         for( let i=0; i<deers.length; i++ ) {
-            //console.log(deers[i].days > Deer.INI)
-            if (deers[i].isMale == true && deers[i].days>Deer.INIT_HP*0  ){
-                males [males.length] = deers[i];
+
+            if ( deers[i].days < Deer.INIT_HP * 1 ) {
+                continue ;
             }
-            if (deers[i].isMale == false && deers[i].days>Deer.INIT_HP*0  ){
+            if (deers[i].isMale == true ){
+                males [males.length] = deers[i];
+            } else {
                 females [females.length] = deers[i];
             }
         }
@@ -77,7 +79,6 @@ class Land {
         if (males.length==0||females.length==0){
             return ;
         }
-        console.log(`hi`);
         if ( Math.floor( Math.random()*10 )>0 ){
             return ;
         }
@@ -99,8 +100,8 @@ class Land {
 class Deer {
     isMale = true ;
     height ;
-    INIT_HP=11;
-    hp=this.INIT_HP;  
+    static INIT_HP=11;
+    hp=Deer.INIT_HP;  
     days=0;
     location_row ;
     location_col ;
@@ -151,7 +152,7 @@ class Deer {
             trees = this.filteTree( trees ) ;
             if ( trees.length > 0 ) {
                 let tree = trees[ Math.floor( Math.random()*trees.length) ] ;
-                this.hp=this.INIT_HP;
+                this.hp=Deer.INIT_HP;
                 this._move( tree.location_row, tree.location_col ) ;
                 return ;
             }
@@ -388,7 +389,7 @@ function keydownEvent(event) {
 
 function updateSidePanel() {
     let html = "";
-//    return ;
+    return ;
     for( let row=0; row<WORLD_ROWS; row++ ) {
         for( let col=0; col<WORLD_COLS; col++ ) {
             if ( matrix[row][col] instanceof Deer ) {
@@ -398,7 +399,7 @@ function updateSidePanel() {
                     html += "Sex:母";
                 }
                 html += `, Height:${matrix[row][col].height}` ;
-                html += `, HP：${matrix[row][col].hp}/${matrix[row][col].INIT_HP-1}`;
+                html += `, HP：${matrix[row][col].hp}/${Deer.INIT_HP-1}`;
                 html += `, Days:${matrix[row][col].days}` ;
                 html += "<BR>" ;
             }
@@ -423,7 +424,7 @@ function displayInfo(row, col) {
         panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}<BR>Days:${matrix[row][col].days}`;
     } 
     if ( matrix[row][col] instanceof Deer ) {
-        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${matrix[row][col].INIT_HP-1}<BR>Days:${matrix[row][col].days}`;
+        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${Deer.INIT_HP-1}<BR>Days:${matrix[row][col].days}`;
     } 
     lastInfoRow = row ;
     lastInfoCol = col ;
