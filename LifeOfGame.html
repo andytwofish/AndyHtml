@@ -57,11 +57,44 @@ class Land {
         this.location_col = col ;
         matrix[row][col] = this ;
     }
+    nextDay() {
+        let deers = World.getDeersAround( this.location_row, this.location_col) ;
+        if (deers.length==0){
+            return ;
+        }
+        let males = [] ;
+        let females = [] ;
+        for( let i=0; i<deers.length; i++ ) {
+            if (deers[i].isMale == true ){
+                males [males.length] = deers[i];
+            }else{
+                females [females.length] = deers[i];
+            }
+        }
+
+        if (males.length==0||females.length==0){
+            return ;
+        }
+        if ( Math.floor( Math.random()*10 )>0 ){
+            return ;
+        }
+        let male = males [Math.floor( Math.random()*males.length )] ;
+        let female = females [Math.floor( Math.random()*females.length )] ;
+        new Deer (this.location_row,this.location_col);
+        let k = Math.floor( Math.random()*40 )-(40/2);
+        matrix[this.location_row][this.location_col].height=Math.floor ( ( ( male.height+female.height)/2  )+k );
+
+        console.log("---");
+        console.log(males);
+        console.log(females);
+    }
+    
+      
 }
 
 class Deer {
     isMale = true ;
-    height ;  //短100cm , 高200cm 
+    height ;
     INIT_HP=9
     hp=this.INIT_HP;  
     days=0
@@ -77,7 +110,7 @@ class Deer {
         if ( Math.floor( Math.random()*2 )==0 ) {
             this.isMale = false ;
         }
-        this.height = 121 + Math.floor( Math.random()*281 ) ;
+        this.height = 80 + Math.floor( Math.random()*181 ) ;
     }
     
     _move(row, col) {
@@ -150,7 +183,6 @@ class World {
             }
         }
         World.bornTrees();
-    
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Tree){
@@ -163,6 +195,14 @@ class World {
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Deer){
+                    matrix[row][col].nextDay();
+                } 
+            }
+        }
+
+        for (let row=0; row<WORLD_ROWS;row++) {
+            for (let col=0; col<WORLD_COLS;col++) {
+                if( matrix[row][col] instanceof Land){
                     matrix[row][col].nextDay();
                 } 
             }
@@ -186,11 +226,12 @@ class World {
 
     if (matrix[row][col].deadFrequency>4){
         new Land(row, col) ;
+    
     }
   }
 
 
-    //傳回空地周圍九宮格的鹿陣列
+    //傳回空地周圍九宮格的地陣列
     static getLandsAround( row, col ) {
         let lands = [] ;
         for( let j=-1; j<2; j++ ) {
@@ -332,6 +373,7 @@ window.onload = function() {
 }
 
 function keydownEvent(event) {
+//    console.log("lll");
     switch(event.code) {
         case 'Space':
             World.nextDay() ;
@@ -343,6 +385,7 @@ function keydownEvent(event) {
 
 function updateSidePanel() {
     let html = "";
+    return ;
     for( let row=0; row<WORLD_ROWS; row++ ) {
         for( let col=0; col<WORLD_COLS; col++ ) {
             if ( matrix[row][col] instanceof Deer ) {
@@ -415,7 +458,7 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
     new Land( row, col ) ;
   }
 }
-for  (let i=0; i<400;i++) {
+for  (let i=0; i<800;i++) {
     new Tree(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
 
