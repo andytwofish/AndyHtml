@@ -65,9 +65,10 @@ class Land {
         let males = [] ;
         let females = [] ;
         for( let i=0; i<deers.length; i++ ) {
-            if (deers[i].isMale == true ){
+            if (deers[i].isMale == true && deers[i].days>INIT_HP*2  ){
                 males [males.length] = deers[i];
-            }else{
+            }
+            if (deers[i].isMale == false && deers[i].days>INIT_HP*2  ){
                 females [females.length] = deers[i];
             }
         }
@@ -96,7 +97,7 @@ class Land {
 class Deer {
     isMale = true ;
     height ;
-    INIT_HP=9
+    INIT_HP=11
     hp=this.INIT_HP;  
     days=0
     location_row ;
