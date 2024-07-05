@@ -65,10 +65,10 @@ class Land {
         let males = [] ;
         let females = [] ;
         for( let i=0; i<deers.length; i++ ) {
-            if (deers[i].isMale == true && deers[i].days>INIT_HP*2  ){
+            if (deers[i].isMale == true && deers[i].days>Deer.INIT_HP*2  ){
                 males [males.length] = deers[i];
             }
-            if (deers[i].isMale == false && deers[i].days>INIT_HP*2  ){
+            if (deers[i].isMale == false && deers[i].days>Deer.INIT_HP*2  ){
                 females [females.length] = deers[i];
             }
         }
@@ -386,7 +386,7 @@ function keydownEvent(event) {
 
 function updateSidePanel() {
     let html = "";
-    return ;
+//    return ;
     for( let row=0; row<WORLD_ROWS; row++ ) {
         for( let col=0; col<WORLD_COLS; col++ ) {
             if ( matrix[row][col] instanceof Deer ) {
