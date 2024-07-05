@@ -82,7 +82,12 @@ class Land {
         let female = females [Math.floor( Math.random()*females.length )] ;
         new Deer (this.location_row,this.location_col);
         let k = Math.floor( Math.random()*40 )-(40/2);
-        matrix[this.location_row][this.location_col].height=Math.floor ( ( ( male.height+female.height)/2  )+k );
+        
+        if (Math.floor(Math.random()*2) ==0){
+            matrix[this.location_row][this.location_col].height=( male.height +k );
+        } else{
+            matrix[this.location_row][this.location_col].height=( female.height +k );
+        }   
     }
     
       
