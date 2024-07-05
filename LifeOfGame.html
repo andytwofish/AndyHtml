@@ -83,10 +83,6 @@ class Land {
         new Deer (this.location_row,this.location_col);
         let k = Math.floor( Math.random()*40 )-(40/2);
         matrix[this.location_row][this.location_col].height=Math.floor ( ( ( male.height+female.height)/2  )+k );
-
-        console.log("---");
-        console.log(males);
-        console.log(females);
     }
     
       
@@ -373,7 +369,6 @@ window.onload = function() {
 }
 
 function keydownEvent(event) {
-//    console.log("lll");
     switch(event.code) {
         case 'Space':
             World.nextDay() ;
