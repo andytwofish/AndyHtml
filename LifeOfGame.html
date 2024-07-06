@@ -9,7 +9,7 @@
 </head>
 <body>
   <table><TR>
-    <TD>
+    <TD style="vertical-align: super;">
         <table width="100%" style="border:1px solid #000;background-color: #aaffff;"><tr>
             <td><DIV id="days">Days:</DIV></td>
         </tr></table>
@@ -399,7 +399,7 @@ function keydownEvent(event) {
 
 function updateSidePanel() {
     let html = "";
-    return ;
+//    return ;
     for( let row=0; row<WORLD_ROWS; row++ ) {
         for( let col=0; col<WORLD_COLS; col++ ) {
             if ( matrix[row][col] instanceof Deer ) {
