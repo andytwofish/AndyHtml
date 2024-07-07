@@ -35,6 +35,7 @@
 //==========  class ===========
 //=============================
 class Tree {
+    static totalCount = 0;
     static GROW_UP_HEIGHT = 10 ;
     static INIT_HEIGHT = 50 ;
     static TREE_MAX=300;
@@ -46,6 +47,7 @@ class Tree {
     limitHeight ; //亂數100~300
 
     constructor(row, col) {
+        Tree.totalCount++;
         this.location_row = row ;
         this.location_col = col ;
         matrix[row][col] = this ;
@@ -110,6 +112,7 @@ class Land {
 }
 
 class Deer {
+    static totalCount = 0 ;
     isMale = true ;
     height ;
     static INIT_HP=11;
@@ -120,6 +123,7 @@ class Deer {
     flag = false ;
 
     constructor(row, col) {
+        Deer.totalCount++;
         this.location_row = row ;
         this.location_col = col ;
         matrix[row][col] = this ;
@@ -191,7 +195,6 @@ class Deer {
 
 class World {
     static nextDay() {
-        worldDays+=1;
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Tree){
@@ -224,7 +227,6 @@ class World {
                 } 
             }
         }
-        updateSidePanel() ;
     }
 
   static treeDeadRule( row, col) {
@@ -351,7 +353,7 @@ class World {
                 }
             }
         }
-        displayInfo(lastInfoRow, lastInfoCol) ;
+
     }
 }
 
@@ -361,9 +363,13 @@ class Game {
     runCountObj = document.getElementById("runCount") ;
     isRunning = false ;
     runInterval = 0 ;
+    worldDays = 0;
+    lastInfoRow = -1 ;
+    lastInfoCol = -1 ;
 
     constructor() {
         document.addEventListener("keydown", this.keydownEvent.bind(this) );
+        document.addEventListener("mousemove", this.mouseEvent.bind(this) ) ;
         this.btnRunObj.addEventListener("click", this.switchBtnOnClick.bind(this) ) ;
     }
 
@@ -394,18 +400,90 @@ class Game {
     run() {
         World.nextDay() ;
         World.drawWorld();
-        if ( this.isRunning && --this.runCount > 0 ) {
+        if ( this.isRunning ) {
+            this.runCountObj.value = --this.runCount ;
+        }
+        this.worldDays++;
+        this.updateSideInfo() ;
+        this.displayCellInfo(this.lastInfoRow, this.lastInfoCol) ;
+        this.updateTopInfo();
+        if ( this.isRunning && this.runCount > 0 ) {
             setTimeout( this.run.bind(this), this.runInterval ) ;
         } else {
             this.isRunning = false ;
             this.btnRunObj.innerText = "Run" ;
         }
-        this.runCountObj.value = this.runCount ;
+        
+    }
+
+    updateSideInfo() {
+        let html = "";
+        for( let row=0; row<WORLD_ROWS; row++ ) {
+            for( let col=0; col<WORLD_COLS; col++ ) {
+                if ( matrix[row][col] instanceof Deer ) {
+                    if ( matrix[row][col].isMale ) {
+                        html += "Sex:公";
+                    } else {
+                        html += "Sex:母";
+                    }
+                    html += `, Height:${matrix[row][col].height}` ;
+                    html += `, HP：${matrix[row][col].hp}/${Deer.INIT_HP-1}`;
+                    html += `, Days:${matrix[row][col].days}` ;
+                    html += "<BR>" ;
+                }
+            }
+        }
+        let sidePanel = document.getElementById("sidePanel") ;
+        sidePanel.innerHTML = html ;
     }
 
     updateTopInfo() {
         let days = document.getElementById("days");
-        days.innerHTML = `Days:${worldDays}`;
+        days.innerHTML = `Days:${this.worldDays}`;
+        let deersCount = 0 ;
+        let treesCount = 0 ;
+        for( let row=0; row<WORLD_ROWS; row++ ) {
+            for( let col=0; col<WINDOW_COLS; col++ ) {
+                if ( matrix[row][col] instanceof Deer ) {
+                    deersCount++ ;
+                }
+                if ( matrix[row][col] instanceof Tree ) {
+                    treesCount++ ;
+                }
+            }
+        }
+        let trees = document.getElementById("trees");
+        trees.innerText = `Trees:${treesCount}`;
+        let deers = document.getElementById("deers");
+        deers.innerText = `Deers:${deersCount}`;
+    }
+
+    displayCellInfo(row, col) {
+        let panel = document.getElementById('display') ;
+        const rect = canvas.getBoundingClientRect();
+        panel.style.top = `${row*CELL_SIZE-rect.top}px` ;
+        panel.style.left = `${col*CELL_SIZE-rect.left+30}px`;
+        panel.innerText="";
+        this.lastInfoRow = row ;
+        this.lastInfoCol = col ;
+        if ( row < 0 || col < 0 || row >= WINDOW_ROWS || col >= WINDOW_COLS ) {
+            panel.style.display = 'none';
+            return;
+        }
+        panel.style.display = 'inline-block';
+        if ( matrix[row][col] instanceof Tree ) {
+            panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}<BR>Days:${matrix[row][col].days}`;
+        } 
+        if ( matrix[row][col] instanceof Deer ) {
+            panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${Deer.INIT_HP-1}<BR>Days:${matrix[row][col].days}`;
+        } 
+    }
+
+    mouseEvent(event) {
+        const rect = canvas.getBoundingClientRect();
+        let row = Math.floor( (event.clientY-rect.top) / CELL_SIZE) ;
+        let col = Math.floor( (event.clientX-rect.left) / CELL_SIZE) ;
+        this.displayCellInfo(row, col) ;
     }
 }
 
@@ -444,55 +522,9 @@ window.onload = function() {
     drawCells() ;
 }
 
-function updateSidePanel() {
-    let html = "";
-//    return ;
-    for( let row=0; row<WORLD_ROWS; row++ ) {
-        for( let col=0; col<WORLD_COLS; col++ ) {
-            if ( matrix[row][col] instanceof Deer ) {
-                if ( matrix[row][col].isMale ) {
-                    html += "Sex:公";
-                } else {
-                    html += "Sex:母";
-                }
-                html += `, Height:${matrix[row][col].height}` ;
-                html += `, HP：${matrix[row][col].hp}/${Deer.INIT_HP-1}`;
-                html += `, Days:${matrix[row][col].days}` ;
-                html += "<BR>" ;
-            }
-        }
-    }
-    let sidePanel = document.getElementById("sidePanel") ;
-    sidePanel.innerHTML = html ;
-}
 
-function displayInfo(row, col) {
-    let panel = document.getElementById('display') ;
-    const rect = canvas.getBoundingClientRect();
-    panel.style.top = `${row*CELL_SIZE-rect.top}px` ;
-    panel.style.left = `${col*CELL_SIZE-rect.left+30}px`;
-    panel.innerText="";
-    lastInfoRow = row ;
-    lastInfoCol = col ;
-    if ( row < 0 || col < 0 || row >= WINDOW_ROWS || col >= WINDOW_COLS ) {
-        panel.style.display = 'none';
-        return;
-    }
-    panel.style.display = 'inline-block';
-    if ( matrix[row][col] instanceof Tree ) {
-        panel.innerHTML = `Tree:<BR>Height:${matrix[row][col].nowHeight}<BR>LimitHeight:${matrix[row][col].limitHeight}<BR>Days:${matrix[row][col].days}`;
-    } 
-    if ( matrix[row][col] instanceof Deer ) {
-        panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${Deer.INIT_HP-1}<BR>Days:${matrix[row][col].days}`;
-    } 
-}
 
-function mouseEvent(event) {
-    const rect = canvas.getBoundingClientRect();
-    let row = Math.floor( (event.clientY-rect.top) / CELL_SIZE) ;
-    let col = Math.floor( (event.clientX-rect.left) / CELL_SIZE) ;
-    displayInfo(row, col) ;
-}
+
 
 //===========================================
 // ============= 主程式 =====================
@@ -506,9 +538,6 @@ const WINDOW_COLS = 50;
 const WORLD_ROWS = 50;
 const WORLD_COLS = 50;
 
-let worldDays = 0;
-let lastInfoRow = -1 ;
-let lastInfoCol = -1 ;
 let game = new Game() ;
 
 //初始化matrix陣列，每個陣列可能是鹿或樹
@@ -526,7 +555,7 @@ for  (let i=0; i<800;i++) {
 for  (let i=0; i<40;i++) {
     new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
-document.addEventListener("mousemove", mouseEvent ) ;
+
 canvas.style.cursor = "pointer";
 
 // =============================================
