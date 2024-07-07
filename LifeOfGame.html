@@ -12,16 +12,21 @@
     <TD style="vertical-align: super;">
         <table width="100%" style="border:1px solid #000;background-color: #aaffff;"><tr>
             <td><DIV id="days">Days:</DIV></td>
+            <td><DIV id="deers">Deers:</DIV></td>
+            <td><DIV id="trees">Teers:</DIV></td>
         </tr></table>
         <canvas id="_Canvas" width="700" height="700"></canvas><BR>
-        間隔(ms)：<INPUT id="runInterval" type="text" size="7" value="40">次數：<INPUT id="runCount" type="text" size="7" value="365"><button id="btnRun" type="button" size="20" onclick="btnRunOnclick()">Run</button><BR>
+        間隔(ms)：<INPUT id="runInterval" type="text" size="7" value="40">
+        次數：<INPUT id="runCount" type="text" size="7" value="365">
+        <button id="btnRun" type="button" size="20">Run</button>
+        <BR>
     </TD>
     <TD style="vertical-align: super;">
         <DIV id="sidePanel" style="border-style: solid;border-width:1px;border-color:#000; overflow:auto; height:600px;">abc<br>abc<br>abc</DIV>
     </TD></TR></table>
   
   <img id="frogImg" src="./frog.png" alt="Source Image" style="display:none;">
-  <DIV id="display" style="border: 1px solid #000;position: absolute; width: 130px; height: 80px; background-color: white;top: 10px;left: 10px;">test test</DIV>
+  <DIV id="display" style="border: 1px solid #000; display:none; position: absolute; width: 130px; height: 80px; background-color: white;top: 10px;left: 10px;">test test</DIV>
 </body>
 </html>
 
@@ -347,6 +352,58 @@ class World {
             }
         }
         displayInfo(lastInfoRow, lastInfoCol) ;
+    }
+}
+
+class Game {
+    runCount = 0 ;
+    btnRunObj = document.getElementById("btnRun") ;   
+    runCountObj = document.getElementById("runCount") ;
+    isRunning = false ;
+    runInterval = 0 ;
+
+    constructor() {
+        document.addEventListener("keydown", this.keydownEvent.bind(this) );
+        this.btnRunObj.addEventListener("click", this.switchBtnOnClick.bind(this) ) ;
+    }
+
+    keydownEvent(event) {
+        switch(event.code) {
+            case 'Space':
+                this.run() ;
+                break;
+        }
+    }
+    
+
+    switchBtnOnClick() {
+        if ( !this.isRunning ) {
+            this.runCount = parseInt( this.runCountObj.value) ;
+            this.runInterval = parseInt( document.getElementById("runInterval").value ) ;
+            if ( this.runCount > 0 ) {
+                this.btnRunObj.innerText = "Stop";
+                this.isRunning = true ;
+                this.run() ;
+            }
+        } else {
+            this.btnRunObj.innerText = "Run"
+            this.isRunning = false ;
+        }
+    }
+
+    run() {
+        World.nextDay() ;
+        World.drawWorld();
+        if ( this.isRunning && --this.runCount > 0 ) {
+            setTimeout( this.run.bind(this), this.runInterval ) ;
+        } else {
+            this.isRunning = false ;
+            this.btnRunObj.innerText = "Run" ;
+        }
+        this.runCountObj.value = this.runCount ;
+    }
+
+    updateTopInfo() {
         let days = document.getElementById("days");
         days.innerHTML = `Days:${worldDays}`;
     }
@@ -387,15 +444,6 @@ window.onload = function() {
     drawCells() ;
 }
 
-function keydownEvent(event) {
-    switch(event.code) {
-        case 'Space':
-            World.nextDay() ;
-            World.drawWorld();
-            break;
-        }
-}
-
 function updateSidePanel() {
     let html = "";
 //    return ;
@@ -424,6 +472,8 @@ function displayInfo(row, col) {
     panel.style.top = `${row*CELL_SIZE-rect.top}px` ;
     panel.style.left = `${col*CELL_SIZE-rect.left+30}px`;
     panel.innerText="";
+    lastInfoRow = row ;
+    lastInfoCol = col ;
     if ( row < 0 || col < 0 || row >= WINDOW_ROWS || col >= WINDOW_COLS ) {
         panel.style.display = 'none';
         return;
@@ -435,8 +485,6 @@ function displayInfo(row, col) {
     if ( matrix[row][col] instanceof Deer ) {
         panel.innerHTML = `Deer:<BR>Height:${matrix[row][col].height}<BR>${matrix[row][col].hp}/${Deer.INIT_HP-1}<BR>Days:${matrix[row][col].days}`;
     } 
-    lastInfoRow = row ;
-    lastInfoCol = col ;
 }
 
 function mouseEvent(event) {
@@ -444,22 +492,6 @@ function mouseEvent(event) {
     let row = Math.floor( (event.clientY-rect.top) / CELL_SIZE) ;
     let col = Math.floor( (event.clientX-rect.left) / CELL_SIZE) ;
     displayInfo(row, col) ;
-}
-
-function btnRunOnclick() {
-    batchRunCount = 0 ;
-    setTimeout(batchRun, 100) ;
-}
-
-let batchRunCount = 0 ;
-function batchRun() {
-    World.nextDay() ;
-    World.drawWorld();
-    let runInterval = parseInt( document.getElementById("runInterval").value ) ;
-    let runCount = parseInt(document.getElementById("runCount").value) ;
-    if ( ++batchRunCount < runCount ) {
-        setTimeout( batchRun, runInterval) ;
-    }
 }
 
 //===========================================
@@ -475,8 +507,9 @@ const WORLD_ROWS = 50;
 const WORLD_COLS = 50;
 
 let worldDays = 0;
-let lastInfoRow = 0 ;
-let lastInfoCol = 0 ;
+let lastInfoRow = -1 ;
+let lastInfoCol = -1 ;
+let game = new Game() ;
 
 //初始化matrix陣列，每個陣列可能是鹿或樹
 let matrix = [] ; 
@@ -493,10 +526,8 @@ for  (let i=0; i<800;i++) {
 for  (let i=0; i<40;i++) {
     new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
-document.addEventListener("keydown", keydownEvent );
 document.addEventListener("mousemove", mouseEvent ) ;
 canvas.style.cursor = "pointer";
-
 
 // =============================================
  
