@@ -120,16 +120,16 @@ class Abc{
     abc = [];
 
     random(){
-        for (let i=0;i<20;i++){
+        for (let i=0;i<40;i++){
             this.abc [i] = Math.floor (Math.random()*20);
         }
         console.log(this.abc);
     }
 
     sort(){
-        for (let j=0;j<20;j++){
+        for (let j=0;j<40;j++){
             let again = false ;
-            for (let i=0;i<20;i++){
+            for (let i=0;i<39;i++){
                 if (this.abc [i]>this.abc [i+1]) {
                     this.bubble = this.abc [i];
                     this.abc [i] =this.abc [i+1];
