@@ -19,6 +19,18 @@
         間隔(ms)：<INPUT id="runInterval" type="text" size="7" value="0">
         次數：<INPUT id="runCount" type="text" size="7" value="2000">
         <button id="btnRun" type="button" size="20">Run</button>
+        <SELECT id="treeDisplayType">
+            <OPTION id="樹目前高度">樹目前高度</OPTION>
+            <OPTION id="樹基因" selected>樹基因</OPTION>
+        </SELECT>
+        <SELECT id="deerDisplayType">
+            <OPTION id="鹿公母" selected>鹿公母</OPTION>
+            <OPTION id="鹿隱藏">隱藏</OPTION>
+        </SELECT>
+        <SELECT id="sidePanelType">
+            <OPTION value="樹清單" selected>樹清單</OPTION>
+            <OPTION value="鹿清單">鹿清單</OPTION>
+        </SELECT>
         <BR>
     </TD>
     <TD style="vertical-align: super;">
@@ -51,7 +63,7 @@ class Tree {
         this.location_row = row ;
         this.location_col = col ;
         matrix[row][col] = this ;
-        this.limitHeight = 200 ;
+        this.limitHeight = 100 ;
     //    this.limitHeight = 101 + Math.floor( Math.random()*(Tree.TREE_MAX-100) );
     }
 
@@ -231,14 +243,18 @@ class World {
     }
 
   static treeDeadRule( row, col) {
+    if ( matrix[row][col].days > 300 ) {
+        new Land(row, col) ;
+    }
     let trees = World.getTreesAround( row, col ) ;
-    let deadTree=0
+    let deadTree=0;
+    
     for( let j=0; j<trees.length; j++ ) {
       if (trees[j].nowHeight>matrix[row][col].nowHeight){
         deadTree=deadTree+1;
         }
     }
-    if (deadTree>=4){  
+    if (deadTree>=3){  
      matrix[row][col].deadFrequency+=1;
     } else {
       matrix[row][col].deadFrequency=0
@@ -341,16 +357,30 @@ class World {
         for(let row=0; row<WINDOW_ROWS;row++) {
             for(let col=0; col<WINDOW_COLS;col++) {
                 if( matrix[row][col] instanceof Tree){
-                    ctx.fillStyle = `rgb(0,${255+Tree.limitHeight},0)` ;
-                    ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                    switch ( treeDisplayTypeObj.value ) {
+                        case "樹目前高度":
+                            ctx.fillStyle = `rgb(0,${255-matrix[row][col].nowHeight+50},0)` ;
+                            ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                            break;
+                        case "樹基因":
+                            ctx.fillStyle = `rgb(0,${255-matrix[row][col].limitHeight+50},0)` ;
+                            ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                            break;
+                    }
                 }
                 if( matrix[row][col] instanceof Deer){
-                if( matrix[row][col].isMale){
-                    ctx.fillStyle = `rgb(0,0,255)` ;
-                }else{
-                    ctx.fillStyle = `rgb(255,0,0)` ;
-                }
-                    ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                    switch( deerDisplayTypeObj.value ) {
+                        case "鹿公母":
+                            if( matrix[row][col].isMale){
+                                ctx.fillStyle = `rgb(0,0,255)` ;
+                            }else{
+                                ctx.fillStyle = `rgb(255,0,0)` ;
+                            }
+                            ctx.fillRect( col*CELL_SIZE+1, row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                            break;
+                        case "鹿隱藏":
+                            break;
+                    }
                 }
             }
         }
@@ -418,21 +448,45 @@ class Game {
     }
 
     updateSideInfo() {
-        let html = "";
-        for( let row=0; row<WORLD_ROWS; row++ ) {
-            for( let col=0; col<WORLD_COLS; col++ ) {
-                if ( matrix[row][col] instanceof Deer ) {
-                    if ( matrix[row][col].isMale ) {
-                        html += "Sex:公";
-                    } else {
-                        html += "Sex:母";
-                    }
-                    html += `, Height:${matrix[row][col].height}` ;
-                    html += `, HP：${matrix[row][col].hp}/${Deer.INIT_HP-1}`;
-                    html += `, Days:${matrix[row][col].days}` ;
-                    html += "<BR>" ;
+        let html = "<BR>";
+        switch( sidePanelTypeObj.value ) {
+            case "樹清單":
+                let treeHeightCount = [] ;
+                for( let i=0; i<Tree.TREE_MAX; i++ ) {
+                    treeHeightCount[i] = 0 ;
                 }
-            }
+                for( let row=0; row<WORLD_ROWS; row++ ) {
+                    for( let col=0; col<WORLD_COLS; col++ ) {
+                        if ( matrix[row][col] instanceof Tree ) {
+                            treeHeightCount[matrix[row][col].limitHeight]++ ;
+                            //html += `Day,${matrix[row][col].days}` ;
+                            //html += `,Height,${matrix[row][col].nowHeight}`;
+                            //html += `,LimitHeight,${matrix[row][col].limitHeight}` ;
+                            //html += "<BR>" ;
+                        }
+                    }
+                }
+                for( let i=0; i<Tree.TREE_MAX; i++ ) {
+                    html += `${treeHeightCount[i]}<br>` ;
+                }
+                break;
+            case "鹿清單":
+                for( let row=0; row<WORLD_ROWS; row++ ) {
+                    for( let col=0; col<WORLD_COLS; col++ ) {
+                        if ( matrix[row][col] instanceof Deer ) {
+                            if ( matrix[row][col].isMale ) {
+                                html += "Sex:公";
+                            } else {
+                                html += "Sex:母";
+                            }
+                            html += `, Height:${matrix[row][col].height}` ;
+                            html += `, HP：${matrix[row][col].hp}/${Deer.INIT_HP-1}`;
+                            html += `, Days:${matrix[row][col].days}` ;
+                            html += "<BR>" ;
+                        }
+                    }
+                }
+                break;
         }
         let sidePanel = document.getElementById("sidePanel") ;
         sidePanel.innerHTML = html ;
@@ -539,6 +593,11 @@ const WINDOW_COLS = 50;
 const WORLD_ROWS = 50;
 const WORLD_COLS = 50;
 
+const treeDisplayTypeObj = document.getElementById("treeDisplayType") ;
+const deerDisplayTypeObj = document.getElementById("deerDisplayType") ;
+const sidePanelTypeObj = document.getElementById("sidePanelType") ;
+
+
 let game = new Game() ;
 
 //初始化matrix陣列，每個陣列可能是鹿或樹
@@ -549,14 +608,18 @@ for( let row=0; row<WORLD_ROWS; row++ ) {
     new Land( row, col ) ;
   }
 }
-for  (let i=0; i<800;i++) {
+/*
+for  (let i=0; i<3;i++) {
     new Tree(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
-
+*/
+new Tree( 10, 10 ) ;
+new Tree( 40, 40 ) ;
+/*
 for  (let i=0; i<40;i++) {
     new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
 }
-
+*/
 canvas.style.cursor = "pointer";
 
 // =============================================
