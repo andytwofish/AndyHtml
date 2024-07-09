@@ -13,12 +13,12 @@
 </html>
 
 <script>
-
+/*
 class Dog{
     Height=100;
 }
     let dogs = [];
-/*
+
 let c = new Dog();
 Dog.Height=100;
 console.log(c);
@@ -26,11 +26,11 @@ console.log(c);
 let d = new  Dog();
 Dog.Height=200;
 console.log(d);
-*/
 
 
 
-/*
+
+
 let d = new  Dog();
 dogs[0] = d; 
 d.Height = 1000;
@@ -38,7 +38,7 @@ let dd2 = d ;
 console.log( d ) ;
 console.log( dogs[0] ) ;
 console.log( dd2 ) ;
-*/
+
 
 
 for (let j=0;j<100;j++){
@@ -51,7 +51,7 @@ console.log (dogs);
 
 
 //kkkkkkkkkkkkkkkkkkkkkkkkk
-/*
+
 class Cat{
 coler=0
 }
@@ -64,8 +64,8 @@ for (let i=0;i<3;i++){
 }
 
 console.log (cats);   
-*/    
-/*
+
+
 class Deer{
     isMale=true;
 }
@@ -83,7 +83,7 @@ for (let k=0;k<2;k++){
     }
 }
 console.log (deers);  
-*/
+
 class Cat{
     isMale=true;
 }
@@ -100,13 +100,69 @@ let cats = [];
         
     console.log ( cats );
 //    console.log ( c.isMale );
+*/
+/*
+class Table {
+    x = 10;
+    y = 20;
+    move( x, y ) {
+        this.x = x ;
+        this.y = y ;
+    }
+}
+let table = new Table() ;
+console.log( table.x ) ;
+table.move( 30, 50 ) ;
+console.log( table.x ) ;
+*/
 
+class Abc{
+    abc = [];
 
+    random(){
+        for (let i=0;i<20;i++){
+            this.abc [i] = Math.floor (Math.random()*20);
+        }
+        console.log(this.abc);
+    }
 
+    sort(){
+        for (let j=0;j<20;j++){
+            let again = false ;
+            for (let i=0;i<20;i++){
+                if (this.abc [i]>this.abc [i+1]) {
+                    this.bubble = this.abc [i];
+                    this.abc [i] =this.abc [i+1];
+                    this.abc [i+1]=this.bubble ;
+                    again = true;
+                }
+            }
+            if ( !again ) {
+                break ;
+            }
+        }
+        console.log( this.abc );
+    }
+}
+let k = new Abc();
+k.random();
+k.sort();
 
+/*
+class Table{
+    x = 8;
+    y = 8;
+    move(x,y){
+    this.x = x;
+    this.y = y;
+    }
 
-
-
+}
+table = new Table;
+console.log(table.x);
+table.move(64,64);
+console.log(table.x);
+*/
 
 
 
