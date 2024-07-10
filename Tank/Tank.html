@@ -36,6 +36,42 @@ class Brick {
     }
 }
 
+class MyTank {
+    x=0;
+    y=0;
+    height=20;
+    width=40;
+    constructor(x, y) {
+        this.x = x ;
+        this.y = y ;
+        document.addEventListener("keydown", this.keyEvent.bind(this) );
+    }
+    keyEvent(event) {
+        switch( event.code ) {
+            case "Space":
+                console.log("MyTank收到空白鍵");
+                break;
+            case "ArrowDown":
+                this.y+=10;
+                break;
+            case "ArrowLeft":
+                this.x-=10;
+                break;
+            case "ArrowRight":
+                this.x+=10;
+                break;
+            case "ArrowUp":
+                this.y-=10;
+                break;
+        }
+    }
+    refresh() {
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        ctx.fillRect( this.x, this.y, this.width, this.height ) ;
+    }
+
+}
+
 class World{
     static WORLD_HEIGHT = 4000 ;
     static WORLD_WIDTH = 2000 ;
@@ -46,8 +82,20 @@ class World{
     viewTop = 1640 ;
     viewLeft = 1760 ;
     objects = [] ; //放所有物體的物件
+    myTank = new MyTank(0,0) ;
+    constructor() {
+        this.addObject(this.myTank) ;
+        document.addEventListener("keydown", this.keyEvent.bind(this) );
+    }
     addObject(obj) {
         this.objects[this.objects.length] = obj ;
+    }
+    keyEvent(event) {
+        switch( event.code ) {
+            case "Space":
+                console.log("世界收到空白鍵");
+                break;
+        }
     }
     refresh(){ //每50ms執行一次
         this.cleanView();
