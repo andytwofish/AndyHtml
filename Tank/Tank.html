@@ -30,7 +30,7 @@ class Brick {
         ctx.fillStyle = `rgb(0,0,0)` ;
         ctx.fillRect( this.x, this.y, this.width, this.height ) ;
         this.x += 10 ;
-        if ( this.x > World.WORLD_WIDTH ) {
+        if ( this.x > World.VIEW_WIDTH ) {
             this.x=0 ;
         }
     }
@@ -41,12 +41,34 @@ class MyTank {
     y=0;
     height=20;
     width=40;
+    lastKeyEvent=0;
+    isKeyDown = false ;
     constructor(x, y) {
         this.x = x ;
         this.y = y ;
-        document.addEventListener("keydown", this.keyEvent.bind(this) );
+        document.addEventListener("keydown", this._keyDown.bind(this) );
+        document.addEventListener("keyup", this._keyUp.bind(this) );
+    }
+    _keyDown(event) {
+        if ( this.lastKeyEvent != 0 && event.code == this.lastKeyEvent.code && this.isKeyDown )
+            return ;
+        this.lastKeyEvent = event ;
+        this.isKeyDown = true ;
+        this.keyEvent(event) ;
+        setTimeout( this._keyLoop.bind(this), 40 ) ;
+    }
+    _keyLoop() {
+        if ( this.isKeyDown ) {
+            this.keyEvent(this.lastKeyEvent) ;
+            setTimeout( this._keyLoop.bind(this), 40 ) ;
+        }
+    }
+    _keyUp(event) {
+        this.isKeyDown = false ;
+        this.lastKeyEvent = 0 ;
     }
     keyEvent(event) {
+        console.log(event) ;
         switch( event.code ) {
             case "Space":
                 console.log("MyTank收到空白鍵");
@@ -75,9 +97,11 @@ class MyTank {
 class World{
     static WORLD_HEIGHT = 4000 ;
     static WORLD_WIDTH = 2000 ;
-    static VIEW_HEIGHT = 22 ;
-    static VIEW_WIDTH = 30 ;  
+    static VIEW_ROWS = 22 ;
+    static VIEW_COLS = 30 ;  
     static CELL_SIZE = 20 ;    
+    static VIEW_HEIGHT = World.CELL_SIZE * World.VIEW_ROWS ;
+    static VIEW_WIDTH = World.CELL_SIZE * World.VIEW_COLS ;
 
     viewTop = 1640 ;
     viewLeft = 1760 ;
@@ -111,13 +135,13 @@ class World{
     }    
     drawBackground(){
         ctx.strokeStyle = "black";
-        for (let i=0;i<World.VIEW_WIDTH+1;i++){
+        for (let i=0;i<World.VIEW_COLS+1;i++){
             ctx.moveTo(World.CELL_SIZE*i,0 );
-            ctx.lineTo(World.CELL_SIZE*i,World.CELL_SIZE*World.VIEW_HEIGHT);
+            ctx.lineTo(World.CELL_SIZE*i,World.CELL_SIZE*World.VIEW_ROWS);
         } 
-        for (let j=0;j<World.VIEW_HEIGHT+1;j++){
+        for (let j=0;j<World.VIEW_ROWS+1;j++){
             ctx.moveTo(0,World.CELL_SIZE*j );
-            ctx.lineTo(World.CELL_SIZE*World.VIEW_WIDTH,World.CELL_SIZE*j);    
+            ctx.lineTo(World.CELL_SIZE*World.VIEW_COLS,World.CELL_SIZE*j);    
         }
         ctx.stroke();
     }
