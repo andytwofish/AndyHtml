@@ -8,7 +8,7 @@
   </style>
 </head>
 <body>
-  <canvas id="_Canvas" width="800" height="800"></canvas>
+  <canvas id="_Canvas" width="600" height="440"></canvas>
 </body>
 </html>
 
@@ -30,17 +30,17 @@ class Brick {
         ctx.fillStyle = `rgb(0,0,0)` ;
         ctx.fillRect( this.x, this.y, this.width, this.height ) ;
         this.x += 10 ;
-        if ( this.x > World.WIDTH ) {
+        if ( this.x > World.WORLD_WIDTH ) {
             this.x=0 ;
         }
     }
 }
 
 class World{
-    static HEIGHT = 4000 ;
-    static WIDTH = 2000 ;
-    static VIEW_HEIGHT = 480 ;
-    static VIEW_WIDTH = 360 ;  
+    static WORLD_HEIGHT = 4000 ;
+    static WORLD_WIDTH = 2000 ;
+    static VIEW_HEIGHT = 22 ;
+    static VIEW_WIDTH = 30 ;  
     static CELL_SIZE = 20 ;    
 
     viewTop = 1640 ;
@@ -63,11 +63,11 @@ class World{
     }    
     drawBackground(){
         ctx.strokeStyle = "black";
-        for (let i=0;i<World.VIEW_HEIGHT;i++){
+        for (let i=0;i<World.VIEW_WIDTH+1;i++){
             ctx.moveTo(World.CELL_SIZE*i,0 );
             ctx.lineTo(World.CELL_SIZE*i,World.CELL_SIZE*World.VIEW_HEIGHT);
         } 
-        for (let j=0;j<World.VIEW_WIDTH;j++){
+        for (let j=0;j<World.VIEW_HEIGHT+1;j++){
             ctx.moveTo(0,World.CELL_SIZE*j );
             ctx.lineTo(World.CELL_SIZE*World.VIEW_WIDTH,World.CELL_SIZE*j);    
         }
