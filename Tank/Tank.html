@@ -13,7 +13,73 @@
 </html>
 
 <script>
+const canvas = document.getElementById('_Canvas');
+const ctx = canvas.getContext('2d');
 
+//紅磚
+class Brick { 
+    x = 0 ;
+    y = 0 ;
+    height = 20;
+    width = 20;
+    constructor(x,y) {
+        this.x = x ;
+        this.y = y ;
+    }
+    refresh() {
+        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillRect( this.x, this.y, this.width, this.height ) ;
+        this.x += 10 ;
+        if ( this.x > World.WIDTH ) {
+            this.x=0 ;
+        }
+    }
+}
+
+class World{
+    static HEIGHT = 4000 ;
+    static WIDTH = 2000 ;
+    static VIEW_HEIGHT = 480 ;
+    static VIEW_WIDTH = 360 ;  
+    static CELL_SIZE = 20 ;    
+
+    viewTop = 1640 ;
+    viewLeft = 1760 ;
+    objects = [] ; //放所有物體的物件
+    addObject(obj) {
+        this.objects[this.objects.length] = obj ;
+    }
+    refresh(){ //每50ms執行一次
+        this.cleanView();
+        this.drawBackground();
+        for( let i=0; i<this.objects.length; i++ ) {
+            this.objects[i].refresh() ;
+        }
+        setTimeout( this.refresh.bind(this), 50 ) ; //在50ms之後再呼叫refresh()
+    }
+    cleanView(){
+        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillRect(0,0,canvas.width, canvas.height) ;
+    }    
+    drawBackground(){
+        ctx.strokeStyle = "black";
+        for (let i=0;i<World.VIEW_HEIGHT;i++){
+            ctx.moveTo(World.CELL_SIZE*i,0 );
+            ctx.lineTo(World.CELL_SIZE*i,World.CELL_SIZE*World.VIEW_HEIGHT);
+        } 
+        for (let j=0;j<World.VIEW_WIDTH;j++){
+            ctx.moveTo(0,World.CELL_SIZE*j );
+            ctx.lineTo(World.CELL_SIZE*World.VIEW_WIDTH,World.CELL_SIZE*j);    
+        }
+        ctx.stroke();
+    }
+
+}
+let world = new World();
+let brick = new Brick(10,20);
+world.addObject( brick ) ;
+
+setTimeout( world.refresh.bind(world), 50) ;
 
 
 
