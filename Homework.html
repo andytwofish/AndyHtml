@@ -181,10 +181,14 @@ const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');
 
 class Tank{
-static CELL_SIZE = 14 ;
-h = 0 ;
-row = Math.floor(Math.random()*40) ;  
-col = Math.floor(Math.random()*40) ; 
+
+    static CELL_SIZE = 14 ;
+    h = 0 ;
+    row = Math.floor(Math.random()*39) ;  
+    col = Math.floor(Math.random()*39) ; 
+    red = Math.floor(Math.random()*256) ;
+    green = Math.floor(Math.random()*256) ;
+    blue = Math.floor(Math.random()*256) ;
     static drawBackground(){
         ctx.strokeStyle = "orange";
         for (let i=0;i<40+1;i++){
@@ -198,11 +202,11 @@ col = Math.floor(Math.random()*40) ;
         ctx.stroke();
     }
     drawCell(){
-        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
     }
     cleanCell(){
-        ctx.fillStyle = `rgb(100,100,100)` ;
+        ctx.fillStyle = `rgb(255,255,255)` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
     }
 
@@ -220,24 +224,81 @@ col = Math.floor(Math.random()*40) ;
         }else{
             this.col+=this.h ;
         }
+        if (this.row<0){
+            this.row = 0  ;
+        }
+        if (this.row>39){
+            this.row = 39 ;
+        }
+        if (this.col<0){
+            this.col = 0 ;
+        }
+        if (this.col>39){
+            this.col = 39 ;
+        }
         this.drawCell() ;
+        // for (let i=0;i<tanks.length;i++){
+        //     if ( tanks[i] !=this&&tanks[i].row==this.row&&tanks[i].col==this.col ){
+        //         tanks.splice(i,1) ;
+        //         return ;
+        //     }
+        // }
     }
 }
 
-let k = [] ; 
-for (let i=0;i<10;i++){
-    k [k.length] = new Tank () ;
+class MyTank {
+    row = 0 ;
+    col = 0 ;
+    constructor() {
+        document.addEventListener( "keydown", this.keyDown.bind(this) ) ;
+    }
+    keyDown(event ) {
+         this.cleanMyCell() ;
+        if (event.code==`ArrowUp`){
+            this.row-=1 ;
+        }
+        if (event.code==`ArrowDown`){
+            this.row+=1 ;
+        }
+        if (event.code==`ArrowRight`){
+            this.col+=1 ;
+        }
+        if (event.code==`ArrowLeft`){
+            this.col-=1 ;
+        }
+        this.drawMyCell() ;
+    }
+
+    drawMyCell(){
+        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+    }
+    cleanMyCell(){
+        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+    }
+    
+
 }
- Tank.drawBackground () ;
+
+let tanks = [] ; 
+for (let i=0;i<100;i++){
+    tanks [tanks.length] = new Tank () ;
+}
+Tank.drawBackground () ;
 let countDown = 3000 ;
+let myTank = new MyTank() ;
 run() ;
 function run() {
-    for (let i=0;i<k.length;i++){
-        k [i].move() ;
+    for (let i=0;i<tanks.length;i++){
+        tanks [i].move() ;
     }
+    myTank.cleanMyCell () ;
+    myTank.drawMyCell () ;
     if ( --countDown > 0 ) {
-        setTimeout( run, 100 ) ;
+        setTimeout( run, 1000 ) ;
     }
 }
 
+    
 </script>
