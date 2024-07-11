@@ -9,6 +9,7 @@
 </head>
 <body>
   <canvas id="_Canvas" width="600" height="440"></canvas>
+    <img id="MyTankImg" src="./icons8-tank-top-view-50.png" alt="Source Image" style="display:none;">
 </body>
 </html>
 
@@ -37,11 +38,12 @@ class Brick {
 }
 
 class MyTank {
-    x=0;
+    x=10;
     y=0;
-    height=20;
+    height=60;
     width=40;
     lastKeyEvent=0;
+    direction=0;
     isKeyDown = false ;
     constructor(x, y) {
         this.x = x ;
@@ -50,17 +52,20 @@ class MyTank {
         document.addEventListener("keyup", this._keyUp.bind(this) );
     }
     _keyDown(event) {
+        if ( event.code == "IntlRo" ) {
+            return ;
+        }
         if ( this.lastKeyEvent != 0 && event.code == this.lastKeyEvent.code && this.isKeyDown )
             return ;
         this.lastKeyEvent = event ;
         this.isKeyDown = true ;
         this.keyEvent(event) ;
-        setTimeout( this._keyLoop.bind(this), 40 ) ;
+        setTimeout( this._keyLoop.bind(this), 150 ) ;
     }
     _keyLoop() {
         if ( this.isKeyDown ) {
             this.keyEvent(this.lastKeyEvent) ;
-            setTimeout( this._keyLoop.bind(this), 40 ) ;
+            setTimeout( this._keyLoop.bind(this), 100 ) ;
         }
     }
     _keyUp(event) {
@@ -68,28 +73,38 @@ class MyTank {
         this.lastKeyEvent = 0 ;
     }
     keyEvent(event) {
-        console.log(event) ;
         switch( event.code ) {
             case "Space":
                 console.log("MyTank收到空白鍵");
                 break;
             case "ArrowDown":
-                this.y+=5;
+                this.direction=(180* Math.PI) / 180;
+                this.y+=20;
                 break;
             case "ArrowLeft":
-                this.x-=5;
+                this.direction=(270* Math.PI) / 180;
+                this.x-=20;
                 break;
             case "ArrowRight":
-                this.x+=5;
+                this.direction=(90* Math.PI) / 180;
+                this.x+=20;
                 break;
             case "ArrowUp":
-                this.y-=5;
+                this.direction=(0* Math.PI) / 180;
+                this.y-=20;
                 break;
         }
     }
     refresh() {
-        ctx.fillStyle = `rgb(255,0,0)` ;
-        ctx.fillRect( this.x, this.y, this.width, this.height ) ;
+        //ctx.fillStyle = `rgb(255,0,0)` ;
+        //ctx.fillRect( this.x, this.y, this.width, this.height ) ;
+        let myTankImgObj = document.getElementById("MyTankImg") ;
+        ctx.save();
+        ctx.translate(this.x+this.width/2, this.y+this.height/2);
+        ctx.rotate(this.direction);
+        ctx.translate(- this.x-this.width/2, -this.y-this.height/2);
+        ctx.drawImage(myTankImgObj, this.x, this.y, this.width, this.height ) ;
+        ctx.restore();
     }
 
 }
