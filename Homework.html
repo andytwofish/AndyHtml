@@ -238,9 +238,9 @@ class Tank{
         }
         this.drawCell() ;
         for (let i=0;i<tanks.length;i++){
-        if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
-            tanks.splice(i,1) ;
-            return ;
+            if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
+                tanks.splice(i,1) ;
+                return ;
         }
     }
         // for (let i=0;i<tanks.length;i++){
@@ -323,7 +323,7 @@ function run() {
     myTank.cleanMyCell () ;
     myTank.drawMyCell () ;
     if ( --countDown > 0 ) {
-        setTimeout( run, 400 ) ;
+        setTimeout( run, 800 ) ;
     }
 }
 
