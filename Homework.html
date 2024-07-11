@@ -237,6 +237,12 @@ class Tank{
             this.col = 39 ;
         }
         this.drawCell() ;
+        for (let i=0;i<tanks.length;i++){
+        if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
+            tanks.splice(i,1) ;
+            return ;
+        }
+    }
         // for (let i=0;i<tanks.length;i++){
         //     if ( tanks[i] !=this&&tanks[i].row==this.row&&tanks[i].col==this.col ){
         //         tanks.splice(i,1) ;
@@ -249,6 +255,9 @@ class Tank{
 class MyTank {
     row = 0 ;
     col = 0 ;
+    red = Math.floor(Math.random()*256) ;
+    green = Math.floor(Math.random()*256) ;
+    blue = Math.floor(Math.random()*256) ;
     constructor() {
         document.addEventListener( "keydown", this.keyDown.bind(this) ) ;
     }
@@ -256,21 +265,39 @@ class MyTank {
          this.cleanMyCell() ;
         if (event.code==`ArrowUp`){
             this.row-=1 ;
+            if (this.row<0){
+                this.row = 0  ;
+            }
         }
         if (event.code==`ArrowDown`){
             this.row+=1 ;
+            if (this.row>39){
+                this.row = 39 ;
+            }
         }
         if (event.code==`ArrowRight`){
             this.col+=1 ;
+            if (this.col>39){
+                this.col = 39 ;
+            }
         }
         if (event.code==`ArrowLeft`){
             this.col-=1 ;
+            if (this.col<0){
+                this.col = 0 ;
+            }
         }
         this.drawMyCell() ;
+        for (let i=0;i<tanks.length;i++){
+        if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
+            tanks.splice(i,1) ;
+            return ;
+        }
+    }
     }
 
     drawMyCell(){
-        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
     }
     cleanMyCell(){
@@ -296,7 +323,7 @@ function run() {
     myTank.cleanMyCell () ;
     myTank.drawMyCell () ;
     if ( --countDown > 0 ) {
-        setTimeout( run, 1000 ) ;
+        setTimeout( run, 400 ) ;
     }
 }
 
