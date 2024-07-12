@@ -186,9 +186,12 @@ class Tank{
     h = 0 ;
     row = Math.floor(Math.random()*39) ;  
     col = Math.floor(Math.random()*39) ; 
-    red = Math.floor(Math.random()*256) ;
-    green = Math.floor(Math.random()*256) ;
-    blue = Math.floor(Math.random()*256) ;
+//    red = Math.floor(Math.random()*256) ;
+//    green = Math.floor(Math.random()*256) ;
+//    blue = Math.floor(Math.random()*256) ;
+    red = Math.floor(Math.random()*56)+200 ;
+    green = Math.floor(Math.random()*56)+200 ;
+    blue = Math.floor(Math.random()*56)+200 ;
     static drawBackground(){
         ctx.strokeStyle = "orange";
         for (let i=0;i<40+1;i++){
@@ -240,6 +243,11 @@ class Tank{
         for (let i=0;i<tanks.length;i++){
             if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
                 tanks.splice(i,1) ;
+                if (tanks.length==0){
+                    console.log("ture:0") ; 
+                }else{
+                    console.log(`false:${tanks.length}`) ;
+                }
                 return ;
         }
     }
@@ -291,6 +299,11 @@ class MyTank {
         for (let i=0;i<tanks.length;i++){
         if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
             tanks.splice(i,1) ;
+            if (tanks.length==0){
+                console.log('ture 0') ;
+            }else{
+                console.log(`false${tanks.length}`) ;
+            }
             return ;
         }
     }
