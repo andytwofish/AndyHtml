@@ -134,9 +134,9 @@ class MyTank {
         if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
             tanks.splice(i,1) ;
             if (tanks.length==0){
-                console.log('ture 0') ;
+                console.log('ture:0') ;
             }else{
-                console.log(`false${tanks.length}`) ;
+                console.log(`false:${tanks.length}`) ;
             }
             return ;
         }
@@ -171,7 +171,6 @@ class Bullet{
         this.row-=1 ;    
         if (this.row<0){
             this.isRunning=false ; 
-            console.log(this.row) ;
         } 
         
         this.drawBulletCell() ;
@@ -179,6 +178,11 @@ class Bullet{
         for (let i=0;i<tanks.length;i++){
             if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
                 tanks.splice(i,1) ;
+                if (tanks.length==0){
+                    console.log('ture:0') ;
+                }else{
+                    console.log(`false:${tanks.length}`) ;
+                } 
                 return ;
             }
         }
