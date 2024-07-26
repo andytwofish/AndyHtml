@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Homework</title>
+  <title>bee</title>
   <style>
     canvas { border: 1px solid #000; }
   </style>
 </head>
 <body>
-  <canvas id="_Canvas" width="800" height="800"></canvas>
+  <canvas id="_Canvas" width="560" height="560"></canvas>
 </body>
 </html>
 
@@ -26,6 +26,9 @@ class Tank{
     red = Math.floor(Math.random()*256) ;
     green = Math.floor(Math.random()*256) ;
     blue = Math.floor(Math.random()*256) ;
+//    red = Math.floor(Math.random()*56)+200 ;
+//    green = Math.floor(Math.random()*56)+200 ;
+//    blue = Math.floor(Math.random()*56)+200 ;
     static drawBackground(){
         ctx.strokeStyle = "orange";
         for (let i=0;i<40+1;i++){
@@ -73,6 +76,9 @@ class Tank{
         if (this.col>39){
             this.col = 39 ;
         }
+        if ( Math.floor(Math.random()*60)<=0 ) {
+            new Bullet(this.row,this.col,this.red,this.green,this.blue) ;
+        }
         this.drawCell() ;
         for (let i=0;i<tanks.length;i++){
             if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
@@ -94,14 +100,85 @@ class Tank{
     }
 }
 
+class Bullet{
+    bullet = [] ;
+    row = 0 ;
+    col = 0 ;
+    red = 0 ;
+    green = 0 ;
+    blue = 0 ;
+    isRunning = true ;
+    constructor(row,col,red,green,blue) {
+        this.row = row ;
+        this.col = col ;
+        this.red = red ;
+        this.green = green ;
+        this.blue = blue ;
+        this.move();
+    }
+    
+    move(){
+        if ( !this.isRunning ) {
+            return ;
+        }
+        this.cleanBulletCell() ;
+        this.row+=1 ;    
+        if (this.row>39){
+            this.isRunning=false ; 
+        } 
+        
+        this.drawBulletCell() ;
+        setTimeout( this.move.bind(this), 30 ) ;
+        if ( myTank.row==this.row&&myTank.col==this.col ){
+            isRun = false ;
+            return ;
+        }
+    }
+    drawBulletCell(){
+        ctx.fillStyle = `rgb(${ this.red },${ this.green },${ this.blue })` ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
+    }
+    cleanBulletCell(){
+        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+    }
+}
+
 class MyTank {
     row = 30 ;
     col = 20 ;
+    loaded = false ;
+    isKeyDown = false ;
+    lastKeyEvent=0;
     constructor() {
-        document.addEventListener( "keydown", this.keyDown.bind(this) ) ;
+        document.addEventListener("keydown", this._keyDown.bind(this) );
+        document.addEventListener("keyup", this._keyUp.bind(this) );
     }
-    keyDown(event ) {
-         this.cleanMyCell() ;
+    _keyDown(event) {
+        if ( event.code == "IntlRo" ) {
+            return ;
+        }
+        if ( this.lastKeyEvent != 0 && event.code == this.lastKeyEvent.code && this.isKeyDown ){
+            return ;
+        }
+        this.lastKeyEvent = event ;
+        this.isKeyDown = true ;
+        this.keyEvent(event) ;
+        setTimeout( this._keyLoop.bind(this), 84 ) ;
+    }
+    _keyLoop() {
+        if ( this.isKeyDown ) {
+            this.keyEvent(this.lastKeyEvent) ;
+            setTimeout( this._keyLoop.bind(this), 50 ) ;
+        }
+    }
+    _keyUp(event) {
+        this.lastKeyEvent = 0 ;
+        this.isKeyDown = false ;
+        this.loaded = false ;
+    }
+    keyEvent(event ) {
+        this.cleanMyCell() ;
         if (event.code==`ArrowUp`){
             this.row-=1 ;
             if (this.row<20){
@@ -127,20 +204,18 @@ class MyTank {
             }
         }
         if (event.code==`Space`){
-            let bullet = new Bullet(this.row,this.col) ;
+            if ( !this.loaded ){
+                this.loaded = true ;
+                let bullet = new MyBullet(this.row,this.col) ;
+//                this.row+=1 ;
+//                if (this.row>39){
+//                    this.row = 39 ;
+//                }
+                this.cleanMyCell() ;
+                this.drawMyCell() ;
+            }
         }
         this.drawMyCell() ;
-        for (let i=0;i<tanks.length;i++){
-        if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
-            tanks.splice(i,1) ;
-            if (tanks.length==0){
-                console.log('ture:0') ;
-            }else{
-                console.log(`false:${tanks.length}`) ;
-            }
-            return ;
-        }
-    }
     }
 
     drawMyCell(){
@@ -153,7 +228,7 @@ class MyTank {
     }
 }
 
-class Bullet{
+class MyBullet{
     row = 0 ;
     col = 0 ;
     isRunning = true ;
@@ -174,7 +249,8 @@ class Bullet{
         } 
         
         this.drawBulletCell() ;
-        setTimeout( this.move.bind(this), 8 ) ;
+        setTimeout( this.move.bind(this), 20 ) ;
+
         for (let i=0;i<tanks.length;i++){
             if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
                 tanks.splice(i,1) ;
@@ -186,10 +262,11 @@ class Bullet{
                 return ;
             }
         }
+
     }
     drawBulletCell(){
         ctx.fillStyle = `rgb(0,0,0)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
     }
     cleanBulletCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
@@ -197,21 +274,24 @@ class Bullet{
     }
 }
 let tanks = [] ; 
-for (let i=0;i<100;i++){
+for (let i=0;i<40;i++){
     tanks [tanks.length] = new Tank () ;
 }
 Tank.drawBackground () ;
 let countDown = 3000 ;
 let myTank = new MyTank() ;
+let isRun = true ;
 run() ;
 function run() {
-    for (let i=0;i<tanks.length;i++){
-        tanks [i].move() ;
+    if (isRun){
+        for (let i=0;i<tanks.length;i++){
+            tanks [i].move() ;
+        }
     }
     myTank.cleanMyCell () ;
     myTank.drawMyCell () ;
     if ( --countDown > 0 ) {
-        setTimeout( run, 40 ) ;
+        setTimeout( run, 50 ) ;
     }
 }
 
