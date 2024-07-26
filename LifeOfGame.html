@@ -456,7 +456,7 @@ class Game {
         switch( sidePanelTypeObj.value ) {
             case "樹清單":
                 let treeHeightCount = [] ;
-                for( let i=0; i<Tree.TREE_MAX; i++ ) {
+                for( let i=0; i<=Tree.TREE_MAX; i++ ) {
                     treeHeightCount[i] = 0 ;
                 }
                 for( let row=0; row<WORLD_ROWS; row++ ) {
@@ -470,7 +470,7 @@ class Game {
                         }
                     }
                 }
-                for( let i=0; i<Tree.TREE_MAX; i++ ) {
+                for( let i=0; i<=Tree.TREE_MAX; i++ ) {
                     html += `${treeHeightCount[i]}<br>` ;
                 }
                 break;
