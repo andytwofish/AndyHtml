@@ -15,7 +15,69 @@
 <script>
 
 const canvas = document.getElementById('_Canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');     
+
+class DefenseTank{
+    static CELL_SIZE = 14 ;
+    h = 0 ;
+    row = Math.floor(Math.random()*39) ;  
+    col = Math.floor(Math.random()*39) ; 
+    red = 0 ;
+    green = 0 ;
+    blue = 0 ;
+
+    drawCell(){
+        ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
+        ctx.fillRect( this.col*DefenseTank.CELL_SIZE+1, this.row*DefenseTank.CELL_SIZE+1, DefenseTank.CELL_SIZE-2, DefenseTank.CELL_SIZE-2 ) ;
+    }
+    cleanCell(){
+        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillRect( this.col*DefenseTank.CELL_SIZE+1, this.row*DefenseTank.CELL_SIZE+1,DefenseTank.CELL_SIZE-2, DefenseTank.CELL_SIZE-2 ) ;
+    }
+
+    move(){
+        this.cleanCell() ;
+        let i = Math.floor(Math.random()*2) ;
+        this.h = Math.floor(Math.random()*2) ;
+        if (this.h==0){
+            this.h=-1 ;
+        }else{
+            this.h=1 ;
+        }
+        if (i==0){
+            this.row+=this.h ;
+        }else{
+            this.col+=this.h ;
+        }
+        if (this.row<0){
+            this.row = 0  ;
+        }
+        if (this.row>19){
+            this.row = 19 ;
+        }
+        if (this.col<0){
+            this.col = 0 ;
+        }
+        if (this.col>39){
+            this.col = 39 ;
+        }
+        if ( Math.floor(Math.random()*140)<=0 ) {
+            tanks [tanks.length] = new Tank () ;
+        }
+        this.drawCell() ;
+        for (let i=0;i<tanks.length;i++){
+            if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
+                tanks.splice(i,1) ;
+                if (tanks.length==0){
+                    console.log("ture:0") ; 
+                }else{
+                    console.log(`false:${tanks.length}`) ;
+                }
+                return ;
+            }
+        }
+    }
+}
 
 class Tank{
 
@@ -89,8 +151,8 @@ class Tank{
                     console.log(`false:${tanks.length}`) ;
                 }
                 return ;
-        }
-    }
+            }
+         }
         // for (let i=0;i<tanks.length;i++){
         //     if ( tanks[i] !=this&&tanks[i].row==this.row&&tanks[i].col==this.col ){
         //         tanks.splice(i,1) ;
@@ -231,6 +293,7 @@ class MyTank {
 class MyBullet{
     row = 0 ;
     col = 0 ;
+    life = true ;
     isRunning = true ;
     constructor(row,col) {
         this.row = row ;
@@ -247,22 +310,18 @@ class MyBullet{
         if (this.row<0){
             this.isRunning=false ; 
         } 
+        if ( this.life ){
+            this.drawBulletCell() ;
+            setTimeout( this.move.bind(this), 20 ) ;
         
-        this.drawBulletCell() ;
-        setTimeout( this.move.bind(this), 20 ) ;
-
-        for (let i=0;i<tanks.length;i++){
-            if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
-                tanks.splice(i,1) ;
-                if (tanks.length==0){
-                    console.log('ture:0') ;
-                }else{
-                    console.log(`false:${tanks.length}`) ;
-                } 
-                return ;
+            for (let i=0;i<tanks.length;i++){
+                if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
+                    tanks.splice(i,1) ;
+                    this.life = false ;
+                    return ;
+                }
             }
         }
-
     }
     drawBulletCell(){
         ctx.fillStyle = `rgb(0,0,0)` ;
@@ -274,8 +333,11 @@ class MyBullet{
     }
 }
 let tanks = [] ; 
-for (let i=0;i<40;i++){
+for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
+}
+for (let i=0;i<20;i++){
+    tanks [tanks.length] = new DefenseTank () ;
 }
 Tank.drawBackground () ;
 let countDown = 3000 ;
@@ -287,6 +349,9 @@ function run() {
         for (let i=0;i<tanks.length;i++){
             tanks [i].move() ;
         }
+    }else{
+        ctx.font = "80px Arial";
+        ctx.fillText("GAME OVER",20,350);
     }
     myTank.cleanMyCell () ;
     myTank.drawMyCell () ;

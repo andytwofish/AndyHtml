@@ -28,8 +28,9 @@
             <OPTION id="鹿隱藏">隱藏</OPTION>
         </SELECT>
         <SELECT id="sidePanelType">
-            <OPTION value="樹清單" selected>樹清單</OPTION>
+            <OPTION value="樹清單">樹清單</OPTION>
             <OPTION value="鹿清單">鹿清單</OPTION>
+            <OPTION value="鹿數量及身高變化" selected>鹿數量及身高變化</OPTION>
         </SELECT>
         <BR>
     </TD>
@@ -47,7 +48,7 @@
 //==========  class ===========
 //=============================
 class Tree {
-    static treeDead = 9 ;
+    static treeDead = 3 ;
     static totalCount = 0 ;
     static GROW_UP_HEIGHT = 10 ;
     static INIT_HEIGHT = 175 ;
@@ -145,7 +146,8 @@ class Deer {
         if ( Math.floor( Math.random()*2 )==0 ) {
             this.isMale = false ;
         }
-        this.height = 80 + Math.floor( Math.random()*181 ) ;
+//        this.height = 80 + Math.floor( Math.random()*181 ) ;
+        this.height = 150 ;
     }
     
     _move(row, col) {
@@ -209,6 +211,19 @@ class Deer {
 
 class World {
     static nextDay() {
+        let deerCount = new DeerCount() ;
+        let deerHeightSum = 0 ;
+        for( let row=0; row<WORLD_ROWS; row++ ) {
+            for( let col=0; col<WORLD_COLS; col++ ) {
+                if ( matrix[row][col] instanceof Deer ) {
+                    deerCount.count++;
+                    deerHeightSum += matrix[row][col].height ;
+                }
+            }
+        }
+        deerCount.heightAvg = Math.round( deerHeightSum / deerCount.count ) ;
+        deerCounts[deerCounts.length] = deerCount ;
+
         for (let row=0; row<WORLD_ROWS;row++) {
             for (let col=0; col<WORLD_COLS;col++) {
                 if( matrix[row][col] instanceof Tree){
@@ -439,6 +454,11 @@ class Game {
             this.runCountObj.value = --this.runCount ;
         }
         this.worldDays++;
+        if (this.worldDays==400){
+            for  (let i=0; i<40;i++) {
+                new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
+            }
+        }
         this.updateSideInfo() ;
         this.displayCellInfo(this.lastInfoRow, this.lastInfoCol) ;
         this.updateTopInfo();
@@ -472,6 +492,11 @@ class Game {
                 }
                 for( let i=0; i<=Tree.TREE_MAX; i++ ) {
                     html += `${treeHeightCount[i]}<br>` ;
+                }
+                break;
+            case "鹿數量及身高變化":
+                for( let i=0; i<deerCounts.length; i++ ) {
+                    html += `${deerCounts[i].count}, ${deerCounts[i].heightAvg}<br>`;
                 }
                 break;
             case "鹿清單":
@@ -546,6 +571,10 @@ class Game {
     }
 }
 
+class DeerCount {
+    count = 0;
+    heightAvg = 0 ;
+}
 //=============================
 //==========  function ===========
 //=============================
@@ -601,7 +630,7 @@ const treeDisplayTypeObj = document.getElementById("treeDisplayType") ;
 const deerDisplayTypeObj = document.getElementById("deerDisplayType") ;
 const sidePanelTypeObj = document.getElementById("sidePanelType") ;
 
-
+let deerCounts = [] ; 
 let game = new Game() ;
 
 //初始化matrix陣列，每個陣列可能是鹿或樹
@@ -619,11 +648,7 @@ for  (let i=0; i<3;i++) {
 */
 new Tree( 10, 10 ) ;
 new Tree( 40, 40 ) ;
-/*
-for  (let i=0; i<40;i++) {
-    new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
-}
-*/
+
 canvas.style.cursor = "pointer";
 
 // =============================================
