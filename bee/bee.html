@@ -17,7 +17,7 @@
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');     
 
-class DefenseTank{
+class BabyTank{
     static CELL_SIZE = 14 ;
     h = 0 ;
     row = Math.floor(Math.random()*39) ;  
@@ -28,23 +28,26 @@ class DefenseTank{
 
     drawCell(){
         ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
-        ctx.fillRect( this.col*DefenseTank.CELL_SIZE+1, this.row*DefenseTank.CELL_SIZE+1, DefenseTank.CELL_SIZE-2, DefenseTank.CELL_SIZE-2 ) ;
+        ctx.fillRect( this.col*BabyTank.CELL_SIZE+1, this.row*BabyTank.CELL_SIZE+1, BabyTank.CELL_SIZE-2, BabyTank.CELL_SIZE-2 ) ;
     }
     cleanCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*DefenseTank.CELL_SIZE+1, this.row*DefenseTank.CELL_SIZE+1,DefenseTank.CELL_SIZE-2, DefenseTank.CELL_SIZE-2 ) ;
+        ctx.fillRect( this.col*BabyTank.CELL_SIZE+1, this.row*BabyTank.CELL_SIZE+1,BabyTank.CELL_SIZE-2, BabyTank.CELL_SIZE-2 ) ;
     }
 
     move(){
         this.cleanCell() ;
         let i = Math.floor(Math.random()*2) ;
-        this.h = Math.floor(Math.random()*2) ;
-        if (this.h==0){
-            this.h=-1 ;
+        if (i==0){
+            this.h = Math.floor(Math.random()*3)-2 ;
         }else{
-            this.h=1 ;
+            this.h = Math.floor(Math.random()*2) ;
+            if (this.h==0){
+                this.h = -1 ;
+            }
         }
         if (i==0){
+            
             this.row+=this.h ;
         }else{
             this.col+=this.h ;
@@ -61,8 +64,11 @@ class DefenseTank{
         if (this.col>39){
             this.col = 39 ;
         }
-        if ( Math.floor(Math.random()*140)<=0 ) {
+        if ( Math.floor(Math.random()*40)<=0 ) {
             tanks [tanks.length] = new Tank () ;
+            console.log(tanks) ;
+            tanks [tanks.length-1].row = this.row+=1 ;
+            tanks [tanks.length-1].col = this.col ;
         }
         this.drawCell() ;
         for (let i=0;i<tanks.length;i++){
@@ -336,8 +342,8 @@ let tanks = [] ;
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<20;i++){
-    tanks [tanks.length] = new DefenseTank () ;
+for (let i=0;i<2;i++){
+    tanks [tanks.length] = new BabyTank () ;
 }
 Tank.drawBackground () ;
 let countDown = 3000 ;
