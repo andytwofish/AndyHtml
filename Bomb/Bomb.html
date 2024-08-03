@@ -16,26 +16,51 @@
 
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');     
-
+const rect = canvas.getBoundingClientRect();
 
 
     
 class Game{ 
-    static CELL_SIZE =14;
+    static CELL_SIZE =20;
     row = 10 ;
     col = 10 ;
-    bombCount = 20 ;
+    bombCount = 8 ;
     matrix = [] ; 
     constructor() {
+        canvas.addEventListener("click", this.openCell.bind(this) ) ;
+        canvas.addEventListener("contextmenu", this.switchFlag.bind(this), false ) ;
+
         for(let i=0; i<this.row;i++){
             this.matrix[i] = []; 
             for(let j=0;j<this.col;j++){
-                this.matrix[i][j] = 0 ;  
+                this.matrix[i][j] = new CellInfo() ;  
             }
         }
         this.drawBackground() ;
         this.genBomb(this.bombCount) ;
         console.log(this.matrix);
+    }
+    openCell(e) {
+        console.log(e) ;
+        
+    }
+    switchFlag(e) {
+        e.preventDefault();
+        let row = Math.floor( (e.y- rect.top)/Game.CELL_SIZE ) ; 
+        let col = Math.floor( (e.x- rect.left)/Game.CELL_SIZE ) ;
+        if ( col>=this.col || row>=this.row ) {
+            return
+        }
+
+        console.log(row) ;
+        console.log(col) ;
+        if (this.matrix[row][col].state == CellInfo.STATE_CLOSE){
+            this.matrix[row][col].state = CellInfo.STATE_FLAG ;
+        }
+        if (this.matrix[row][col].state == CellInfo.STATE_FLAG){
+            this.matrix[row][col].state = CellInfo.STATE_CLOSE ;
+        }
+        return false;
     }
     drawBackground(){
         ctx.strokeStyle = "black";
@@ -56,13 +81,79 @@ class Game{
             for (let j=0;j<1;j=0){
                 bombRow = Math.floor(Math.random()*this.row) ;
                 bombCol = Math.floor(Math.random()*this.col) ;
-                if (this.matrix[bombRow][bombCol] != 'Bomb' ){
+                if (this.matrix[bombRow][bombCol].bomb != 9 ){
                     break ;
                 }
             }
-            this.matrix[bombRow][bombCol] = 'Bomb' ;
+            this.matrix[bombRow][bombCol].bomb = 9 ;
         }
-    }  
+        console.log(this.matrix) ;
+        for (let i=0;i<this.row;i++){
+            for (let j=0;j<this.col;j++){
+                if (this.getBomb(i,j)!=9){
+                    if (i!=0&&j!=0){
+                        if (this.getBomb(i-1,j-1) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                    if (i!=0){
+                        if (this.getBomb(i-1,j) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                    if (i!=0&&j!=this.col-1){
+                        if (this.getBomb(i-1,j+1) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                    if (j!=0){
+                        if (this.getBomb(i,j-1) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                    if (j!=this.col-1){
+                        if (this.getBomb(i,j+1) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                    if (i!=this.row-1&&j!=0){
+                        if (this.getBomb(i+1,j-1) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                    if (i!=this.row-1){
+                        if (this.getBomb(i+1,j) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                    if (i!=this.row-1&&j!=this.col-1){
+                        if (this.getBomb(i+1,j+1) == 9 ){
+                            this.matrix[i][j].bomb+=1 ;
+                        }
+                    }
+                }
+            }
+        }
+        for (let i=0;i<this.row;i++){
+            for (let j=0;j<this.col;j++){
+                ctx.font = `${Game.CELL_SIZE}px Arial`;
+                ctx.fillText(this.matrix[i][j].bomb,j*Game.CELL_SIZE,(i+1)*Game.CELL_SIZE );
+            }
+        }
+    }
+       
+    getBomb(row,col){
+        return this.matrix[row][col].bomb ;
+    }
+}
+class CellInfo{
+    static STATE_CLOSE = 0 ;
+    static STATE_OPEN = 1 ;
+    static STATE_PROCESS = 2 ;
+    static STATE_FLAG = 3 ;
+    bomb = 0 ;
+    state = CellInfo.STATE_CLOSE ;
+
 }
 let game = new Game () ;
 //Game.drawBackground () ;
