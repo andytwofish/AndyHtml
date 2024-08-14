@@ -422,7 +422,9 @@ class MyTank {
                         this.keyUp() ;
                     }
                     if ( gamepad.buttons[0].pressed ) {
-                        this.keySpace();
+                        this.keySpace();  
+                    }else{
+                        this.loaded = false ;
                     }
                 }
             }
@@ -455,10 +457,12 @@ class MyTank {
         }
     }
     keySpace() {
-        let bullet = new MyBullet(this.row,this.col) ;
+        if ( !this.loaded ){
+            this.loaded = true ;
+            let bullet = new MyBullet(this.row,this.col) ;
+        }
     }
     keyEvent(event ) {
-        this.cleanMyCell() ;
         if (event.code==`ArrowUp`){
             this.keyUp();
         }
@@ -551,7 +555,7 @@ run() ;
 
 function run() {
     if (isRun){
-        if ( delayCount++ > 15 ) {
+        if ( delayCount++ > 5 ) {
             delayCount=0;
             for (let i=0;i<tanks.length;i++){
                 if (!tanks [i].life ){
