@@ -127,17 +127,17 @@ static CELL_SIZE = 14 ;
             this.shield = true ;
         }
         this.drawCell() ;
-        for (let i=0;i<tanks.length;i++){
-            if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
-                tanks.splice(i,1) ;
-                if (tanks.length==0){
-                    console.log("ture:0") ; 
-                }else{
-                    console.log(`false:${tanks.length}`) ;
-                }
-                return ;
-            }
-        }
+        //for (let i=0;i<tanks.length;i++){
+        //    if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
+        //        tanks.splice(i,1) ;
+        //        if (tanks.length==0){
+        //            console.log("ture:0") ; 
+        //        }else{
+        //            console.log(`false:${tanks.length}`) ;
+        //        }
+        //        return ;
+        //    }
+        //}
     }
 }
 
@@ -212,17 +212,17 @@ class BabyTank{
             tanks [tanks.length-1].col = this.col ;
         }
         this.drawCell() ;
-        for (let i=0;i<tanks.length;i++){
-            if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
-                tanks.splice(i,1) ;
-                if (tanks.length==0){
-                    console.log("ture:0") ; 
-                }else{
-                    console.log(`false:${tanks.length}`) ;
-                }
-                return ;
-            }
-        }
+        //for (let i=0;i<tanks.length;i++){
+        //    if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
+        //        tanks.splice(i,1) ;
+        //        if (tanks.length==0){
+        //            console.log("ture:0") ; 
+        //        }else{
+        //            console.log(`false:${tanks.length}`) ;
+        //        }
+        //        return ;
+        //    }
+        //}
     }
 }
 
@@ -300,17 +300,17 @@ class Tank{
             new Bullet(this.row,this.col,this.red,this.green,this.blue) ;
         }
         this.drawCell() ;
-        for (let i=0;i<tanks.length;i++){
-            if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
-                tanks.splice(i,1) ;
-                if (tanks.length==0){
-                    console.log("ture:0") ; 
-                }else{
-                    console.log(`false:${tanks.length}`) ;
-                }
-                return ;
-            }
-         }
+        //for (let i=0;i<tanks.length;i++){
+        //    if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
+        //        tanks.splice(i,1) ;
+        //        if (tanks.length==0){
+        //            console.log("ture:0") ; 
+        //        }else{
+        //            console.log(`false:${tanks.length}`) ;
+        //        }
+        //        return ;
+        //    }
+        // }
         // for (let i=0;i<tanks.length;i++){
         //     if ( tanks[i] !=this&&tanks[i].row==this.row&&tanks[i].col==this.col ){
         //         tanks.splice(i,1) ;
@@ -349,10 +349,10 @@ class Bullet{
         
         this.drawBulletCell() ;
         setTimeout( this.move.bind(this), 30 ) ;
-        if ( myTank.row==this.row&&myTank.col==this.col ){
-            isRun = false ;
-            return ;
-        }
+        //if ( myTank.row==this.row&&myTank.col==this.col ){
+        //    isRun = false ;
+        //    return ;
+        //}
     }
     drawBulletCell(){
         ctx.fillStyle = `rgb(${ this.red },${ this.green },${ this.blue })` ;
@@ -371,7 +371,9 @@ class MyTank {
     isKeyDown = false ;
     lastKeyEvent=0;
     keyDelayCount=0;
-    constructor() {
+    gamepadIdx= 0;
+    constructor(gamepadIdx) {
+        this.gamepadIdx = gamepadIdx ;
         document.addEventListener("keydown", this._keyDown.bind(this) );
         document.addEventListener("keyup", this._keyUp.bind(this) );
     }
@@ -402,30 +404,28 @@ class MyTank {
         this.cleanMyCell() ;
         if ( this.keyDelayCount++ >= 0 ) {
             const gamepads = navigator.getGamepads();
-            for (let i = 0; i < gamepads.length; i++) {
-                const gamepad = gamepads[i]
-                if (gamepad) {
-                    if ( gamepad.axes[0] == 1 ) {
-                        console.log("right") ;
-                        this.keyRight();
-                    }
-                    if ( gamepad.axes[0] == -1 ) {
-                        console.log("left") ;
-                        this.keyLeft();
-                    }
-                    if ( gamepad.axes[1] == 1 ) {
-                        console.log("down") ;
-                        this.keyDown();
-                    }
-                    if ( gamepad.axes[1] == -1 ) {
-                        console.log("up") ;
-                        this.keyUp() ;
-                    }
-                    if ( gamepad.buttons[0].pressed ) {
-                        this.keySpace();  
-                    }else{
-                        this.loaded = false ;
-                    }
+            const gamepad = gamepads[this.gamepadIdx] ;
+            if (gamepad) {
+                if ( gamepad.axes[0] == 1 ) {
+                    console.log("right") ;
+                    this.keyRight();
+                }
+                if ( gamepad.axes[0] == -1 ) {
+                    console.log("left") ;
+                    this.keyLeft();
+                }
+                if ( gamepad.axes[1] == 1 ) {
+                    console.log("down") ;
+                    this.keyDown();
+                }
+                if ( gamepad.axes[1] == -1 ) {
+                    console.log("up") ;
+                    this.keyUp() ;
+                }
+                if ( gamepad.buttons[0].pressed ) {
+                    this.keySpace();  
+                }else{
+                    this.loaded = false ;
                 }
             }
             this.keyDelayCount=0;
@@ -548,7 +548,8 @@ for (let i=0;i<0;i++){
 }
 Tank.drawBackground () ;
 let countDown = 3000 ;
-let myTank = new MyTank() ;
+let myTank1 = new MyTank(0) ;
+let myTank2 = new MyTank(1) ;
 let isRun = true ;
 let delayCount = 0 ;
 run() ;
@@ -565,7 +566,8 @@ function run() {
             for (let i=0;i<tanks.length;i++){
                 tanks [i].move() ;
             }
-            myTank.process() ;
+            myTank1.process() ;
+            myTank2.process() ;
         }
     }else{
         ctx.font = "80px Arial";
