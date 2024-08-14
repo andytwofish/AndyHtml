@@ -8,79 +8,199 @@
   </style>
 </head>
 <body>
-  <canvas id="_Canvas" width="800" height="800"></canvas>
+    Numbers of Cell : <input id="cellCount" type="text" size="8" value="10">
+    Nunmbers of Bomb : <input id="bombNum" type="text" size="8" value="10">
+    <button id="btnRun" type="button" size="20">Run</button><BR>
+    <canvas id="_Canvas" width="800" height="800"></canvas>
+    <img id="bombImg" src="./icons8-bomb-48.png" style="display:none;">
+    <img id="flagImg" src="./icons8-flag-96.png" style="display:none;">
 </body>
 </html>
 
 <script>
 
 const canvas = document.getElementById('_Canvas');
+const bombNumObj = document.getElementById('bombNum') ;
+const cellCountObj = document.getElementById('cellCount') ;
+const btnRunObj = document.getElementById("btnRun") ;  
+ 
+canvas.addEventListener("click", leftClick ) ;
+canvas.addEventListener("contextmenu", rightClick, false ) ;
+btnRunObj.addEventListener("click", runBtnClick ) ;
+
 const ctx = canvas.getContext('2d');     
 const rect = canvas.getBoundingClientRect();
 
 
-    
 class Game{ 
     static CELL_SIZE =20;
-    row = 10 ;
-    col = 10 ;
-    bombCount = 8 ;
+    rowSize = 0;
+    colSize = 0 ;
+    bombCount = 0 ;
     matrix = [] ; 
-    constructor() {
-        canvas.addEventListener("click", this.openCell.bind(this) ) ;
-        canvas.addEventListener("contextmenu", this.switchFlag.bind(this), false ) ;
 
-        for(let i=0; i<this.row;i++){
+    constructor() {
+    }
+
+    run() {
+        for(let i=0; i<this.rowSize;i++){
             this.matrix[i] = []; 
-            for(let j=0;j<this.col;j++){
+            for(let j=0;j<this.colSize;j++){
                 this.matrix[i][j] = new CellInfo() ;  
             }
         }
-        this.drawBackground() ;
         this.genBomb(this.bombCount) ;
         console.log(this.matrix);
+
+        console.log("switchBtnOnClick()" );
+        console.log( "bombNum:" + parseInt( bombNumObj.value) ) ;
+        console.log( "cellCount:" + parseInt( cellCountObj.value) ) ;
+        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillRect( 0, 0 , 800 , 800 ) ;
+        this.drawBackground() ;
+        this.paint();
     }
     openCell(e) {
-        console.log(e) ;
-        
+        e.preventDefault();
+        let row = Math.floor( (e.y- rect.top)/Game.CELL_SIZE ) ; 
+        let col = Math.floor( (e.x- rect.left)/Game.CELL_SIZE ) ;
+        if ( col>=this.colSize || row>=this.rowSize ) {
+            return ;
+        }
+        if (this.matrix[row][col].state == CellInfo.STATE_CLOSE){
+            if(this.matrix[row][col].bomb == 0){
+                this.matrix[row][col].state = CellInfo.STATE_PROCESS ;
+                for(let i=0;i<this.rowSize*this.colSize;i++){
+                    let run = false ;
+                    for(let j=0;j<this.rowSize;j++){
+                        for (let k=0;k<this.colSize;k++){
+                            if( this.matrix[j][k].bomb == 0 ){
+
+                                if (this.getState(j-1,k-1) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                                if (this.getState(j-1,k) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                                if (this.getState(j-1,k+1) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                                if (this.getState(j,k-1) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                                if (this.getState(j,k+1) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                                if (this.getState(j+1,k-1) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                                if (this.getState(j+1,k) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                                if (this.getState(j+1,k+1) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_PROCESS ;
+                                    run = true ;
+                                }
+                            }else{
+                                if (this.matrix[j][k].state != CellInfo.STATE_FLAG){
+                                    if (this.getState(j-1,k-1) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                    if (this.getState(j-1,k) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                    if (this.getState(j-1,k+1) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                    if (this.getState(j,k-1) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                    if (this.getState(j,k+1) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                    if (this.getState(j+1,k-1) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                    if (this.getState(j+1,k) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                    if (this.getState(j+1,k+1) == CellInfo.STATE_PROCESS ){
+                                        this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                        run = true ;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (run == false){;
+                        for(let j=0;j<this.rowSize;j++){
+                            for (let k=0;k<this.colSize;k++){
+                                if (this.getState(j,k) == CellInfo.STATE_PROCESS ){
+                                    this.matrix[j][k].state = CellInfo.STATE_OPEN ;
+                                }
+                            }
+                        }
+                        this.paint() ;
+                        return ;
+                    }
+                }
+            }
+            this.matrix[row][col].state = CellInfo.STATE_OPEN ;
+        }
+        this.paint() ;
     }
     switchFlag(e) {
         e.preventDefault();
         let row = Math.floor( (e.y- rect.top)/Game.CELL_SIZE ) ; 
         let col = Math.floor( (e.x- rect.left)/Game.CELL_SIZE ) ;
-        if ( col>=this.col || row>=this.row ) {
-            return
+        if ( col>=this.colSize || row>=this.rowSize ) {
+            return ;
         }
 
-        console.log(row) ;
-        console.log(col) ;
+
         if (this.matrix[row][col].state == CellInfo.STATE_CLOSE){
             this.matrix[row][col].state = CellInfo.STATE_FLAG ;
-        }
-        if (this.matrix[row][col].state == CellInfo.STATE_FLAG){
+        } else if (this.matrix[row][col].state == CellInfo.STATE_FLAG){
             this.matrix[row][col].state = CellInfo.STATE_CLOSE ;
         }
+        this.paint() ;
         return false;
     }
     drawBackground(){
+        ctx.beginPath() ;
         ctx.strokeStyle = "black";
-        for (let i=0;i<this.row+1;i++){
+        ctx.fillStyle = `rgb(0,0,0)` ;
+        for (let i=0;i<this.rowSize+1;i++){
             ctx.moveTo(Game.CELL_SIZE*i,0 );
-            ctx.lineTo(Game.CELL_SIZE*i,Game.CELL_SIZE*this.col);
+            ctx.lineTo(Game.CELL_SIZE*i,Game.CELL_SIZE*this.colSize);
         } 
-        for (let j=0;j<this.col+1;j++){
+        for (let j=0;j<this.colSize+1;j++){
             ctx.moveTo(0,Game.CELL_SIZE*j );
-            ctx.lineTo(Game.CELL_SIZE*this.row,Game.CELL_SIZE*j);    
+            ctx.lineTo(Game.CELL_SIZE*this.rowSize,Game.CELL_SIZE*j);    
         }
-        ctx.stroke();
+        ctx.stroke() ;
     }
     genBomb(bombNumbers){
         let bombRow = 0 ;
         let bombCol = 0 ;
         for (let i=0;i<bombNumbers;i++){ 
             for (let j=0;j<1;j=0){
-                bombRow = Math.floor(Math.random()*this.row) ;
-                bombCol = Math.floor(Math.random()*this.col) ;
+                bombRow = Math.floor(Math.random()*this.rowSize) ;
+                bombCol = Math.floor(Math.random()*this.colSize) ;
                 if (this.matrix[bombRow][bombCol].bomb != 9 ){
                     break ;
                 }
@@ -88,8 +208,8 @@ class Game{
             this.matrix[bombRow][bombCol].bomb = 9 ;
         }
         console.log(this.matrix) ;
-        for (let i=0;i<this.row;i++){
-            for (let j=0;j<this.col;j++){
+        for (let i=0;i<this.rowSize;i++){
+            for (let j=0;j<this.colSize;j++){
                 if (this.getBomb(i,j)!=9){
                     if (i!=0&&j!=0){
                         if (this.getBomb(i-1,j-1) == 9 ){
@@ -101,7 +221,7 @@ class Game{
                             this.matrix[i][j].bomb+=1 ;
                         }
                     }
-                    if (i!=0&&j!=this.col-1){
+                    if (i!=0&&j!=this.colSize-1){
                         if (this.getBomb(i-1,j+1) == 9 ){
                             this.matrix[i][j].bomb+=1 ;
                         }
@@ -111,22 +231,22 @@ class Game{
                             this.matrix[i][j].bomb+=1 ;
                         }
                     }
-                    if (j!=this.col-1){
+                    if (j!=this.colSize-1){
                         if (this.getBomb(i,j+1) == 9 ){
                             this.matrix[i][j].bomb+=1 ;
                         }
                     }
-                    if (i!=this.row-1&&j!=0){
+                    if (i!=this.rowSize-1&&j!=0){
                         if (this.getBomb(i+1,j-1) == 9 ){
                             this.matrix[i][j].bomb+=1 ;
                         }
                     }
-                    if (i!=this.row-1){
+                    if (i!=this.rowSize-1){
                         if (this.getBomb(i+1,j) == 9 ){
                             this.matrix[i][j].bomb+=1 ;
                         }
                     }
-                    if (i!=this.row-1&&j!=this.col-1){
+                    if (i!=this.rowSize-1&&j!=this.colSize-1){
                         if (this.getBomb(i+1,j+1) == 9 ){
                             this.matrix[i][j].bomb+=1 ;
                         }
@@ -134,16 +254,47 @@ class Game{
                 }
             }
         }
-        for (let i=0;i<this.row;i++){
-            for (let j=0;j<this.col;j++){
-                ctx.font = `${Game.CELL_SIZE}px Arial`;
-                ctx.fillText(this.matrix[i][j].bomb,j*Game.CELL_SIZE,(i+1)*Game.CELL_SIZE );
+    }
+    paint(){
+        console.log(this.matrix);
+        for (let i=0;i<this.rowSize;i++){
+            for (let j=0;j<this.colSize;j++){
+                ctx.fillStyle = `rgb(255,255,255)` ;
+                ctx.fillRect( j*Game.CELL_SIZE+1, i*Game.CELL_SIZE+1, Game.CELL_SIZE-2, Game.CELL_SIZE-2 ) ;
+
+                if (this.matrix[i][j].state == CellInfo.STATE_CLOSE ){
+                    ctx.fillStyle = `rgb(0,0,0)` ;
+                    ctx.fillRect( j*Game.CELL_SIZE+1, i*Game.CELL_SIZE+1, Game.CELL_SIZE-2, Game.CELL_SIZE-2 ) ;
+                }
+                if (this.matrix[i][j].state == CellInfo.STATE_OPEN ){
+                    if (this.matrix[i][j].bomb != 0 ){
+                        ctx.fillStyle = `rgb(0,0,0)` ;
+                        ctx.strokeStyle = "black";
+                        ctx.font = `${Game.CELL_SIZE}px Arial`;
+                        ctx.fillText(this.matrix[i][j].bomb,( j*Game.CELL_SIZE )+3,( (i+1)*Game.CELL_SIZE ) )+3;
+                    }
+                }
+                if (this.matrix[i][j].state == CellInfo.STATE_OPEN ){
+                    if (this.matrix[i][j].bomb == 9){
+                        let img = document.getElementById('bombImg');
+                        ctx.drawImage(img, j*Game.CELL_SIZE, i*Game.CELL_SIZE, Game.CELL_SIZE, Game.CELL_SIZE );
+                    }
+                }
+                if (this.matrix[i][j].state == CellInfo.STATE_FLAG ){
+                    let img = document.getElementById('flagImg');
+                    ctx.drawImage(img, j*Game.CELL_SIZE, i*Game.CELL_SIZE, Game.CELL_SIZE, Game.CELL_SIZE );
+                }
             }
         }
     }
-       
     getBomb(row,col){
         return this.matrix[row][col].bomb ;
+    }
+    getState(row,col){
+        if(row<0||row>=this.rowSize||col<0||col>=this.colSize){
+            return CellInfo.STATE_CLOSE ;
+        }
+        return this.matrix[row][col].state ;
     }
 }
 class CellInfo{
@@ -155,8 +306,34 @@ class CellInfo{
     state = CellInfo.STATE_CLOSE ;
 
 }
-let game = new Game () ;
-//Game.drawBackground () ;
+let game  ;
 
+function leftClick(e)  {
+    game.openCell(e);
+}
 
+function rightClick(e) {
+    game.switchFlag(e) ;
+}
+
+function runBtnClick(e) {
+    game = new Game();
+    let size = parseInt( cellCountObj.value) ;
+    if ( size > 40 ) {
+        size = 40 ;
+        cellCountObj.value = size ;
+    }
+    game.rowSize = size ;
+    game.colSize = size ;
+
+    let count = parseInt( bombNumObj.value) ;
+    if ( count > size*size ) {
+        count = size*size ;
+        bombNumObj.value = count ;
+    }
+    game.bombCount = count ;
+
+    game.run() ;
+}
+    
 </script>
