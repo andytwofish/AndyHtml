@@ -371,17 +371,33 @@ function addNewPads() {
   }
 }
 
+function process2() {
+  const gamepads = navigator.getGamepads();
+  for (let i = 0; i < gamepads.length; i++) {
+    const gamepad = gamepads[i]
+    if (gamepad) {
+      for( let j=0; j<gamepad.buttons.length; j++ ) {
+        const button = gamepad.buttons[j];
+        if ( button.pressed ) {
+          console.log( button ) ;
+        }
+      }
+    }
+  }
+  requestAnimationFrame(process2);
+}
+
 window.addEventListener("gamepadconnected", handleConnect);
 window.addEventListener("gamepaddisconnected", handleDisconnect);
 
 function process() {
-  runningElem.textContent = ((performance.now() * 0.001 * 60 | 0) % 100).toString().padStart(2, '0');
+  //runningElem.textContent = ((performance.now() * 0.001 * 60 | 0) % 100).toString().padStart(2, '0');
   addNewPads();  // some browsers add by polling, others by event
 
   Object.values(gamepadsByIndex).forEach(processController);
   requestAnimationFrame(process);
 }
-requestAnimationFrame(process);
+requestAnimationFrame(process2);
 
 </script>
 </body></html>

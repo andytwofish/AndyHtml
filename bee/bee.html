@@ -370,6 +370,7 @@ class MyTank {
     loaded = false ;
     isKeyDown = false ;
     lastKeyEvent=0;
+    keyDelayCount=0;
     constructor() {
         document.addEventListener("keydown", this._keyDown.bind(this) );
         document.addEventListener("keyup", this._keyUp.bind(this) );
@@ -397,45 +398,82 @@ class MyTank {
         this.isKeyDown = false ;
         this.loaded = false ;
     }
+    process() {
+        this.cleanMyCell() ;
+        if ( this.keyDelayCount++ >= 0 ) {
+            const gamepads = navigator.getGamepads();
+            for (let i = 0; i < gamepads.length; i++) {
+                const gamepad = gamepads[i]
+                if (gamepad) {
+                    if ( gamepad.axes[0] == 1 ) {
+                        console.log("right") ;
+                        this.keyRight();
+                    }
+                    if ( gamepad.axes[0] == -1 ) {
+                        console.log("left") ;
+                        this.keyLeft();
+                    }
+                    if ( gamepad.axes[1] == 1 ) {
+                        console.log("down") ;
+                        this.keyDown();
+                    }
+                    if ( gamepad.axes[1] == -1 ) {
+                        console.log("up") ;
+                        this.keyUp() ;
+                    }
+                    if ( gamepad.buttons[0].pressed ) {
+                        this.keySpace();
+                    }
+                }
+            }
+            this.keyDelayCount=0;
+        }
+        this.drawMyCell() ;
+    }
+    keyUp() {
+        this.row-=1 ;
+        if (this.row<20){
+            this.row = 20  ;
+        }
+    }
+    keyDown() {
+        this.row+=1 ;
+        if (this.row>39){
+            this.row = 39 ;
+        }
+    }
+    keyRight() {
+        this.col+=1 ;
+        if (this.col>39){
+            this.col = 39 ;
+        }
+    }
+    keyLeft() {
+        this.col-=1 ;
+        if (this.col<0){
+            this.col = 0 ;
+        }
+    }
+    keySpace() {
+        let bullet = new MyBullet(this.row,this.col) ;
+    }
     keyEvent(event ) {
         this.cleanMyCell() ;
         if (event.code==`ArrowUp`){
-            this.row-=1 ;
-            if (this.row<20){
-                this.row = 20  ;
-            }
+            this.keyUp();
         }
         if (event.code==`ArrowDown`){
-            this.row+=1 ;
-            if (this.row>39){
-                this.row = 39 ;
-            }
+            this.keyDown();
         }
         if (event.code==`ArrowRight`){
-            this.col+=1 ;
-            if (this.col>39){
-                this.col = 39 ;
-            }
+            this.keyRight();
         }
         if (event.code==`ArrowLeft`){
-            this.col-=1 ;
-            if (this.col<0){
-                this.col = 0 ;
-            }
+            this.keyLeft() ;
         }
         if (event.code==`Space`){
-            if ( !this.loaded ){
-                this.loaded = true ;
-                let bullet = new MyBullet(this.row,this.col) ;
-//                this.row+=1 ;
-//                if (this.row>39){
-//                    this.row = 39 ;
-//                }
-                this.cleanMyCell() ;
-                this.drawMyCell() ;
-            }
+            this.keySpace();
         }
-        this.drawMyCell() ;
     }
 
     drawMyCell(){
@@ -508,16 +546,22 @@ Tank.drawBackground () ;
 let countDown = 3000 ;
 let myTank = new MyTank() ;
 let isRun = true ;
+let delayCount = 0 ;
 run() ;
+
 function run() {
     if (isRun){
-         for (let i=0;i<tanks.length;i++){
-            if (!tanks [i].life ){
-                tanks.splice(i--,1) ;
+        if ( delayCount++ > 15 ) {
+            delayCount=0;
+            for (let i=0;i<tanks.length;i++){
+                if (!tanks [i].life ){
+                    tanks.splice(i--,1) ;
+                }
+            }       
+            for (let i=0;i<tanks.length;i++){
+                tanks [i].move() ;
             }
-        }       
-        for (let i=0;i<tanks.length;i++){
-            tanks [i].move() ;
+            myTank.process() ;
         }
     }else{
         ctx.font = "80px Arial";
@@ -528,12 +572,17 @@ function run() {
         ctx.font = "200px Arial";
         ctx.fillText("WIN",50,350 );
     }
-    myTank.cleanMyCell () ;
-    myTank.drawMyCell () ;
-    if ( --countDown > 0 ) {
-        setTimeout( run, 50 ) ;
-    }
+    //myTank.cleanMyCell () ;
+    //myTank.drawMyCell () ;
+    //if ( --countDown > 0 ) {
+        requestAnimationFrame(run);
+    //}
 }
 
-    
+function process2() {
+
+ 
+}
+requestAnimationFrame(run);
+
 </script>
