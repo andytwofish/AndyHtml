@@ -349,10 +349,14 @@ class Bullet{
         
         this.drawBulletCell() ;
         setTimeout( this.move.bind(this), 30 ) ;
-        //if ( myTank.row==this.row&&myTank.col==this.col ){
-        //    isRun = false ;
-        //    return ;
-        //}
+        if ( myTank1.row==this.row&&myTank1.col==this.col ){
+            isRun = false ;
+            return ;
+        }
+        if ( myTank2.row==this.row&&myTank2.col==this.col ){
+            isRun = false ;
+            return ;
+        }
     }
     drawBulletCell(){
         ctx.fillStyle = `rgb(${ this.red },${ this.green },${ this.blue })` ;
@@ -548,8 +552,8 @@ for (let i=0;i<0;i++){
 }
 Tank.drawBackground () ;
 let countDown = 3000 ;
-let myTank1 = new MyTank(0) ;
-let myTank2 = new MyTank(1) ;
+let myTank1 = new MyTank(1) ;
+let myTank2 = new MyTank(3) ;
 let isRun = true ;
 let delayCount = 0 ;
 run() ;
