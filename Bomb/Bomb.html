@@ -158,8 +158,16 @@ class Game{
                         return ;
                     }
                 }
-            }
+            } 
             this.matrix[row][col].state = CellInfo.STATE_OPEN ;
+            console.log('a') ;
+            if (this.matrix[row][col].bomb == 9){
+                for (let i=0;i<this.rowSize;i++){
+                    for (let j=0;j<this.colSize;j++){
+                        this.matrix[i][j].state = CellInfo.STATE_OPEN ;
+                    }
+                }
+            }
         }
         this.paint() ;
     }
