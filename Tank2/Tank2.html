@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>bee</title>
+  <title>Tank2</title>
   <style>
     canvas { border: 1px solid #000; }
   </style>
@@ -17,27 +17,65 @@
 class DrawableObject {
     isAlive = true ;
     isProcessed = false ;
-    row = 0 ;
-    col = 0 ;
+    isMoved = false ;
+    x = 0 ;
+    y = 0 ;
     dir = 0 ;
+    width=0;
+    height=0;
+    beforeProcess() {
+        this.isProcessed = false ;
+        this.isMoved = false ;
+    }
+    _process() {
+        if ( this.isProcessed ) {
+            return ;
+        }
+        this.process();
+        this.isProcessed = true ;
+    }
     process() {}
+    moveTo( newX, newY ) {
+        this.isMoved = true ;
+        let oldX = this.x ;
+        let oldY = this.y ;
+        this.x = newX ;
+        this.y = newY ;
+        let objs = world.overlapObjects(this) ;
+        for( let i=0; i<objs; i++ ) {
+            objs[i].touched(this) ;
+            if ( !this.moveCheck(objs[i]) ) {
+                this.x = x ;
+                this.y = y ;
+                this.isMoved = false ;
+            }
+        }
+    }
+    afterProcess() { }
     paint() {}
-    touch(obj) {}
+    moveCheck(obj) {}
+    touched(obj) {}
 }
 
 class MyTank extends DrawableObject {
     gamepadIdx= 0;
     delayCount=0;
+    height=50;
+    width=30;
+    dir=0;
     constructor(gamepadIdx) {
         super() ;
         this.gamepadIdx = gamepadIdx ;
-        this.row = 30 ;
-        this.col = 20+gamepadIdx ;
-        this.dir = 0 ;
+        this.x = (20+gamepadIdx)*CELL_SIZE ;
+        this.y = 30 ;
     }
     paint() {
         ctx.fillStyle = `rgb(0,255,255)` ;
-        ctx.fillRect( this.col*CELL_SIZE+1, this.row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+        if ( dir == 0 || dir == 180 ) {
+            ctx.fillRect( this.x+this.width/2, this.y+this.height/2, this.width, this.height ) ;
+        } else {
+            ctx.fillRect( this.x+this.height/2, this.y+this.width/2, this.height, this.width ) ;
+        }
     }
     process() {
         if ( this.delayCount++ > 1 ) {
@@ -46,23 +84,23 @@ class MyTank extends DrawableObject {
             const gamepad = gamepads[this.gamepadIdx] ;
             if (gamepad) {
                 if ( gamepad.axes[0] == 1 ) {
-                    console.log("right") ;
+                    //console.log("right") ;
                     this.keyRight();
                 }
                 if ( gamepad.axes[0] == -1 ) {
-                    console.log("left") ;
+                    //console.log("left") ;
                     this.keyLeft();
                 }
                 if ( gamepad.axes[1] == 1 ) {
-                    console.log("down") ;
+                    //console.log("down") ;
                     this.keyDown();
                 }
                 if ( gamepad.axes[1] == -1 ) {
-                    console.log("up") ;
+                    //console.log("up") ;
                     this.keyUp() ;
                 }
                 if ( gamepad.buttons[0].pressed ) {
-                    console.log("space") ;
+                    //console.log("space") ;
                     this.keySpace();  
                 }
             }
@@ -70,58 +108,43 @@ class MyTank extends DrawableObject {
     }
     keyUp() {
         this.dir = 0 ;
-        if ( this.row > 0 ) {
-            world.move( this.row-1, this.col, this ) ;
+        if ( this.x > 0 ) {
+            this.moveTo( newX, newY-10 ) ;
         }
     }
     keyDown() {
         this.dir = 180 ;
         if ( this.row < TOTAL_ROWS-1 ) {
-            world.move( this.row+1, this.col, this ) ;
+            this.moveTo(  newX, newY+10 ) ;
         }
     }
     keyRight() {
         this.dir = 90 ;
         if ( this.col < TOTAL_COLS-1 ) {
-            world.move( this.row, this.col+1, this ) ;
+            this.moveTo( newX+10, newY ) ;
         }
     }
     keyLeft() {
         this.dir = 270;
         if ( this.col > 0 ) {
-            world.move( this.row, this.col-1, this ) ;
+            this.moveTo( newX-10, newY ) ;
         }
     }
     keySpace() {
-        switch( this.dir ) {
-            case 0:
-                world.add( new Bullet(this.row-1,this.col, this.dir) );
-                break;
-            case 90:
-                world.add( new Bullet(this.row,this.col+1, this.dir) );
-                break;
-            case 180:
-                world.add( new Bullet(this.row+1,this.col, this.dir) );
-                break;
-            case 270:
-                world.add( new Bullet(this.row,this.col-1, this.dir) );
-                break;
-        }
+        world.add( new Bullet(this.x,this.y, this.dir) );
     }
-    draw(){
-        ctx.fillStyle = `rgb(0,0,0)` ;
-        ctx.fillRect( this.col*CELL_SIZE+1, this.row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
-    }
-    touch(obj) {
+    moveCheck(obj) {
     }
 }
 
 class Bullet extends DrawableObject {
     dist = 10 ;
-    constructor(row,col,dir) {
+    width=5;
+    height=10;
+    constructor(x,y,dir) {
         super();
-        this.row = row ;
-        this.col = col ;
+        this.x = x ;
+        this.y = y ;
         this.dir = dir ;
     }
     
@@ -132,54 +155,55 @@ class Bullet extends DrawableObject {
         }
         switch( this.dir ) {
             case 0:
-                world.move( this.row-1, this.col, this ) ;
+                world.move( this.x, this.y-10, this )  ;
                 break;
             case 90:
-                world.move( this.row, this.col+1, this ) ;
+                world.move( this.x+10, this.y, this )  ;
                 break;
             case 180:
-                world.move( this.row+1, this.col, this ) ;
+                world.move( this.x, this.y+10, this )  ;
                 break;
             case 270:
-                world.move( this.row, this.col-1, this ) ;
+                world.move( this.x-10, this.y, this )  ;
                 break;
         }
     }
     paint(){
-        console.log('paint()');
-        ctx.fillStyle = `rgb(0,255,0)` ;
-        ctx.fillRect( this.col*CELL_SIZE+4, this.row*CELL_SIZE+4, CELL_SIZE-5, CELL_SIZE-5 ) ;
+        ctx.fillStyle = `rgb(0,0,255)` ;
+        if ( dir == 0 || dir == 180 ) {
+            ctx.fillRect( this.x+this.width/2, this.y+this.height/2, this.width, this.height ) ;
+        } else {
+            ctx.fillRect( this.x+this.height/2, this.y+this.width/2, this.height, this.width ) ;
+        }
     }
-    touch(obj) {
+    moveCheck(obj) {
     }
 }
 
 class World {
-    matrix = [] ;
+    objects = [] ;
     constructor() {
-        for( let row=0; row<TOTAL_ROWS; row++ ) {
-            this.matrix[row] = [] ;
-            for( let col=0; col<TOTAL_COLS; col++ ) {
-                this.matrix[row][col] = null ;
-            }
-        }
     }
 
     process() {
-        //console.log(objects.length);
-        for( let row=0; row<TOTAL_ROWS; row++ ) {
-            for( let col=0; col<TOTAL_COLS; col++ ) {
-                let obj = this.matrix[row][col]                
-                if ( obj != null ) {
-                    if ( obj.isAlive ){
-                        if ( obj.isProcessed == false ) {
-                            obj.isProcessed = true ;
-                            obj.process() ;
-                        }
-                    } else {
-                        this.matrix[row][col] = null ;
-                    }
-                }
+        for( let i=0; i<objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if ( obj.isAlive ){
+                obj.beforeProcess() ;
+            }
+        }      
+        for( let i=0; i<objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if ( obj.isAlive ){
+                obj._process() ;
+            } else {
+                this.objects.splice(i--,1) ;
+            }
+        }      
+        for( let i=0; i<objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if ( obj.isAlive ){
+                obj.afterProcess() ;
             }
         }      
         this.paint();
@@ -188,16 +212,12 @@ class World {
     paint() {
         //console.log(objects.length);
         this.drawBackground();
-        for( let row=0; row<TOTAL_ROWS; row++ ) {
-            for( let col=0; col<TOTAL_COLS; col++ ) {
-                if ( this.matrix[row][col] != null ) {
-                    this.matrix[row][col].isProcessed = false ;
-                    if (this.matrix[row][col].isAlive ){
-                        this.matrix[row][col].paint() ;
-                    } else {
-                        this.matrix[row][col] = null ;
-                    }
-                }
+        for( let i=0; i<objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if (obj.isAlive ){
+                obj.paint() ;
+            } else {
+                this.objects.splice(i--,1) ;
             }
         }      
     }
@@ -220,40 +240,22 @@ class World {
     }
 
     add( obj ) {
-        if ( obj.row < 0 || obj.row >= TOTAL_ROWS || obj.col < 0 || obj.col >= TOTAL_COLS ) {
-            return false;
-        }
-
-        if ( this.matrix[obj.row][obj.col] != null ) {
-            console.log('add error');
-            return false ;
-        }
-
-        this.matrix[obj.row][obj.col] = obj ;
-        return true ;
-    }
-
-    remove( obj ) {
-        this.matrix[obj.row][obj.col] = null ;
-    }
-
-    move(newRow, newCol, obj) {
-        console.log(newCol) ;
-        if ( newRow < 0 || newRow >= TOTAL_ROWS || newCol < 0 || newCol >= TOTAL_COLS ) {
-            return false;
-        }
-        if ( this.matrix[newRow][newCol] != null ) {
-            this.matrix[newRow][newCol].touch(obj) ;
-            obj.touch(this.matrix[newRow][newCol]) ;
+        let objs = this.overlapObjects(obj) ;
+        for( let i=0; i<objs; i++ ) {
+            objs[i].touched(obj) ;
+            if ( !obj.moveCheck(objs[i]) ) {
+                return false;
+            }
         }
         if ( obj.isAlive ) {
-            console.log("--");
-            this.matrix[obj.row][obj.col] = null ;
-            obj.row = newRow ;
-            obj.col = newCol ;
-            this.matrix[newRow][newCol] = obj ;
+            this.objects.push( obj ) ;
+            return true ;
         }
-        return true ;
+        return false ;
+    }
+
+    overlapObjects(obj) {
+        return [] ;
     }
 }
 //============================================================================
@@ -286,6 +288,8 @@ const ctx = canvas.getContext('2d');
 const TOTAL_ROWS = 35 ;
 const TOTAL_COLS = 35 ;
 const CELL_SIZE = 15 ;
+const WORLD_WIDTH = TOTAL_COLS*CELL_SIZE ;
+const WORLD_HEIGHT = TOTAL_ROWS*CELL_SIZE;
 let lastTime = 0 ;
 
 let world = new World() ; 
