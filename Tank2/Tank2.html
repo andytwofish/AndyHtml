@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>bee</title>
+  <style>
+    canvas { border: 1px solid #000; }
+  </style>
+</head>
+<body>
+  <canvas id="_Canvas" width="560" height="560"></canvas>
+</body>
+</html>
+
+<script>
+
+class DrawableObject {
+    isAlive = true ;
+    isProcessed = false ;
+    row = 0 ;
+    col = 0 ;
+    dir = 0 ;
+    process() {}
+    paint() {}
+    touch(obj) {}
+}
+
+class MyTank extends DrawableObject {
+    gamepadIdx= 0;
+    delayCount=0;
+    constructor(gamepadIdx) {
+        super() ;
+        this.gamepadIdx = gamepadIdx ;
+        this.row = 30 ;
+        this.col = 20+gamepadIdx ;
+        this.dir = 0 ;
+    }
+    paint() {
+        ctx.fillStyle = `rgb(0,255,255)` ;
+        ctx.fillRect( this.col*CELL_SIZE+1, this.row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+    }
+    process() {
+        if ( this.delayCount++ > 1 ) {
+            this.delayCount=0;
+            const gamepads = navigator.getGamepads();
+            const gamepad = gamepads[this.gamepadIdx] ;
+            if (gamepad) {
+                if ( gamepad.axes[0] == 1 ) {
+                    console.log("right") ;
+                    this.keyRight();
+                }
+                if ( gamepad.axes[0] == -1 ) {
+                    console.log("left") ;
+                    this.keyLeft();
+                }
+                if ( gamepad.axes[1] == 1 ) {
+                    console.log("down") ;
+                    this.keyDown();
+                }
+                if ( gamepad.axes[1] == -1 ) {
+                    console.log("up") ;
+                    this.keyUp() ;
+                }
+                if ( gamepad.buttons[0].pressed ) {
+                    console.log("space") ;
+                    this.keySpace();  
+                }
+            }
+        }
+    }
+    keyUp() {
+        this.dir = 0 ;
+        if ( this.row > 0 ) {
+            world.move( this.row-1, this.col, this ) ;
+        }
+    }
+    keyDown() {
+        this.dir = 180 ;
+        if ( this.row < TOTAL_ROWS-1 ) {
+            world.move( this.row+1, this.col, this ) ;
+        }
+    }
+    keyRight() {
+        this.dir = 90 ;
+        if ( this.col < TOTAL_COLS-1 ) {
+            world.move( this.row, this.col+1, this ) ;
+        }
+    }
+    keyLeft() {
+        this.dir = 270;
+        if ( this.col > 0 ) {
+            world.move( this.row, this.col-1, this ) ;
+        }
+    }
+    keySpace() {
+        switch( this.dir ) {
+            case 0:
+                world.add( new Bullet(this.row-1,this.col, this.dir) );
+                break;
+            case 90:
+                world.add( new Bullet(this.row,this.col+1, this.dir) );
+                break;
+            case 180:
+                world.add( new Bullet(this.row+1,this.col, this.dir) );
+                break;
+            case 270:
+                world.add( new Bullet(this.row,this.col-1, this.dir) );
+                break;
+        }
+    }
+    draw(){
+        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillRect( this.col*CELL_SIZE+1, this.row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+    }
+    touch(obj) {
+    }
+}
+
+class Bullet extends DrawableObject {
+    dist = 10 ;
+    constructor(row,col,dir) {
+        super();
+        this.row = row ;
+        this.col = col ;
+        this.dir = dir ;
+    }
+    
+    process() {
+        if ( this.dist-- <=0 ) {
+            this.isAlive = false ;
+            return ;
+        }
+        switch( this.dir ) {
+            case 0:
+                world.move( this.row-1, this.col, this ) ;
+                break;
+            case 90:
+                world.move( this.row, this.col+1, this ) ;
+                break;
+            case 180:
+                world.move( this.row+1, this.col, this ) ;
+                break;
+            case 270:
+                world.move( this.row, this.col-1, this ) ;
+                break;
+        }
+    }
+    paint(){
+        console.log('paint()');
+        ctx.fillStyle = `rgb(0,255,0)` ;
+        ctx.fillRect( this.col*CELL_SIZE+4, this.row*CELL_SIZE+4, CELL_SIZE-5, CELL_SIZE-5 ) ;
+    }
+    touch(obj) {
+    }
+}
+
+class World {
+    matrix = [] ;
+    constructor() {
+        for( let row=0; row<TOTAL_ROWS; row++ ) {
+            this.matrix[row] = [] ;
+            for( let col=0; col<TOTAL_COLS; col++ ) {
+                this.matrix[row][col] = null ;
+            }
+        }
+    }
+
+    process() {
+        //console.log(objects.length);
+        for( let row=0; row<TOTAL_ROWS; row++ ) {
+            for( let col=0; col<TOTAL_COLS; col++ ) {
+                let obj = this.matrix[row][col]                
+                if ( obj != null ) {
+                    if ( obj.isAlive ){
+                        if ( obj.isProcessed == false ) {
+                            obj.isProcessed = true ;
+                            obj.process() ;
+                        }
+                    } else {
+                        this.matrix[row][col] = null ;
+                    }
+                }
+            }
+        }      
+        this.paint();
+    }
+
+    paint() {
+        //console.log(objects.length);
+        this.drawBackground();
+        for( let row=0; row<TOTAL_ROWS; row++ ) {
+            for( let col=0; col<TOTAL_COLS; col++ ) {
+                if ( this.matrix[row][col] != null ) {
+                    this.matrix[row][col].isProcessed = false ;
+                    if (this.matrix[row][col].isAlive ){
+                        this.matrix[row][col].paint() ;
+                    } else {
+                        this.matrix[row][col] = null ;
+                    }
+                }
+            }
+        }      
+    }
+
+    drawBackground(){
+        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillRect( 0, 0, CELL_SIZE*TOTAL_COLS, CELL_SIZE*TOTAL_ROWS ) ;
+
+        ctx.beginPath();
+        ctx.strokeStyle = "orange";
+        for (let i=0;i<TOTAL_COLS+1;i++){
+            ctx.moveTo(CELL_SIZE*i,0 );
+            ctx.lineTo(CELL_SIZE*i,CELL_SIZE*TOTAL_ROWS);
+        } 
+        for (let j=0;j<TOTAL_ROWS+1;j++){
+            ctx.moveTo(0,CELL_SIZE*j );
+            ctx.lineTo(CELL_SIZE*TOTAL_COLS, CELL_SIZE*j );    
+        }
+        ctx.stroke();
+    }
+
+    add( obj ) {
+        if ( obj.row < 0 || obj.row >= TOTAL_ROWS || obj.col < 0 || obj.col >= TOTAL_COLS ) {
+            return false;
+        }
+
+        if ( this.matrix[obj.row][obj.col] != null ) {
+            console.log('add error');
+            return false ;
+        }
+
+        this.matrix[obj.row][obj.col] = obj ;
+        return true ;
+    }
+
+    remove( obj ) {
+        this.matrix[obj.row][obj.col] = null ;
+    }
+
+    move(newRow, newCol, obj) {
+        console.log(newCol) ;
+        if ( newRow < 0 || newRow >= TOTAL_ROWS || newCol < 0 || newCol >= TOTAL_COLS ) {
+            return false;
+        }
+        if ( this.matrix[newRow][newCol] != null ) {
+            this.matrix[newRow][newCol].touch(obj) ;
+            obj.touch(this.matrix[newRow][newCol]) ;
+        }
+        if ( obj.isAlive ) {
+            console.log("--");
+            this.matrix[obj.row][obj.col] = null ;
+            obj.row = newRow ;
+            obj.col = newCol ;
+            this.matrix[newRow][newCol] = obj ;
+        }
+        return true ;
+    }
+}
+//============================================================================
+//============================================================================
+//============================================================================
+
+function run(time) {
+    if (!isRunning){
+        return ;
+    }
+
+    if (lastTime === 0) {
+        lastTime = time;
+    }
+
+    // 計算自上次更新以來經過的時間
+    const deltaTime = time - lastTime
+    if ( deltaTime > 30 ) {
+        world.process();
+        lastTime = time ;
+    }
+    requestAnimationFrame(run);
+
+}
+
+//----------------------------------------------------------------------
+const canvas = document.getElementById('_Canvas');
+const ctx = canvas.getContext('2d');    
+
+const TOTAL_ROWS = 35 ;
+const TOTAL_COLS = 35 ;
+const CELL_SIZE = 15 ;
+let lastTime = 0 ;
+
+let world = new World() ; 
+world.add( new MyTank(0) ) ;
+world.add( new MyTank(1) ) ;
+let isRunning = true ;
+
+requestAnimationFrame(run);
+
+</script>
