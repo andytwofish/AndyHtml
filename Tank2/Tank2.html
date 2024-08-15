@@ -42,7 +42,7 @@ class DrawableObject {
         this.x = newX ;
         this.y = newY ;
         let objs = world.overlapObjects(this) ;
-        for( let i=0; i<objs; i++ ) {
+        for( let i=0; i<objs.length; i++ ) {
             objs[i].touched(this) ;
             if ( !this.moveCheck(objs[i]) ) {
                 this.x = x ;
@@ -71,10 +71,10 @@ class MyTank extends DrawableObject {
     }
     paint() {
         ctx.fillStyle = `rgb(0,255,255)` ;
-        if ( dir == 0 || dir == 180 ) {
-            ctx.fillRect( this.x+this.width/2, this.y+this.height/2, this.width, this.height ) ;
+        if ( this.dir == 0 || this.dir == 180 ) {
+            ctx.fillRect( this.x-this.width/2, this.y-this.height/2, this.width, this.height ) ;
         } else {
-            ctx.fillRect( this.x+this.height/2, this.y+this.width/2, this.height, this.width ) ;
+            ctx.fillRect( this.x-this.height/2, this.y-this.width/2, this.height, this.width ) ;
         }
     }
     process() {
@@ -108,26 +108,26 @@ class MyTank extends DrawableObject {
     }
     keyUp() {
         this.dir = 0 ;
-        if ( this.x > 0 ) {
-            this.moveTo( newX, newY-10 ) ;
+        if ( this.y > 0 ) {
+            this.moveTo( this.x, this.y-10 ) ;
         }
     }
     keyDown() {
         this.dir = 180 ;
-        if ( this.row < TOTAL_ROWS-1 ) {
-            this.moveTo(  newX, newY+10 ) ;
+        if ( this.y < WORLD_HEIGHT-1 ) {
+            this.moveTo(  this.x, this.y+10 ) ;
         }
     }
     keyRight() {
         this.dir = 90 ;
-        if ( this.col < TOTAL_COLS-1 ) {
-            this.moveTo( newX+10, newY ) ;
+        if ( this.x < WORLD_WIDTH-1 ) {
+            this.moveTo( this.x+10, this.y ) ;
         }
     }
     keyLeft() {
         this.dir = 270;
-        if ( this.col > 0 ) {
-            this.moveTo( newX-10, newY ) ;
+        if ( this.x > 0 ) {
+            this.moveTo( this.x-10, this.y ) ;
         }
     }
     keySpace() {
@@ -155,25 +155,25 @@ class Bullet extends DrawableObject {
         }
         switch( this.dir ) {
             case 0:
-                world.move( this.x, this.y-10, this )  ;
+                this.moveTo( this.x, this.y-10 )  ;
                 break;
             case 90:
-                world.move( this.x+10, this.y, this )  ;
+                this.moveTo( this.x+10, this.y )  ;
                 break;
             case 180:
-                world.move( this.x, this.y+10, this )  ;
+                this.moveTo( this.x, this.y+10 )  ;
                 break;
             case 270:
-                world.move( this.x-10, this.y, this )  ;
+                this.moveTo( this.x-10, this.y )  ;
                 break;
         }
     }
     paint(){
         ctx.fillStyle = `rgb(0,0,255)` ;
-        if ( dir == 0 || dir == 180 ) {
-            ctx.fillRect( this.x+this.width/2, this.y+this.height/2, this.width, this.height ) ;
+        if ( this.dir == 0 || this.dir == 180 ) {
+            ctx.fillRect( this.x-this.width/2, this.y-this.height/2, this.width, this.height ) ;
         } else {
-            ctx.fillRect( this.x+this.height/2, this.y+this.width/2, this.height, this.width ) ;
+            ctx.fillRect( this.x-this.height/2, this.y-this.width/2, this.height, this.width ) ;
         }
     }
     moveCheck(obj) {
@@ -186,13 +186,13 @@ class World {
     }
 
     process() {
-        for( let i=0; i<objects.length; i++ ) {
+        for( let i=0; i<this.objects.length; i++ ) {
             let obj = this.objects[i] ;
             if ( obj.isAlive ){
                 obj.beforeProcess() ;
             }
         }      
-        for( let i=0; i<objects.length; i++ ) {
+        for( let i=0; i<this.objects.length; i++ ) {
             let obj = this.objects[i] ;
             if ( obj.isAlive ){
                 obj._process() ;
@@ -200,7 +200,7 @@ class World {
                 this.objects.splice(i--,1) ;
             }
         }      
-        for( let i=0; i<objects.length; i++ ) {
+        for( let i=0; i<this.objects.length; i++ ) {
             let obj = this.objects[i] ;
             if ( obj.isAlive ){
                 obj.afterProcess() ;
@@ -212,7 +212,7 @@ class World {
     paint() {
         //console.log(objects.length);
         this.drawBackground();
-        for( let i=0; i<objects.length; i++ ) {
+        for( let i=0; i<this.objects.length; i++ ) {
             let obj = this.objects[i] ;
             if (obj.isAlive ){
                 obj.paint() ;
