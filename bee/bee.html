@@ -433,7 +433,7 @@ class MyTank {
     lastKeyEvent=0;
     keyDelayCount=0;
     gamepadIdx= 0;
-    shield = true ;
+    shield = false ;
     constructor(gamepadIdx) {
         this.gamepadIdx = gamepadIdx ;
         document.addEventListener("keydown", this._keyDown.bind(this) );
