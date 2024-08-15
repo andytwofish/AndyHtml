@@ -354,30 +354,30 @@ class Bullet{
             this.life = false ;
             return ;
         }
-        if ( myTank1.shield ){
+        if ( myTank1.shield != 0 ){
             if ( (myTank1.row-1)==this.row&&(myTank1.col-2)==this.col ){
-                myTank1.shield = false ;
+                myTank1.shield-=1 ;
                 this.life = false ;
                 return ;
 
             }
             if ( (myTank1.row-2)==this.row&&(myTank1.col-1)==this.col ){
-                myTank1.shield = false ;
+                myTank1.shield-=1 ;
                 this.life = false ;
                 return ;
             }
             if ( (myTank1.row-2)==this.row&&myTank1.col==this.col ){
-                myTank1.shield = false ;
+                myTank1.shield-=1 ;
                 this.life = false ;
                 return ;
             }
             if ( (myTank1.row-2)==this.row&&(myTank1.col+1)==this.col ){
-                myTank1.shield = false ;
+                myTank1.shield-=1 ;
                 this.life = false ;
                 return ;
             }
             if ( (myTank1.row-1)==this.row&&(myTank1.col+2)==this.col ){
-                myTank1.shield = false ;
+                myTank1.shield-=1 ;
                 this.life = false ;
                 return ;
             }
@@ -387,29 +387,29 @@ class Bullet{
                 this.life = false ;
             return ;
         }
-        if ( myTank2.shield ){
+        if ( myTank2.shield != 0 ){
             if ( (myTank2.row-1)==this.row&&(myTank2.col-2)==this.col ){
-                myTank2.shield = false ;
+                myTank2.shield-=1 ;
                 this.life = false ;
                 return ;
             }
             if ( (myTank2.row-2)==this.row&&(myTank2.col-1)==this.col ){
-                myTank2.shield = false ;
+                myTank2.shield-=1 ;
                 this.life = false ;
                 return ;
             }
             if ( (myTank2.row-2)==this.row&&myTank2.col==this.col ){
-                myTank2.shield = false ;
+                myTank2.shield-=1 ;
                 this.life = false ;
                 return ;
             }
             if ( (myTank2.row-2)==this.row&&(myTank2.col+1)==this.col ){
-                myTank2.shield = false ;
+                myTank2.shield-=1 ;
                 this.life = false ;
                 return ;
             }
             if ( (myTank2.row-1)==this.row&&(myTank2.col+2)==this.col ){
-                myTank2.shield = false ;
+                myTank2.shield-=1 ;
                 this.life = false ;
                 return ;
             }
@@ -433,7 +433,7 @@ class MyTank {
     lastKeyEvent=0;
     keyDelayCount=0;
     gamepadIdx= 0;
-    shield = false ;
+    shield = 0 ;
     constructor(gamepadIdx) {
         this.gamepadIdx = gamepadIdx ;
         document.addEventListener("keydown", this._keyDown.bind(this) );
@@ -530,8 +530,8 @@ class MyTank {
         }
     }
     keyShield() {
-        this.shield = true ;
-       
+        if(this.shield == 0)
+        this.shield = 4 ;
     }
     keyEvent(event ) {
         if (event.code==`ArrowUp`){
@@ -554,7 +554,8 @@ class MyTank {
     drawMyCell(){
         ctx.fillStyle = `rgb(0,0,0)` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
-        if (this.shield){
+        if (this.shield != 0 ){
+            ctx.fillStyle = `rgb(${255/this.shield},${255/this.shield},${255/this.shield})` ;
             ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
@@ -565,7 +566,7 @@ class MyTank {
     cleanMyCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
-        if (this.shield){
+        if (this.shield != 0 ){
             ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
@@ -625,7 +626,7 @@ let tanks = [] ;
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<2;i++){
+for (let i=0;i<4;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
