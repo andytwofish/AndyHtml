@@ -338,7 +338,6 @@ class Bullet{
     }
     
     move(){
-        console.log(this.row) ;
         if ( !this.life ) {
             return ;
         }
@@ -352,60 +351,71 @@ class Bullet{
 //        setTimeout( this.move.bind(this), 30 ) ;
         if ( myTank1.row==this.row&&myTank1.col==this.col ){
             isRun = false ;
+            this.life = false ;
             return ;
         }
         if ( myTank1.shield ){
             if ( (myTank1.row-1)==this.row&&(myTank1.col-2)==this.col ){
                 myTank1.shield = false ;
-
+                this.life = false ;
                 return ;
+
             }
             if ( (myTank1.row-2)==this.row&&(myTank1.col-1)==this.col ){
                 myTank1.shield = false ;
+                this.life = false ;
                 return ;
             }
             if ( (myTank1.row-2)==this.row&&myTank1.col==this.col ){
                 myTank1.shield = false ;
+                this.life = false ;
                 return ;
             }
             if ( (myTank1.row-2)==this.row&&(myTank1.col+1)==this.col ){
                 myTank1.shield = false ;
+                this.life = false ;
                 return ;
             }
             if ( (myTank1.row-1)==this.row&&(myTank1.col+2)==this.col ){
                 myTank1.shield = false ;
+                this.life = false ;
                 return ;
             }
         }
         if ( myTank2.row==this.row&&myTank2.col==this.col ){
             isRun = false ;
+                this.life = false ;
             return ;
         }
         if ( myTank2.shield ){
             if ( (myTank2.row-1)==this.row&&(myTank2.col-2)==this.col ){
                 myTank2.shield = false ;
+                this.life = false ;
                 return ;
             }
             if ( (myTank2.row-2)==this.row&&(myTank2.col-1)==this.col ){
                 myTank2.shield = false ;
+                this.life = false ;
                 return ;
             }
             if ( (myTank2.row-2)==this.row&&myTank2.col==this.col ){
                 myTank2.shield = false ;
+                this.life = false ;
                 return ;
             }
             if ( (myTank2.row-2)==this.row&&(myTank2.col+1)==this.col ){
                 myTank2.shield = false ;
+                this.life = false ;
                 return ;
             }
             if ( (myTank2.row-1)==this.row&&(myTank2.col+2)==this.col ){
                 myTank2.shield = false ;
+                this.life = false ;
                 return ;
             }
         }
     }
     drawBulletCell(){
-        console.log(`bullet row :${this.row}`);
         ctx.fillStyle = `rgb(${ this.red },${ this.green },${ this.blue })` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
     }
@@ -479,6 +489,9 @@ class MyTank {
                 }else{
                     this.loaded = false ;
                 }
+                if ( gamepad.buttons[2].pressed ) {
+                    this.keyShield();  
+                }
             }
             this.keyDelayCount=0;
         }
@@ -509,10 +522,16 @@ class MyTank {
         }
     }
     keySpace() {
-        if ( !this.loaded ){
-            this.loaded = true ;
-            let bullet = new MyBullet(this.row,this.col) ;
+        if ( !this.shield ){
+            if ( !this.loaded ){
+                this.loaded = true ;
+                tanks [tanks.length] = new MyBullet(this.row,this.col) ;
+            }
         }
+    }
+    keyShield() {
+        this.shield = true ;
+       
     }
     keyEvent(event ) {
         if (event.code==`ArrowUp`){
@@ -560,7 +579,6 @@ class MyBullet{
     row = 0 ;
     col = 0 ;
     life = true ;
-    isRunning = true ;
     constructor(row,col) {
         this.row = row ;
         this.col = col ;
@@ -568,31 +586,30 @@ class MyBullet{
     }
     
     move(){
-        if ( !this.isRunning ) {
+        if ( !this.life ) {
             return ;
         }
 //        this.cleanBulletCell() ;
         this.row-=1 ;    
         if (this.row<0){
-            this.isRunning=false ; 
+            this.life=false ; 
         } 
-        if ( this.life ){
-            this.drawBulletCell() ;
+
+        this.drawBulletCell() ;
 //            setTimeout( this.move.bind(this), 20 ) ;
-        
-            for (let i=0;i<tanks.length;i++){
-                if (!(tanks[i] instanceof  Bullet)  ){
-                    if ( tanks[i].attack( this.row, this.col ) ) {
-                        this.life = false ;
-                        return ;
-                    } 
-                }
-                // if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
-                //     tanks.splice(i,1) ;
-                //     this.life = false ;
-                //     return ;
-                // }
+    
+        for (let i=0;i<tanks.length;i++){
+            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)){
+                if ( tanks[i].attack( this.row, this.col ) ) {
+                    this.life = false ;
+                    return ;
+                } 
             }
+            // if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
+            //     tanks.splice(i,1) ;
+            //     this.life = false ;
+            //     return ;
+            // }
         }
     }
     drawBulletCell(){
