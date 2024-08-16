@@ -47,8 +47,8 @@ class DrawableObject {
         for( let i=0; i<objs.length; i++ ) {
             objs[i].touched(this) ;
             if ( !this.moveCheck(objs[i]) ) {
-                this.x = x ;
-                this.y = y ;
+                this.x = oldX ;
+                this.y = oldY ;
                 this.isMoved = false ;
             }
         }
@@ -104,8 +104,36 @@ class DrawableObject {
 
     afterProcess() { }
     paint() {}
-    moveCheck(obj) {}
-    touched(obj) {}
+    moveCheck(obj) {
+
+        return true ;
+    }
+    touched(obj) {
+    }
+}
+
+class Stone extends DrawableObject {
+    _top = 15;
+    _bottom = 15;
+    _left = 15 ;
+    _right = 15 ;
+    hp = 5 ;
+    constructor(x, y) {
+        super() ;
+        this.x = x ;
+        this.y = y ;
+    }
+    paint() {
+        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
+    }
+    touched(obj) {
+        if ( obj instanceof Bullet ) {
+            if ( this.hp-- <= 0 ) {
+                this.isAlive = false ;
+            }
+        }
+    }
 }
 
 class MyTank extends DrawableObject {
@@ -117,11 +145,11 @@ class MyTank extends DrawableObject {
     _left=15;
     _right=15;
     dir=0;
-    constructor(gamepadIdx) {
+    constructor(x, y, gamepadIdx) {
         super() ;
         this.gamepadIdx = gamepadIdx ;
-        this.x = 30 ;
-        this.y = 30 ;
+        this.x = x ;
+        this.y = y ;
     }
     paint() {
         ctx.fillStyle = `rgb(0,255,255)` ;
@@ -153,7 +181,10 @@ class MyTank extends DrawableObject {
                     //console.log("space") ;
                     this.keySpace();  
                 }
-                console.log(`x=${this.x}, y=${this.y}`);
+                if ( gamepad.buttons[1].pressed ) {
+                    this.makeStone();  
+                }
+//                console.log(`x=${this.x}, y=${this.y}`);
             }
         }
     }
@@ -190,9 +221,50 @@ class MyTank extends DrawableObject {
         this.dir = 270;
     }
     keySpace() {
-        world.add( new Bullet(this.x,this.y, this.dir) );
+        switch( this.dir ) {
+            case 0:
+                world.add( new Bullet(this.x,this.top()-10, this.dir) );
+                break;
+            case 90:
+                world.add( new Bullet(this.right()+10,this.y, this.dir) );
+                break;
+            case 180:
+                world.add( new Bullet(this.x,this.bottom()+10, this.dir) );
+                break;
+            case 270:
+                world.add( new Bullet(this.left()-10,this.y, this.dir) );
+                break;
+        }
+    }
+    makeStone() {
+        switch( this.dir ) {
+            case 0:
+                world.add( new Stone(this.x,this.bottom()+this.distByStep, this.dir) );
+                break;
+            case 90:
+                world.add( new Stone(this.left()-this.distByStep,this.y, this.dir) );
+                break;
+            case 180:
+                world.add( new Stone(this.x,this.top()-this.distByStep, this.dir) );
+                break;
+            case 270:
+                world.add( new Stone(this.right()+this.distByStep,this.y, this.dir) );
+                break;
+        }
     }
     moveCheck(obj) {
+        //console.log(`moveCheck:`) ;
+        console.log(obj) ;
+        if ( obj instanceof Stone ) {
+            return false ;
+        }
+        return true ;
+    }
+    touched(obj) {
+        if ( obj instanceof Bullet ) {
+            this.isAlive = false ;
+            return false ;
+        }
     }
 }
 
@@ -250,6 +322,11 @@ class Bullet extends DrawableObject {
         ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
     moveCheck(obj) {
+        if ( obj instanceof Stone ) {
+            this.isAlive = false ;
+            return false ;
+        }
+        return true ;
     }
 }
 
@@ -328,7 +405,27 @@ class World {
     }
 
     overlapObjects(obj) {
-        return [] ;
+        let objs = [] ;
+        for( let i=0; i<this.objects.length; i++ ) {
+            let obj2 = this.objects[i] ;
+            if ( obj == obj2 ) {
+                continue ;
+            }
+            if ( obj.right() <= obj2.left() ) {
+                continue ;
+            }
+            if ( obj.top() >= obj2.bottom() ) {
+                continue ;
+            }
+            if ( obj.left() >= obj2.right() ) {
+                continue ;
+            }
+            if ( obj.bottom() <= obj2.top() ) {
+                continue ;
+            }
+            objs.push( obj2 ) ;
+        }
+        return objs ;
     }
 }
 //============================================================================
@@ -366,8 +463,12 @@ const WORLD_HEIGHT = TOTAL_ROWS*CELL_SIZE;
 let lastTime = 0 ;
 
 let world = new World() ; 
-world.add( new MyTank(0) ) ;
-//world.add( new MyTank(1) ) ;
+world.add( new MyTank(30,30,0) ) ;
+world.add( new MyTank(300, 400, 2) ) ;
+world.add( new Stone(15*10, 15*20) ) ;
+world.add( new Stone(15*12, 15*25) ) ;
+world.add( new Stone(15*18, 15*10) ) ;
+world.add( new Stone(15*8, 15*30) ) ;
 let isRunning = true ;
 
 requestAnimationFrame(run);
