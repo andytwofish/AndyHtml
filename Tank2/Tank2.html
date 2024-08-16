@@ -136,6 +136,80 @@ class Stone extends DrawableObject {
     }
 }
 
+class Tank extends DrawableObject {
+    distByStep=15 ;
+    delayCount=15;
+    _top=20;
+    _bottom=20;
+    _left=15;
+    _right=15;
+    dir=0;
+    dist=0;
+    dirAry=[0,90,180,270] ;
+    constructor(x, y )  {
+        super() ;
+        this.x = x ;
+        this.y = y ;
+    }
+    paint() {
+        ctx.fillStyle = `rgb(55,55,255)` ;
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
+    }
+    process() {
+        if ( this.delayCount-- <= 0 ) {
+            this.delayCount = 3 ;
+        } else {
+            return ;
+        }
+        if ( this.dist-- <=0 ) {
+            this.dir = this.dirAry[ Math.floor( Math.random()*4 ) ];
+            this.dist = Math.floor( Math.random()*10 )+10 ;
+        }
+        switch( this.dir ) {
+            case 0:
+                if ( this.top()-10 <=0  ) {
+                    this.dist = 0 ;
+                } else {
+                    this.moveTo( this.x, this.y-10 )  ;
+                }
+                break;
+            case 90:
+                if ( this.right()+10 > WORLD_HEIGHT ) {
+                    this.dist = 0;
+                } else {
+                    this.moveTo( this.x+10, this.y )  ;
+                }
+                break;
+            case 180:
+                if ( this.bottom()+10 > WORLD_WIDTH ) {
+                    this.dist = 0 ;
+                } else {
+                    this.moveTo( this.x, this.y+10 )  ;
+                }
+                break;
+            case 270:
+                if ( this.left()-10 <= 0 ) {
+                    this.dist = 0 ;
+                } else {
+                    this.moveTo( this.x-10, this.y )  ;
+                }
+                break;
+        }
+    }
+    moveCheck(obj) {
+        if ( obj instanceof Stone || obj instanceof Tank ) {
+            return false ;
+        }
+        return true ;
+    }
+    touched(obj) {
+        if ( obj instanceof Bullet ) {
+            this.isAlive = false ;
+            return false ;
+        }
+    }
+}
+
 class MyTank extends DrawableObject {
     distByStep=15 ;
     gamepadIdx= 0;
@@ -253,8 +327,6 @@ class MyTank extends DrawableObject {
         }
     }
     moveCheck(obj) {
-        //console.log(`moveCheck:`) ;
-        console.log(obj) ;
         if ( obj instanceof Stone ) {
             return false ;
         }
@@ -463,8 +535,18 @@ const WORLD_HEIGHT = TOTAL_ROWS*CELL_SIZE;
 let lastTime = 0 ;
 
 let world = new World() ; 
-world.add( new MyTank(30,30,0) ) ;
+world.add( new MyTank(30,400,0) ) ;
 world.add( new MyTank(300, 400, 2) ) ;
+
+world.add( new Tank(60, 60) ) ;
+world.add( new Tank(120, 60) ) ;
+world.add( new Tank(180, 60) ) ;
+world.add( new Tank(240, 60) ) ;
+world.add( new Tank(300, 60) ) ;
+world.add( new Tank(360, 60) ) ;
+world.add( new Tank(420, 60) ) ;
+world.add( new Tank(480, 60) ) ;
+
 world.add( new Stone(15*10, 15*20) ) ;
 world.add( new Stone(15*12, 15*25) ) ;
 world.add( new Stone(15*18, 15*10) ) ;
