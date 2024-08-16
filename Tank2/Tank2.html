@@ -21,8 +21,10 @@ class DrawableObject {
     x = 0 ;
     y = 0 ;
     dir = 0 ;
-    width=0;
-    height=0;
+    _top=0;
+    _bottom=0;
+    _left=0;
+    _right=0;
     beforeProcess() {
         this.isProcessed = false ;
         this.isMoved = false ;
@@ -51,6 +53,55 @@ class DrawableObject {
             }
         }
     }
+    top() {
+        switch( this.dir ) {
+            case 0:
+                return this.y-this._top;
+            case 90:
+                return this.y-this._left;
+            case 180:
+                return this.y-this._bottom;
+            case 270:
+                return this.y-this._right;
+        }
+    }
+    left() {
+        switch( this.dir ) {
+            case 0:
+                return this.x-this._left;
+            case 90:
+                return this.x-this._bottom;
+            case 180:
+                return this.x-this._right;
+            case 270:
+                return this.x-this._top;
+        }
+    }
+    bottom() {
+        switch( this.dir ) {
+            case 0:
+                return this._bottom+this.y;
+            case 90:
+                return this._right+this.y;
+            case 180:
+                return this._top+this.y;
+            case 270:
+                return this._left+this.y;
+        }
+    }
+    right() {
+        switch( this.dir ) {
+            case 0:
+                return this._right+this.x;
+            case 90:
+                return this._top+this.x;
+            case 180:
+                return this._left+this.x;
+            case 270:
+                return this._bottom+this.x;
+        }
+    }
+
     afterProcess() { }
     paint() {}
     moveCheck(obj) {}
@@ -58,24 +109,23 @@ class DrawableObject {
 }
 
 class MyTank extends DrawableObject {
+    distByStep=15 ;
     gamepadIdx= 0;
     delayCount=0;
-    height=50;
-    width=30;
+    _top=30;
+    _bottom=30;
+    _left=15;
+    _right=15;
     dir=0;
     constructor(gamepadIdx) {
         super() ;
         this.gamepadIdx = gamepadIdx ;
-        this.x = (20+gamepadIdx)*CELL_SIZE ;
+        this.x = 30 ;
         this.y = 30 ;
     }
     paint() {
         ctx.fillStyle = `rgb(0,255,255)` ;
-        if ( this.dir == 0 || this.dir == 180 ) {
-            ctx.fillRect( this.x-this.width/2, this.y-this.height/2, this.width, this.height ) ;
-        } else {
-            ctx.fillRect( this.x-this.height/2, this.y-this.width/2, this.height, this.width ) ;
-        }
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
     process() {
         if ( this.delayCount++ > 1 ) {
@@ -103,32 +153,41 @@ class MyTank extends DrawableObject {
                     //console.log("space") ;
                     this.keySpace();  
                 }
+                console.log(`x=${this.x}, y=${this.y}`);
             }
         }
     }
     keyUp() {
-        this.dir = 0 ;
-        if ( this.y > 0 ) {
-            this.moveTo( this.x, this.y-10 ) ;
+        if ( this.dir == 0 ) {
+            if ( this.top()-this.distByStep >= 0 ) {
+                this.moveTo( this.x, this.y-this.distByStep  ) ;
+            }
         }
+        this.dir = 0 ;
     }
     keyDown() {
-        this.dir = 180 ;
-        if ( this.y < WORLD_HEIGHT-1 ) {
-            this.moveTo(  this.x, this.y+10 ) ;
+        if ( this.dir == 180 ) {
+            if ( this.bottom()+this.distByStep <= WORLD_HEIGHT ) {
+                this.moveTo(  this.x, this.y+this.distByStep  ) ;
+            }
         }
+        this.dir = 180 ;
     }
     keyRight() {
-        this.dir = 90 ;
-        if ( this.x < WORLD_WIDTH-1 ) {
-            this.moveTo( this.x+10, this.y ) ;
+        if ( this.dir == 90 ) {
+            if ( this.right()+this.distByStep  <= WORLD_WIDTH ) {
+                this.moveTo( this.x+this.distByStep , this.y ) ;
+            }
         }
+        this.dir = 90 ;
     }
     keyLeft() {
-        this.dir = 270;
-        if ( this.x > 0 ) {
-            this.moveTo( this.x-10, this.y ) ;
+        if ( this.dir == 270 ) {
+            if ( this.left()-this.distByStep  >= 0 ) {
+                this.moveTo( this.x-this.distByStep , this.y ) ;
+            }
         }
+        this.dir = 270;
     }
     keySpace() {
         world.add( new Bullet(this.x,this.y, this.dir) );
@@ -138,9 +197,11 @@ class MyTank extends DrawableObject {
 }
 
 class Bullet extends DrawableObject {
-    dist = 10 ;
-    width=5;
-    height=10;
+    dist = 20 ;
+    _top=5;
+    _bottom=5;
+    _left=3;
+    _right=3;
     constructor(x,y,dir) {
         super();
         this.x = x ;
@@ -155,26 +216,38 @@ class Bullet extends DrawableObject {
         }
         switch( this.dir ) {
             case 0:
-                this.moveTo( this.x, this.y-10 )  ;
+                if ( this.top()-10 <=0  ) {
+                    this.isAlive = false ;
+                } else {
+                    this.moveTo( this.x, this.y-10 )  ;
+                }
                 break;
             case 90:
-                this.moveTo( this.x+10, this.y )  ;
+                if ( this.right()+10 > WORLD_HEIGHT ) {
+                    this.isAlive = false ;
+                } else {
+                    this.moveTo( this.x+10, this.y )  ;
+                }
                 break;
             case 180:
-                this.moveTo( this.x, this.y+10 )  ;
+                if ( this.bottom()+10 > WORLD_WIDTH ) {
+                    this.isAlive = false ;
+                } else {
+                    this.moveTo( this.x, this.y+10 )  ;
+                }
                 break;
             case 270:
-                this.moveTo( this.x-10, this.y )  ;
+                if ( this.left()-10 <= 0 ) {
+                    this.isAlive= false ;
+                } else {
+                    this.moveTo( this.x-10, this.y )  ;
+                }
                 break;
         }
     }
     paint(){
         ctx.fillStyle = `rgb(0,0,255)` ;
-        if ( this.dir == 0 || this.dir == 180 ) {
-            ctx.fillRect( this.x-this.width/2, this.y-this.height/2, this.width, this.height ) ;
-        } else {
-            ctx.fillRect( this.x-this.height/2, this.y-this.width/2, this.height, this.width ) ;
-        }
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
     moveCheck(obj) {
     }
@@ -294,7 +367,7 @@ let lastTime = 0 ;
 
 let world = new World() ; 
 world.add( new MyTank(0) ) ;
-world.add( new MyTank(1) ) ;
+//world.add( new MyTank(1) ) ;
 let isRunning = true ;
 
 requestAnimationFrame(run);
