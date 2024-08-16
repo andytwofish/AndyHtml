@@ -146,6 +146,7 @@ class Tank extends DrawableObject {
     dir=0;
     dist=0;
     dirAry=[0,90,180,270] ;
+    bulletDelay=0;
     constructor(x, y )  {
         super() ;
         this.x = x ;
@@ -155,11 +156,31 @@ class Tank extends DrawableObject {
         ctx.fillStyle = `rgb(55,55,255)` ;
         ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
+    fire() {
+        switch( this.dir ) {
+            case 0:
+                world.add( new Bullet(this.x,this.top()-10, this.dir) );
+                break;
+            case 90:
+                world.add( new Bullet(this.right()+10,this.y, this.dir) );
+                break;
+            case 180:
+                world.add( new Bullet(this.x,this.bottom()+10, this.dir) );
+                break;
+            case 270:
+                world.add( new Bullet(this.left()-10,this.y, this.dir) );
+                break;
+        }
+    }
     process() {
         if ( this.delayCount-- <= 0 ) {
             this.delayCount = 3 ;
         } else {
             return ;
+        }
+        if ( this.bulletDelay-- < 0 ) {
+            this.bulletDelay = 5 ;
+            this.fire() ;
         }
         if ( this.dist-- <=0 ) {
             this.dir = this.dirAry[ Math.floor( Math.random()*4 ) ];
