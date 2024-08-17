@@ -286,7 +286,7 @@ class MyTank extends DrawableObject {
     keyUp() {
         if ( this.dir == 0 ) {
             if ( this.top()-this.distByStep >= 0 ) {
-                this.moveTo( this.x, this.y-this.distByStep  ) ;
+               this.moveTo( this.x, this.y-this.distByStep  ) ;
             }
         }
         this.dir = 0 ;
