@@ -20,7 +20,7 @@ class DrawableObject {
     isMoved = false ;
     x = 0 ;
     y = 0 ;
-    dir = 0 ;
+    rotation = 0 ;
     _top=0;
     _bottom=0;
     _left=0;
@@ -53,8 +53,18 @@ class DrawableObject {
             }
         }
     }
+    calculateEndPoint(x1, y1, length, angleInDegrees) {
+        // 將角度從度轉換為弧度
+        const angleInRadians = angleInDegrees * (Math.PI / 180);
+        
+        // 計算另一端點的座標
+        const x2 = x1 + length * Math.sin(angleInRadians);
+        const y2 = y1 + length * Math.cos(angleInRadians);
+        
+        return { x: x2, y: y2 };
+    }
     top() {
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
                 return this.y-this._top;
             case 90:
@@ -66,7 +76,7 @@ class DrawableObject {
         }
     }
     left() {
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
                 return this.x-this._left;
             case 90:
@@ -78,7 +88,7 @@ class DrawableObject {
         }
     }
     bottom() {
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
                 return this._bottom+this.y;
             case 90:
@@ -90,7 +100,7 @@ class DrawableObject {
         }
     }
     right() {
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
                 return this._right+this.x;
             case 90:
@@ -143,7 +153,7 @@ class Tank extends DrawableObject {
     _bottom=20;
     _left=15;
     _right=15;
-    dir=0;
+    rotation=0;
     dist=0;
     dirAry=[0,90,180,270] ;
     bulletDelay=0;
@@ -157,18 +167,18 @@ class Tank extends DrawableObject {
         ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
     fire() {
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
-                world.add( new Bullet(this.x,this.top()-10, this.dir) );
+                world.add( new Bullet(this.x,this.top()-10, this.rotation) );
                 break;
             case 90:
-                world.add( new Bullet(this.right()+10,this.y, this.dir) );
+                world.add( new Bullet(this.right()+10,this.y, this.rotation) );
                 break;
             case 180:
-                world.add( new Bullet(this.x,this.bottom()+10, this.dir) );
+                world.add( new Bullet(this.x,this.bottom()+10, this.rotation) );
                 break;
             case 270:
-                world.add( new Bullet(this.left()-10,this.y, this.dir) );
+                world.add( new Bullet(this.left()-10,this.y, this.rotation) );
                 break;
         }
     }
@@ -183,10 +193,10 @@ class Tank extends DrawableObject {
             this.fire() ;
         }
         if ( this.dist-- <=0 ) {
-            this.dir = this.dirAry[ Math.floor( Math.random()*4 ) ];
+            this.rotation = this.dirAry[ Math.floor( Math.random()*4 ) ];
             this.dist = Math.floor( Math.random()*10 )+10 ;
         }
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
                 if ( this.top()-10 <=0  ) {
                     this.dist = 0 ;
@@ -239,7 +249,7 @@ class MyTank extends DrawableObject {
     _bottom=30;
     _left=15;
     _right=15;
-    dir=0;
+    rotation=0;
     constructor(x, y, gamepadIdx) {
         super() ;
         this.gamepadIdx = gamepadIdx ;
@@ -284,66 +294,66 @@ class MyTank extends DrawableObject {
         }
     }
     keyUp() {
-        if ( this.dir == 0 ) {
+        if ( this.rotation == 0 ) {
             if ( this.top()-this.distByStep >= 0 ) {
                this.moveTo( this.x, this.y-this.distByStep  ) ;
             }
         }
-        this.dir = 0 ;
+        this.rotation = 0 ;
     }
     keyDown() {
-        if ( this.dir == 180 ) {
+        if ( this.rotation == 180 ) {
             if ( this.bottom()+this.distByStep <= WORLD_HEIGHT ) {
                 this.moveTo(  this.x, this.y+this.distByStep  ) ;
             }
         }
-        this.dir = 180 ;
+        this.rotation = 180 ;
     }
     keyRight() {
-        if ( this.dir == 90 ) {
+        if ( this.rotation == 90 ) {
             if ( this.right()+this.distByStep  <= WORLD_WIDTH ) {
                 this.moveTo( this.x+this.distByStep , this.y ) ;
             }
         }
-        this.dir = 90 ;
+        this.rotation = 90 ;
     }
     keyLeft() {
-        if ( this.dir == 270 ) {
+        if ( this.rotation == 270 ) {
             if ( this.left()-this.distByStep  >= 0 ) {
                 this.moveTo( this.x-this.distByStep , this.y ) ;
             }
         }
-        this.dir = 270;
+        this.rotation = 270;
     }
     keySpace() {
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
-                world.add( new Bullet(this.x,this.top()-10, this.dir) );
+                world.add( new Bullet(this.x,this.top()-10, this.rotation) );
                 break;
             case 90:
-                world.add( new Bullet(this.right()+10,this.y, this.dir) );
+                world.add( new Bullet(this.right()+10,this.y, this.rotation) );
                 break;
             case 180:
-                world.add( new Bullet(this.x,this.bottom()+10, this.dir) );
+                world.add( new Bullet(this.x,this.bottom()+10, this.rotation) );
                 break;
             case 270:
-                world.add( new Bullet(this.left()-10,this.y, this.dir) );
+                world.add( new Bullet(this.left()-10,this.y, this.rotation) );
                 break;
         }
     }
     makeStone() {
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
-                world.add( new Stone(this.x,this.bottom()+this.distByStep, this.dir) );
+                world.add( new Stone(this.x,this.bottom()+this.distByStep, this.rotation) );
                 break;
             case 90:
-                world.add( new Stone(this.left()-this.distByStep,this.y, this.dir) );
+                world.add( new Stone(this.left()-this.distByStep,this.y, this.rotation) );
                 break;
             case 180:
-                world.add( new Stone(this.x,this.top()-this.distByStep, this.dir) );
+                world.add( new Stone(this.x,this.top()-this.distByStep, this.rotation) );
                 break;
             case 270:
-                world.add( new Stone(this.right()+this.distByStep,this.y, this.dir) );
+                world.add( new Stone(this.right()+this.distByStep,this.y, this.rotation) );
                 break;
         }
     }
@@ -367,11 +377,11 @@ class Bullet extends DrawableObject {
     _bottom=5;
     _left=3;
     _right=3;
-    constructor(x,y,dir) {
+    constructor(x,y,rotation) {
         super();
         this.x = x ;
         this.y = y ;
-        this.dir = dir ;
+        this.rotation = rotation ;
     }
     
     process() {
@@ -379,7 +389,7 @@ class Bullet extends DrawableObject {
             this.isAlive = false ;
             return ;
         }
-        switch( this.dir ) {
+        switch( this.rotation ) {
             case 0:
                 if ( this.top()-10 <=0  ) {
                     this.isAlive = false ;
