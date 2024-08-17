@@ -19,7 +19,7 @@ const ctx = canvas.getContext('2d');
 
 class ShieldTank{
     shieldGenerated = 0 ;
-static CELL_SIZE = 14 ;
+    static CELL_SIZE = 14 ;
     shield = true ;
     h = 0 ;
     row = Math.floor(Math.random()*39) ;  
@@ -57,22 +57,37 @@ static CELL_SIZE = 14 ;
         if (this.shield){
             if ( row==this.row+1&&col==this.col-2 ){
                 this.shield = false ;
+                if (this.row>0){
+                    row-=1 ;
+                }
                 return true;
             }
             if ( row==this.row+2&&col==this.col-1 ){
                 this.shield = false ;
+                if (this.row>0){
+                    row-=1 ;
+                }
                 return true;
             }
             if ( row==this.row+2&&col==this.col ){
                 this.shield = false ;
+                if (this.row>0){
+                    row-=1 ;
+                }
                 return true;
             }
             if ( row==this.row+2&&col==this.col+1 ){
                 this.shield = false ;
+                if (this.row>0){
+                    row-=1 ;
+                }
                 return true;
             }
             if ( row==this.row+1&&col==this.col+2 ){
                 this.shield = false ;
+                if (this.row>0){
+                    row-=1 ;
+                }
                 return true;
             }
         }
@@ -349,71 +364,7 @@ class Bullet{
         
         this.drawBulletCell() ;
 //        setTimeout( this.move.bind(this), 30 ) ;
-        if ( myTank1.row==this.row&&myTank1.col==this.col ){
-            isRun = false ;
-            this.life = false ;
-            return ;
-        }
-        if ( myTank1.shield != 0 ){
-            if ( (myTank1.row-1)==this.row&&(myTank1.col-2)==this.col ){
-                myTank1.shield-=1 ;
-                this.life = false ;
-                return ;
-
-            }
-            if ( (myTank1.row-2)==this.row&&(myTank1.col-1)==this.col ){
-                myTank1.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-            if ( (myTank1.row-2)==this.row&&myTank1.col==this.col ){
-                myTank1.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-            if ( (myTank1.row-2)==this.row&&(myTank1.col+1)==this.col ){
-                myTank1.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-            if ( (myTank1.row-1)==this.row&&(myTank1.col+2)==this.col ){
-                myTank1.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-        }
-        if ( myTank2.row==this.row&&myTank2.col==this.col ){
-            isRun = false ;
-                this.life = false ;
-            return ;
-        }
-        if ( myTank2.shield != 0 ){
-            if ( (myTank2.row-1)==this.row&&(myTank2.col-2)==this.col ){
-                myTank2.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-            if ( (myTank2.row-2)==this.row&&(myTank2.col-1)==this.col ){
-                myTank2.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-            if ( (myTank2.row-2)==this.row&&myTank2.col==this.col ){
-                myTank2.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-            if ( (myTank2.row-2)==this.row&&(myTank2.col+1)==this.col ){
-                myTank2.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-            if ( (myTank2.row-1)==this.row&&(myTank2.col+2)==this.col ){
-                myTank2.shield-=1 ;
-                this.life = false ;
-                return ;
-            }
-        }
+        
     }
     drawBulletCell(){
         ctx.fillStyle = `rgb(${ this.red },${ this.green },${ this.blue })` ;
@@ -426,14 +377,19 @@ class Bullet{
 }
 
 class MyTank {
+    static SHIELD_HIGHEST = 8 ;
+    shieldHp = 0 ;
+    time = 0 ;
     row = 30 ;
     col = 20 ;
     loaded = false ;
+    loaded2 = false ;
     isKeyDown = false ;
     lastKeyEvent=0;
     keyDelayCount=0;
     gamepadIdx= 0;
     shield = 0 ;
+    bulletCount = 0 ;
     constructor(gamepadIdx) {
         this.gamepadIdx = gamepadIdx ;
         document.addEventListener("keydown", this._keyDown.bind(this) );
@@ -443,7 +399,7 @@ class MyTank {
         if ( event.code == "IntlRo" ) {
             return ;
         }
-        if ( this.lastKeyEvent != 0 && event.code == this.lastKeyEvent.code && this.isKeyDown ){
+        if ( this.lastKeyEvent > 0 && event.code == this.lastKeyEvent.code && this.isKeyDown ){
             return ;
         }
         this.lastKeyEvent = event ;
@@ -458,9 +414,11 @@ class MyTank {
         }
     }
     _keyUp(event) {
+        this.time = 0 ;
         this.lastKeyEvent = 0 ;
         this.isKeyDown = false ;
         this.loaded = false ;
+        this.loaded2 = false ;
     }
     process() {
 //        this.cleanMyCell() ;
@@ -469,31 +427,88 @@ class MyTank {
             const gamepad = gamepads[this.gamepadIdx] ;
             if (gamepad) {
                 if ( gamepad.axes[0] == 1 ) {
-                    console.log("right") ;
+//                    console.log("right") ;
                     this.keyRight();
                 }
                 if ( gamepad.axes[0] == -1 ) {
-                    console.log("left") ;
+//                    console.log("left") ;
                     this.keyLeft();
                 }
                 if ( gamepad.axes[1] == 1 ) {
-                    console.log("down") ;
+//                    console.log("down") ;
                     this.keyDown();
                 }
                 if ( gamepad.axes[1] == -1 ) {
-                    console.log("up") ;
+//                    console.log("up") ;
                     this.keyUp() ;
                 }
                 if ( gamepad.buttons[0].pressed ) {
                     this.keySpace();  
                 }else{
-                    this.loaded = false ;
+                    this.bulletCount = 0 ;//this.loaded = false ;
                 }
                 if ( gamepad.buttons[2].pressed ) {
                     this.keyShield();  
+                }else{
+                    this.loaded2 = false ;
+                }
+                if ( gamepad.buttons[1].pressed ) {
+                    this.keyMyBomb();  
+                }else{
+                    this.time = 0 ;
+                    this.loaded3 = false ;
                 }
             }
             this.keyDelayCount=0;
+        }
+        for(let i=0;i<tanks.length;i++){
+            if (tanks[i] instanceof Bullet ){
+                if ( this.row==tanks[i].row&&this.col==tanks[i].col ){
+                    isRun = false ;
+                    this.life = false ;
+                    this.keyDown() ;
+                    tanks.splice(i,1) ;
+                    return ;
+                }
+                if ( this.shield > 0 ){
+                    if ( (this.row-1)==tanks[i].row&&(this.col-2)==tanks[i].col ){
+                        this.shield-=1 ;
+                        this.life = false ;
+                        this.keyDown() ;
+                        tanks.splice(i,1) ;
+                        return ;
+
+                    }
+                    if ( (this.row-2)==tanks[i].row&&(this.col-1)==tanks[i].col ){
+                        this.shield-=1 ;
+                        this.life = false ;
+                        this.keyDown() ;
+                        tanks.splice(i,1) ;
+                        return ;
+                    }
+                    if ( (this.row-2)==tanks[i].row&&this.col==tanks[i].col ){
+                        this.shield-=1 ;
+                        this.life = false ;
+                        this.keyDown() ;
+                        tanks.splice(i,1) ;
+                        return ;
+                    }
+                    if ( (this.row-2)==tanks[i].row&&(this.col+1)==tanks[i].col ){
+                        this.shield-=1 ;
+                        this.life = false ;
+                        this.keyDown() ;
+                        tanks.splice(i,1) ;
+                        return ;
+                    }
+                    if ( (this.row-1)==tanks[i].row&&(this.col+2)==tanks[i].col ){
+                        this.shield-=1 ;
+                        this.life = false ;
+                        this.keyDown() ;
+                        tanks.splice(i,1) ;
+                        return ;
+                    }
+                }
+            }
         }
         this.drawMyCell() ;
     }
@@ -522,16 +537,46 @@ class MyTank {
         }
     }
     keySpace() {
-        if ( !this.shield ){
-            if ( !this.loaded ){
-                this.loaded = true ;
+        if ( this.bulletCount-- < 0 ) {
+            if ( this.shield <= 0 ) {
+                this.bulletCount = 5 ;
                 tanks [tanks.length] = new MyBullet(this.row,this.col) ;
             }
         }
     }
     keyShield() {
-        if(this.shield == 0)
-        this.shield = 4 ;
+        if ( !this.loaded2 ){
+            this.loaded2 = true ;
+            if(this.shield <= 0){
+                if ( this.shieldHp > 0 ){
+                    this.shield = this.shieldHp ;
+                    this.shieldHp = 0 ;
+                }else{
+                    this.shield =MyTank.SHIELD_HIGHEST ;
+                }
+            }else{
+                this.shieldHp = this.shield ;
+                this.shield = 0 ;
+            }
+        }
+    }
+    keyMyBomb() {
+        if ( !this.loaded3 ){
+            this.time+=1 ;
+            if (this.time>=40){
+                this.loaded3 = true ;
+                tanks [tanks.length] = new MyBomb(this.row-2,this.col-1) ;
+                tanks [tanks.length] = new MyBomb(this.row-2,this.col) ;
+                tanks [tanks.length] = new MyBomb(this.row-2,this.col+1) ;
+                tanks [tanks.length] = new MyBomb(this.row-1,this.col-1) ;
+                tanks [tanks.length] = new MyBomb(this.row-1,this.col) ;
+                tanks [tanks.length] = new MyBomb(this.row-1,this.col+1) ;
+                tanks [tanks.length] = new MyBomb(this.row,this.col-1) ;
+                tanks [tanks.length] = new MyBomb(this.row,this.col) ;
+                tanks [tanks.length] = new MyBomb(this.row,this.col+1) 
+                this.keyDown();
+            }
+        }
     }
     keyEvent(event ) {
         if (event.code==`ArrowUp`){
@@ -550,12 +595,13 @@ class MyTank {
             this.keySpace();
         }
     }
-    
+
     drawMyCell(){
         ctx.fillStyle = `rgb(0,0,0)` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
-        if (this.shield != 0 ){
-            ctx.fillStyle = `rgb(${255/this.shield},${255/this.shield},${255/this.shield})` ;
+        if (this.shield > 0 ){
+            let color = 255-(255/MyTank.SHIELD_HIGHEST*this.shield) ;
+            ctx.fillStyle = `rgb(${color},${color},${color})` ;
             ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
@@ -566,7 +612,7 @@ class MyTank {
     cleanMyCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
-        if (this.shield != 0 ){
+        if (this.shield > 0 ){
             ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
@@ -600,7 +646,7 @@ class MyBullet{
 //            setTimeout( this.move.bind(this), 20 ) ;
     
         for (let i=0;i<tanks.length;i++){
-            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)){
+            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof MyBomb)){
                 if ( tanks[i].attack( this.row, this.col ) ) {
                     this.life = false ;
                     return ;
@@ -622,11 +668,63 @@ class MyBullet{
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
     }
 }
+class MyBomb{
+    cellCount = 20 ;
+    row = 0 ;
+    col = 0 ;
+    life = true ;
+    constructor(row,col) {
+        this.row = row ;
+        this.col = col ;
+        this.move();
+    }
+    
+    move(){
+        if(this.cellCount>0){
+            this.cellCount-=1 ;
+            if ( !this.life ) {
+                return ;
+            }
+    //        this.cleanBulletCell() ;
+            this.row-=1 ;    
+            if (this.row<0){
+                this.life=false ; 
+            } 
+
+            this.drawBulletCell() ;
+    //            setTimeout( this.move.bind(this), 20 ) ;
+        
+            for (let i=0;i<tanks.length;i++){
+                if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet) && !(tanks[i] instanceof MyBomb)){
+                    if ( tanks[i].attack( this.row, this.col ) ) {
+                        this.life = false ;
+                        return ;
+                    } 
+                }
+                // if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
+                //     tanks.splice(i,1) ;
+                //     this.life = false ;
+                //     return ;
+                // }
+            }
+        }
+        
+    }
+    drawBulletCell(){
+        ctx.fillStyle = `rgb(0,0,0)` ;
+//        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+    }
+    cleanBulletCell(){
+        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+    }
+}
 let tanks = [] ; 
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<4;i++){
+for (let i=0;i<3;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -635,13 +733,14 @@ for (let i=0;i<0;i++){
 Tank.drawBackground () ;
 let countDown = 3000 ;
 let myTank1 = new MyTank(1) ;
-let myTank2 = new MyTank(0) ;
+//let myTank2 = new MyTank(2) ;
 let isRun = true ;
 let delayCount = 0 ;
 run() ;
 
 function run() {
     if (isRun){
+//        console.log(tanks.length) ;
         if ( delayCount++ > 5 ) {
             delayCount=0;
             for (let i=0;i<tanks.length;i++){
@@ -656,7 +755,7 @@ function run() {
                 tanks [i].move() ;
             }
             myTank1.process() ;
-            myTank2.process() ;
+//            myTank2.process() ;
         }
     }else{
         ctx.font = "80px Arial";
