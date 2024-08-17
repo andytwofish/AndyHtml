@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>bee</title>
+  <title>Tank2</title>
   <style>
     canvas { border: 1px solid #000; }
   </style>
@@ -17,27 +17,238 @@
 class DrawableObject {
     isAlive = true ;
     isProcessed = false ;
-    row = 0 ;
-    col = 0 ;
+    isMoved = false ;
+    x = 0 ;
+    y = 0 ;
     dir = 0 ;
+    _top=0;
+    _bottom=0;
+    _left=0;
+    _right=0;
+    beforeProcess() {
+        this.isProcessed = false ;
+        this.isMoved = false ;
+    }
+    _process() {
+        if ( this.isProcessed ) {
+            return ;
+        }
+        this.process();
+        this.isProcessed = true ;
+    }
     process() {}
+    moveTo( newX, newY ) {
+        this.isMoved = true ;
+        let oldX = this.x ;
+        let oldY = this.y ;
+        this.x = newX ;
+        this.y = newY ;
+        let objs = world.overlapObjects(this) ;
+        for( let i=0; i<objs.length; i++ ) {
+            objs[i].touched(this) ;
+            if ( !this.moveCheck(objs[i]) ) {
+                this.x = oldX ;
+                this.y = oldY ;
+                this.isMoved = false ;
+            }
+        }
+    }
+    top() {
+        switch( this.dir ) {
+            case 0:
+                return this.y-this._top;
+            case 90:
+                return this.y-this._left;
+            case 180:
+                return this.y-this._bottom;
+            case 270:
+                return this.y-this._right;
+        }
+    }
+    left() {
+        switch( this.dir ) {
+            case 0:
+                return this.x-this._left;
+            case 90:
+                return this.x-this._bottom;
+            case 180:
+                return this.x-this._right;
+            case 270:
+                return this.x-this._top;
+        }
+    }
+    bottom() {
+        switch( this.dir ) {
+            case 0:
+                return this._bottom+this.y;
+            case 90:
+                return this._right+this.y;
+            case 180:
+                return this._top+this.y;
+            case 270:
+                return this._left+this.y;
+        }
+    }
+    right() {
+        switch( this.dir ) {
+            case 0:
+                return this._right+this.x;
+            case 90:
+                return this._top+this.x;
+            case 180:
+                return this._left+this.x;
+            case 270:
+                return this._bottom+this.x;
+        }
+    }
+
+    afterProcess() { }
     paint() {}
-    touch(obj) {}
+    moveCheck(obj) {
+
+        return true ;
+    }
+    touched(obj) {
+    }
+}
+
+class Stone extends DrawableObject {
+    _top = 15;
+    _bottom = 15;
+    _left = 15 ;
+    _right = 15 ;
+    hp = 5 ;
+    constructor(x, y) {
+        super() ;
+        this.x = x ;
+        this.y = y ;
+    }
+    paint() {
+        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
+    }
+    touched(obj) {
+        if ( obj instanceof Bullet ) {
+            if ( this.hp-- <= 0 ) {
+                this.isAlive = false ;
+            }
+        }
+    }
+}
+
+class Tank extends DrawableObject {
+    distByStep=15 ;
+    delayCount=15;
+    _top=20;
+    _bottom=20;
+    _left=15;
+    _right=15;
+    dir=0;
+    dist=0;
+    dirAry=[0,90,180,270] ;
+    bulletDelay=0;
+    constructor(x, y )  {
+        super() ;
+        this.x = x ;
+        this.y = y ;
+    }
+    paint() {
+        ctx.fillStyle = `rgb(55,55,255)` ;
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
+    }
+    fire() {
+        switch( this.dir ) {
+            case 0:
+                world.add( new Bullet(this.x,this.top()-10, this.dir) );
+                break;
+            case 90:
+                world.add( new Bullet(this.right()+10,this.y, this.dir) );
+                break;
+            case 180:
+                world.add( new Bullet(this.x,this.bottom()+10, this.dir) );
+                break;
+            case 270:
+                world.add( new Bullet(this.left()-10,this.y, this.dir) );
+                break;
+        }
+    }
+    process() {
+        if ( this.delayCount-- <= 0 ) {
+            this.delayCount = 3 ;
+        } else {
+            return ;
+        }
+        if ( this.bulletDelay-- < 0 ) {
+            this.bulletDelay = 5 ;
+            this.fire() ;
+        }
+        if ( this.dist-- <=0 ) {
+            this.dir = this.dirAry[ Math.floor( Math.random()*4 ) ];
+            this.dist = Math.floor( Math.random()*10 )+10 ;
+        }
+        switch( this.dir ) {
+            case 0:
+                if ( this.top()-10 <=0  ) {
+                    this.dist = 0 ;
+                } else {
+                    this.moveTo( this.x, this.y-10 )  ;
+                }
+                break;
+            case 90:
+                if ( this.right()+10 > WORLD_HEIGHT ) {
+                    this.dist = 0;
+                } else {
+                    this.moveTo( this.x+10, this.y )  ;
+                }
+                break;
+            case 180:
+                if ( this.bottom()+10 > WORLD_WIDTH ) {
+                    this.dist = 0 ;
+                } else {
+                    this.moveTo( this.x, this.y+10 )  ;
+                }
+                break;
+            case 270:
+                if ( this.left()-10 <= 0 ) {
+                    this.dist = 0 ;
+                } else {
+                    this.moveTo( this.x-10, this.y )  ;
+                }
+                break;
+        }
+    }
+    moveCheck(obj) {
+        if ( obj instanceof Stone || obj instanceof Tank ) {
+            return false ;
+        }
+        return true ;
+    }
+    touched(obj) {
+        if ( obj instanceof Bullet ) {
+            this.isAlive = false ;
+            return false ;
+        }
+    }
 }
 
 class MyTank extends DrawableObject {
+    distByStep=15 ;
     gamepadIdx= 0;
     delayCount=0;
-    constructor(gamepadIdx) {
+    _top=30;
+    _bottom=30;
+    _left=15;
+    _right=15;
+    dir=0;
+    constructor(x, y, gamepadIdx) {
         super() ;
         this.gamepadIdx = gamepadIdx ;
-        this.row = 30 ;
-        this.col = 20+gamepadIdx ;
-        this.dir = 0 ;
+        this.x = x ;
+        this.y = y ;
     }
     paint() {
         ctx.fillStyle = `rgb(0,255,255)` ;
-        ctx.fillRect( this.col*CELL_SIZE+1, this.row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
     process() {
         if ( this.delayCount++ > 1 ) {
@@ -46,82 +257,120 @@ class MyTank extends DrawableObject {
             const gamepad = gamepads[this.gamepadIdx] ;
             if (gamepad) {
                 if ( gamepad.axes[0] == 1 ) {
-                    console.log("right") ;
+                    //console.log("right") ;
                     this.keyRight();
                 }
                 if ( gamepad.axes[0] == -1 ) {
-                    console.log("left") ;
+                    //console.log("left") ;
                     this.keyLeft();
                 }
                 if ( gamepad.axes[1] == 1 ) {
-                    console.log("down") ;
+                    //console.log("down") ;
                     this.keyDown();
                 }
                 if ( gamepad.axes[1] == -1 ) {
-                    console.log("up") ;
+                    //console.log("up") ;
                     this.keyUp() ;
                 }
                 if ( gamepad.buttons[0].pressed ) {
-                    console.log("space") ;
+                    //console.log("space") ;
                     this.keySpace();  
                 }
+                if ( gamepad.buttons[1].pressed ) {
+                    this.makeStone();  
+                }
+//                console.log(`x=${this.x}, y=${this.y}`);
             }
         }
     }
     keyUp() {
-        this.dir = 0 ;
-        if ( this.row > 0 ) {
-            world.move( this.row-1, this.col, this ) ;
+        if ( this.dir == 0 ) {
+            if ( this.top()-this.distByStep >= 0 ) {
+                this.moveTo( this.x, this.y-this.distByStep  ) ;
+            }
         }
+        this.dir = 0 ;
     }
     keyDown() {
-        this.dir = 180 ;
-        if ( this.row < TOTAL_ROWS-1 ) {
-            world.move( this.row+1, this.col, this ) ;
+        if ( this.dir == 180 ) {
+            if ( this.bottom()+this.distByStep <= WORLD_HEIGHT ) {
+                this.moveTo(  this.x, this.y+this.distByStep  ) ;
+            }
         }
+        this.dir = 180 ;
     }
     keyRight() {
-        this.dir = 90 ;
-        if ( this.col < TOTAL_COLS-1 ) {
-            world.move( this.row, this.col+1, this ) ;
+        if ( this.dir == 90 ) {
+            if ( this.right()+this.distByStep  <= WORLD_WIDTH ) {
+                this.moveTo( this.x+this.distByStep , this.y ) ;
+            }
         }
+        this.dir = 90 ;
     }
     keyLeft() {
-        this.dir = 270;
-        if ( this.col > 0 ) {
-            world.move( this.row, this.col-1, this ) ;
+        if ( this.dir == 270 ) {
+            if ( this.left()-this.distByStep  >= 0 ) {
+                this.moveTo( this.x-this.distByStep , this.y ) ;
+            }
         }
+        this.dir = 270;
     }
     keySpace() {
         switch( this.dir ) {
             case 0:
-                world.add( new Bullet(this.row-1,this.col, this.dir) );
+                world.add( new Bullet(this.x,this.top()-10, this.dir) );
                 break;
             case 90:
-                world.add( new Bullet(this.row,this.col+1, this.dir) );
+                world.add( new Bullet(this.right()+10,this.y, this.dir) );
                 break;
             case 180:
-                world.add( new Bullet(this.row+1,this.col, this.dir) );
+                world.add( new Bullet(this.x,this.bottom()+10, this.dir) );
                 break;
             case 270:
-                world.add( new Bullet(this.row,this.col-1, this.dir) );
+                world.add( new Bullet(this.left()-10,this.y, this.dir) );
                 break;
         }
     }
-    draw(){
-        ctx.fillStyle = `rgb(0,0,0)` ;
-        ctx.fillRect( this.col*CELL_SIZE+1, this.row*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+    makeStone() {
+        switch( this.dir ) {
+            case 0:
+                world.add( new Stone(this.x,this.bottom()+this.distByStep, this.dir) );
+                break;
+            case 90:
+                world.add( new Stone(this.left()-this.distByStep,this.y, this.dir) );
+                break;
+            case 180:
+                world.add( new Stone(this.x,this.top()-this.distByStep, this.dir) );
+                break;
+            case 270:
+                world.add( new Stone(this.right()+this.distByStep,this.y, this.dir) );
+                break;
+        }
     }
-    touch(obj) {
+    moveCheck(obj) {
+        if ( obj instanceof Stone ) {
+            return false ;
+        }
+        return true ;
+    }
+    touched(obj) {
+        if ( obj instanceof Bullet ) {
+            this.isAlive = false ;
+            return false ;
+        }
     }
 }
 
 class Bullet extends DrawableObject {
-    dist = 10 ;
-    constructor(row,col,dir) {
+    dist = 20 ;
+    _top=5;
+    _bottom=5;
+    _left=3;
+    _right=3;
+    constructor(x,y,dir) {
         super();
-        this.row = row ;
-        this.col = col ;
+        this.x = x ;
+        this.y = y ;
         this.dir = dir ;
     }
     
@@ -132,54 +381,72 @@ class Bullet extends DrawableObject {
         }
         switch( this.dir ) {
             case 0:
-                world.move( this.row-1, this.col, this ) ;
+                if ( this.top()-10 <=0  ) {
+                    this.isAlive = false ;
+                } else {
+                    this.moveTo( this.x, this.y-10 )  ;
+                }
                 break;
             case 90:
-                world.move( this.row, this.col+1, this ) ;
+                if ( this.right()+10 > WORLD_HEIGHT ) {
+                    this.isAlive = false ;
+                } else {
+                    this.moveTo( this.x+10, this.y )  ;
+                }
                 break;
             case 180:
-                world.move( this.row+1, this.col, this ) ;
+                if ( this.bottom()+10 > WORLD_WIDTH ) {
+                    this.isAlive = false ;
+                } else {
+                    this.moveTo( this.x, this.y+10 )  ;
+                }
                 break;
             case 270:
-                world.move( this.row, this.col-1, this ) ;
+                if ( this.left()-10 <= 0 ) {
+                    this.isAlive= false ;
+                } else {
+                    this.moveTo( this.x-10, this.y )  ;
+                }
                 break;
         }
     }
     paint(){
-        console.log('paint()');
-        ctx.fillStyle = `rgb(0,255,0)` ;
-        ctx.fillRect( this.col*CELL_SIZE+4, this.row*CELL_SIZE+4, CELL_SIZE-5, CELL_SIZE-5 ) ;
+        ctx.fillStyle = `rgb(0,0,255)` ;
+        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
-    touch(obj) {
+    moveCheck(obj) {
+        if ( obj instanceof Stone ) {
+            this.isAlive = false ;
+            return false ;
+        }
+        return true ;
     }
 }
 
 class World {
-    matrix = [] ;
+    objects = [] ;
     constructor() {
-        for( let row=0; row<TOTAL_ROWS; row++ ) {
-            this.matrix[row] = [] ;
-            for( let col=0; col<TOTAL_COLS; col++ ) {
-                this.matrix[row][col] = null ;
-            }
-        }
     }
 
     process() {
-        //console.log(objects.length);
-        for( let row=0; row<TOTAL_ROWS; row++ ) {
-            for( let col=0; col<TOTAL_COLS; col++ ) {
-                let obj = this.matrix[row][col]                
-                if ( obj != null ) {
-                    if ( obj.isAlive ){
-                        if ( obj.isProcessed == false ) {
-                            obj.isProcessed = true ;
-                            obj.process() ;
-                        }
-                    } else {
-                        this.matrix[row][col] = null ;
-                    }
-                }
+        for( let i=0; i<this.objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if ( obj.isAlive ){
+                obj.beforeProcess() ;
+            }
+        }      
+        for( let i=0; i<this.objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if ( obj.isAlive ){
+                obj._process() ;
+            } else {
+                this.objects.splice(i--,1) ;
+            }
+        }      
+        for( let i=0; i<this.objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if ( obj.isAlive ){
+                obj.afterProcess() ;
             }
         }      
         this.paint();
@@ -188,16 +455,12 @@ class World {
     paint() {
         //console.log(objects.length);
         this.drawBackground();
-        for( let row=0; row<TOTAL_ROWS; row++ ) {
-            for( let col=0; col<TOTAL_COLS; col++ ) {
-                if ( this.matrix[row][col] != null ) {
-                    this.matrix[row][col].isProcessed = false ;
-                    if (this.matrix[row][col].isAlive ){
-                        this.matrix[row][col].paint() ;
-                    } else {
-                        this.matrix[row][col] = null ;
-                    }
-                }
+        for( let i=0; i<this.objects.length; i++ ) {
+            let obj = this.objects[i] ;
+            if (obj.isAlive ){
+                obj.paint() ;
+            } else {
+                this.objects.splice(i--,1) ;
             }
         }      
     }
@@ -220,40 +483,42 @@ class World {
     }
 
     add( obj ) {
-        if ( obj.row < 0 || obj.row >= TOTAL_ROWS || obj.col < 0 || obj.col >= TOTAL_COLS ) {
-            return false;
-        }
-
-        if ( this.matrix[obj.row][obj.col] != null ) {
-            console.log('add error');
-            return false ;
-        }
-
-        this.matrix[obj.row][obj.col] = obj ;
-        return true ;
-    }
-
-    remove( obj ) {
-        this.matrix[obj.row][obj.col] = null ;
-    }
-
-    move(newRow, newCol, obj) {
-        console.log(newCol) ;
-        if ( newRow < 0 || newRow >= TOTAL_ROWS || newCol < 0 || newCol >= TOTAL_COLS ) {
-            return false;
-        }
-        if ( this.matrix[newRow][newCol] != null ) {
-            this.matrix[newRow][newCol].touch(obj) ;
-            obj.touch(this.matrix[newRow][newCol]) ;
+        let objs = this.overlapObjects(obj) ;
+        for( let i=0; i<objs; i++ ) {
+            objs[i].touched(obj) ;
+            if ( !obj.moveCheck(objs[i]) ) {
+                return false;
+            }
         }
         if ( obj.isAlive ) {
-            console.log("--");
-            this.matrix[obj.row][obj.col] = null ;
-            obj.row = newRow ;
-            obj.col = newCol ;
-            this.matrix[newRow][newCol] = obj ;
+            this.objects.push( obj ) ;
+            return true ;
         }
-        return true ;
+        return false ;
+    }
+
+    overlapObjects(obj) {
+        let objs = [] ;
+        for( let i=0; i<this.objects.length; i++ ) {
+            let obj2 = this.objects[i] ;
+            if ( obj == obj2 ) {
+                continue ;
+            }
+            if ( obj.right() <= obj2.left() ) {
+                continue ;
+            }
+            if ( obj.top() >= obj2.bottom() ) {
+                continue ;
+            }
+            if ( obj.left() >= obj2.right() ) {
+                continue ;
+            }
+            if ( obj.bottom() <= obj2.top() ) {
+                continue ;
+            }
+            objs.push( obj2 ) ;
+        }
+        return objs ;
     }
 }
 //============================================================================
@@ -286,11 +551,27 @@ const ctx = canvas.getContext('2d');
 const TOTAL_ROWS = 35 ;
 const TOTAL_COLS = 35 ;
 const CELL_SIZE = 15 ;
+const WORLD_WIDTH = TOTAL_COLS*CELL_SIZE ;
+const WORLD_HEIGHT = TOTAL_ROWS*CELL_SIZE;
 let lastTime = 0 ;
 
 let world = new World() ; 
-world.add( new MyTank(0) ) ;
-world.add( new MyTank(1) ) ;
+world.add( new MyTank(30,400,0) ) ;
+world.add( new MyTank(300, 400, 2) ) ;
+
+world.add( new Tank(60, 60) ) ;
+world.add( new Tank(120, 60) ) ;
+world.add( new Tank(180, 60) ) ;
+world.add( new Tank(240, 60) ) ;
+world.add( new Tank(300, 60) ) ;
+world.add( new Tank(360, 60) ) ;
+world.add( new Tank(420, 60) ) ;
+world.add( new Tank(480, 60) ) ;
+
+world.add( new Stone(15*10, 15*20) ) ;
+world.add( new Stone(15*12, 15*25) ) ;
+world.add( new Stone(15*18, 15*10) ) ;
+world.add( new Stone(15*8, 15*30) ) ;
 let isRunning = true ;
 
 requestAnimationFrame(run);
