@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example</title>
+  <style>
+    canvas { border: 1px solid #000; }
+  </style>
+</head>
+<body>
+  <canvas id="_Canvas" width="560" height="560"></canvas>
+</body>
+</html>
+
+<script>
+
+class Animal {
+    isAlive = true ;
+}
+
+class Doggy extends Animal {
+    legNums = 4 ;
+    height = 10 ;
+    run() {
+        console.log('******');
+    }
+}
+
+class BigDog extends Doggy {
+    height = 20 ;
+    run() {
+        super.run();
+        console.log('-------') ;
+    }
+}
+
+let animal = new Animal() ;
+let doggy = new Doggy();
+let bigDog = new BigDog() ;
+
+
+console.log( `animal.isAlive : ${animal.isAlive}` );
+console.log( `doggy.isAlive : ${doggy.isAlive}` );
+console.log( `bigDog.isAlive : ${bigDog.isAlive}` );
+
+console.log( `animal.legNums : ${animal.legNums}` );
+console.log( `doggy.legNums : ${doggy.legNums}` );
+console.log( `bigDog.legNums : ${bigDog.legNums}` );
+
+console.log( `animal.height : ${animal.height}` );
+console.log( `doggy.height : ${doggy.height}` );
+console.log( `bigDog.height : ${bigDog.height}` );
+
+bigDog.run();
+
+console.log( `animal.color : ${animal.color}` );
+animal.run();
+
+</script>
