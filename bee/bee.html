@@ -453,10 +453,29 @@ class MyTank {
                     this.loaded2 = false ;
                 }
                 if ( gamepad.buttons[1].pressed ) {
-                    this.keyMyBomb();  
-                }else{
-                    this.time = 0 ;
-                    this.loaded3 = false ;
+                    this.keyMyBomb() ; 
+                    this.time+=0.5 ; 
+                    this.loaded3 = true ;
+                }else{ 
+                    if (this.time>0){
+                        this.loaded3 = false ;
+                        let k = 1 ;
+                        for (let z=0;z<1;z=0){
+                            if ((k*k)+30>this.time){
+                                break ;
+                            }else{
+                                k+=2 ;
+                            }
+                        }
+                        let l = (k-1)/2 ;
+                        for (let r=-l;r<l+1;r++){
+                            for (let c=-l;c<l+1;c++){
+                                tanks [tanks.length] = new MyBomb(this.row+r,this.col+c) ;
+                            }
+                        }
+                        this.keyDown();
+                        this.time = 0 ;
+                    }
                 }
             }
             this.keyDelayCount=0;
@@ -561,22 +580,7 @@ class MyTank {
         }
     }
     keyMyBomb() {
-        if ( !this.loaded3 ){
-            this.time+=1 ;
-            if (this.time>=40){
-                this.loaded3 = true ;
-                tanks [tanks.length] = new MyBomb(this.row-2,this.col-1) ;
-                tanks [tanks.length] = new MyBomb(this.row-2,this.col) ;
-                tanks [tanks.length] = new MyBomb(this.row-2,this.col+1) ;
-                tanks [tanks.length] = new MyBomb(this.row-1,this.col-1) ;
-                tanks [tanks.length] = new MyBomb(this.row-1,this.col) ;
-                tanks [tanks.length] = new MyBomb(this.row-1,this.col+1) ;
-                tanks [tanks.length] = new MyBomb(this.row,this.col-1) ;
-                tanks [tanks.length] = new MyBomb(this.row,this.col) ;
-                tanks [tanks.length] = new MyBomb(this.row,this.col+1) 
-                this.keyDown();
-            }
-        }
+       
     }
     keyEvent(event ) {
         if (event.code==`ArrowUp`){
@@ -597,7 +601,11 @@ class MyTank {
     }
 
     drawMyCell(){
-        ctx.fillStyle = `rgb(0,0,0)` ;
+        if (this.loaded3){
+            ctx.fillStyle = `rgb(0,${this.time},${this.time})` ;
+        }else{
+            ctx.fillStyle = `rgb(0,0,0)` ;
+        }
         ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
         if (this.shield > 0 ){
             let color = 255-(255/MyTank.SHIELD_HIGHEST*this.shield) ;
@@ -669,7 +677,7 @@ class MyBullet{
     }
 }
 class MyBomb{
-    cellCount = 20 ;
+    cellCount = 30 ;
     row = 0 ;
     col = 0 ;
     life = true ;
@@ -712,8 +720,8 @@ class MyBomb{
     }
     drawBulletCell(){
         ctx.fillStyle = `rgb(0,0,0)` ;
-//        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
+//        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
     }
     cleanBulletCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
@@ -733,7 +741,7 @@ for (let i=0;i<0;i++){
 Tank.drawBackground () ;
 let countDown = 3000 ;
 let myTank1 = new MyTank(1) ;
-//let myTank2 = new MyTank(2) ;
+let myTank2 = new MyTank(2) ;
 let isRun = true ;
 let delayCount = 0 ;
 run() ;
@@ -755,7 +763,7 @@ function run() {
                 tanks [i].move() ;
             }
             myTank1.process() ;
-//            myTank2.process() ;
+            myTank2.process() ;
         }
     }else{
         ctx.font = "80px Arial";
