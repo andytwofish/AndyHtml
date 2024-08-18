@@ -37,18 +37,21 @@ class DrawableObject {
         this.isProcessed = true ;
     }
     process() {}
-    moveTo( newX, newY ) {
+    moveTo( newX, newY, newRotation ) {
         this.isMoved = true ;
         let oldX = this.x ;
         let oldY = this.y ;
+        let oldRotation = this.rotation ;
         this.x = newX ;
         this.y = newY ;
+        this.rotation = newRotation ;
         let objs = world.overlapObjects(this) ;
         for( let i=0; i<objs.length; i++ ) {
             objs[i].touched(this) ;
             if ( !this.moveCheck(objs[i]) ) {
                 this.x = oldX ;
                 this.y = oldY ;
+                this.rotation = oldRotation ;
                 this.isMoved = false ;
             }
         }
@@ -169,16 +172,16 @@ class Tank extends DrawableObject {
     fire() {
         switch( this.rotation ) {
             case 0:
-                world.add( new Bullet(this.x,this.top()-10, this.rotation) );
+                world.add( new Bullet(this.x,this.top()-10, this.rotation, true) );
                 break;
             case 90:
-                world.add( new Bullet(this.right()+10,this.y, this.rotation) );
+                world.add( new Bullet(this.right()+10,this.y, this.rotation, true) );
                 break;
             case 180:
-                world.add( new Bullet(this.x,this.bottom()+10, this.rotation) );
+                world.add( new Bullet(this.x,this.bottom()+10, this.rotation, true) );
                 break;
             case 270:
-                world.add( new Bullet(this.left()-10,this.y, this.rotation) );
+                world.add( new Bullet(this.left()-10,this.y, this.rotation, true) );
                 break;
         }
     }
@@ -192,37 +195,38 @@ class Tank extends DrawableObject {
             this.bulletDelay = 5 ;
             this.fire() ;
         }
+        let newRotation = this.rotation ;
         if ( this.dist-- <=0 ) {
-            this.rotation = this.dirAry[ Math.floor( Math.random()*4 ) ];
+            newRotation = this.dirAry[ Math.floor( Math.random()*4 ) ];
             this.dist = Math.floor( Math.random()*10 )+10 ;
         }
-        switch( this.rotation ) {
+        switch( newRotation ) {
             case 0:
                 if ( this.top()-10 <=0  ) {
                     this.dist = 0 ;
                 } else {
-                    this.moveTo( this.x, this.y-10 )  ;
+                    this.moveTo( this.x, this.y-10, newRotation )  ;
                 }
                 break;
             case 90:
-                if ( this.right()+10 > WORLD_HEIGHT ) {
+                if ( this.right()+10 >= WORLD_HEIGHT ) {
                     this.dist = 0;
                 } else {
-                    this.moveTo( this.x+10, this.y )  ;
+                    this.moveTo( this.x+10, this.y, newRotation )  ;
                 }
                 break;
             case 180:
-                if ( this.bottom()+10 > WORLD_WIDTH ) {
+                if ( this.bottom()+10 >= WORLD_WIDTH ) {
                     this.dist = 0 ;
                 } else {
-                    this.moveTo( this.x, this.y+10 )  ;
+                    this.moveTo( this.x, this.y+10, newRotation )  ;
                 }
                 break;
             case 270:
                 if ( this.left()-10 <= 0 ) {
                     this.dist = 0 ;
                 } else {
-                    this.moveTo( this.x-10, this.y )  ;
+                    this.moveTo( this.x-10, this.y, newRotation )  ;
                 }
                 break;
         }
@@ -235,8 +239,10 @@ class Tank extends DrawableObject {
     }
     touched(obj) {
         if ( obj instanceof Bullet ) {
-            this.isAlive = false ;
-            return false ;
+            if ( !obj.isEnemy) {
+                this.isAlive = false ;
+                return false ;
+            }
         }
     }
 }
@@ -296,48 +302,52 @@ class MyTank extends DrawableObject {
     keyUp() {
         if ( this.rotation == 0 ) {
             if ( this.top()-this.distByStep >= 0 ) {
-               this.moveTo( this.x, this.y-this.distByStep  ) ;
+               this.moveTo( this.x, this.y-this.distByStep, this.rotation  ) ;
             }
+        } else {
+            this.moveTo( this.x, this.y, 0 ) ;
         }
-        this.rotation = 0 ;
     }
     keyDown() {
         if ( this.rotation == 180 ) {
-            if ( this.bottom()+this.distByStep <= WORLD_HEIGHT ) {
-                this.moveTo(  this.x, this.y+this.distByStep  ) ;
+            if ( this.bottom()+this.distByStep < WORLD_HEIGHT ) {
+                this.moveTo(  this.x, this.y+this.distByStep, this.rotation  ) ;
             }
+        } else {
+            this.moveTo( this.x, this.y, 180 ) ;
         }
-        this.rotation = 180 ;
     }
     keyRight() {
         if ( this.rotation == 90 ) {
-            if ( this.right()+this.distByStep  <= WORLD_WIDTH ) {
-                this.moveTo( this.x+this.distByStep , this.y ) ;
+            if ( this.right()+this.distByStep  < WORLD_WIDTH ) {
+                this.moveTo( this.x+this.distByStep , this.y, this.rotation ) ;
             }
+        } else {
+            this.moveTo( this.x, this.y, 90 ) ;
         }
-        this.rotation = 90 ;
     }
     keyLeft() {
         if ( this.rotation == 270 ) {
             if ( this.left()-this.distByStep  >= 0 ) {
-                this.moveTo( this.x-this.distByStep , this.y ) ;
+                this.moveTo( this.x-this.distByStep , this.y, this.rotation ) ;
             }
+        } else {
+            this.moveTo( this.x, this.y, 270 ) ;
         }
-        this.rotation = 270;
     }
     keySpace() {
         switch( this.rotation ) {
             case 0:
-                world.add( new Bullet(this.x,this.top()-10, this.rotation) );
+                world.add( new Bullet(this.x,this.top()-10, this.rotation, false) );
                 break;
             case 90:
-                world.add( new Bullet(this.right()+10,this.y, this.rotation) );
+                world.add( new Bullet(this.right()+10,this.y, this.rotation, false) );
                 break;
             case 180:
-                world.add( new Bullet(this.x,this.bottom()+10, this.rotation) );
+                world.add( new Bullet(this.x,this.bottom()+10, this.rotation, false) );
                 break;
             case 270:
-                world.add( new Bullet(this.left()-10,this.y, this.rotation) );
+                world.add( new Bullet(this.left()-10,this.y, this.rotation, false) );
                 break;
         }
     }
@@ -365,11 +375,15 @@ class MyTank extends DrawableObject {
     }
     touched(obj) {
         if ( obj instanceof Bullet ) {
-            this.isAlive = false ;
-            return false ;
+            if ( obj.isEnemy ) {
+                this.isAlive = false ;
+                return false ;
+            }
         }
     }
-}
+} 
+
+
 
 class Bullet extends DrawableObject {
     dist = 20 ;
@@ -377,11 +391,13 @@ class Bullet extends DrawableObject {
     _bottom=5;
     _left=3;
     _right=3;
-    constructor(x,y,rotation) {
+    isEnemy=false ;
+    constructor(x,y,rotation, isEnemy) {
         super();
         this.x = x ;
         this.y = y ;
         this.rotation = rotation ;
+        this.isEnemy = isEnemy ;
     }
     
     process() {
@@ -394,28 +410,28 @@ class Bullet extends DrawableObject {
                 if ( this.top()-10 <=0  ) {
                     this.isAlive = false ;
                 } else {
-                    this.moveTo( this.x, this.y-10 )  ;
+                    this.moveTo( this.x, this.y-10, this.rotation )  ;
                 }
                 break;
             case 90:
                 if ( this.right()+10 > WORLD_HEIGHT ) {
                     this.isAlive = false ;
                 } else {
-                    this.moveTo( this.x+10, this.y )  ;
+                    this.moveTo( this.x+10, this.y, this.rotation )  ;
                 }
                 break;
             case 180:
                 if ( this.bottom()+10 > WORLD_WIDTH ) {
                     this.isAlive = false ;
                 } else {
-                    this.moveTo( this.x, this.y+10 )  ;
+                    this.moveTo( this.x, this.y+10, this.rotation )  ;
                 }
                 break;
             case 270:
                 if ( this.left()-10 <= 0 ) {
                     this.isAlive= false ;
                 } else {
-                    this.moveTo( this.x-10, this.y )  ;
+                    this.moveTo( this.x-10, this.y, this.rotation )  ;
                 }
                 break;
         }
@@ -435,10 +451,21 @@ class Bullet extends DrawableObject {
 
 class World {
     objects = [] ;
+    tankLastCreateTime = 0 ;
     constructor() {
     }
-
+    createTank() {
+        if ( this.tankLastCreateTime == 0 ) {
+            world.add( new Tank(300, 300) ) ;
+            this.tankLastCreateTime = Date.now() ;
+        }
+        if ( Date.now() - this.tankLastCreateTime > 3000 ) {
+            world.add( new Tank(300, 300) ) ;
+            this.tankLastCreateTime = Date.now() ;
+        }
+    }
     process() {
+        this.createTank() ;
         for( let i=0; i<this.objects.length; i++ ) {
             let obj = this.objects[i] ;
             if ( obj.isAlive ){
@@ -463,7 +490,6 @@ class World {
     }
 
     paint() {
-        //console.log(objects.length);
         this.drawBackground();
         for( let i=0; i<this.objects.length; i++ ) {
             let obj = this.objects[i] ;
@@ -494,7 +520,7 @@ class World {
 
     add( obj ) {
         let objs = this.overlapObjects(obj) ;
-        for( let i=0; i<objs; i++ ) {
+        for( let i=0; i<objs.length; i++ ) {
             objs[i].touched(obj) ;
             if ( !obj.moveCheck(objs[i]) ) {
                 return false;
@@ -511,7 +537,7 @@ class World {
         let objs = [] ;
         for( let i=0; i<this.objects.length; i++ ) {
             let obj2 = this.objects[i] ;
-            if ( obj == obj2 ) {
+            if ( obj === obj2 ) {
                 continue ;
             }
             if ( obj.right() <= obj2.left() ) {
@@ -526,6 +552,7 @@ class World {
             if ( obj.bottom() <= obj2.top() ) {
                 continue ;
             }
+            //console.log(`${obj.x}, ${obj.y}, ${obj.rotation} overlap with ${obj2.x}, ${obj2.y}, ${obj2.rotation} `);
             objs.push( obj2 ) ;
         }
         return objs ;
@@ -566,22 +593,16 @@ const WORLD_HEIGHT = TOTAL_ROWS*CELL_SIZE;
 let lastTime = 0 ;
 
 let world = new World() ; 
-world.add( new MyTank(30,400,0) ) ;
-world.add( new MyTank(300, 400, 2) ) ;
+//world.add( new MyTank(30,400,0) ) ;
+//world.add( new MyTank(300, 400, 2) ) ;
 
-world.add( new Tank(60, 60) ) ;
-world.add( new Tank(120, 60) ) ;
-world.add( new Tank(180, 60) ) ;
-world.add( new Tank(240, 60) ) ;
-world.add( new Tank(300, 60) ) ;
-world.add( new Tank(360, 60) ) ;
-world.add( new Tank(420, 60) ) ;
-world.add( new Tank(480, 60) ) ;
+//world.add( new Stone(15*10, 15*20) ) ;
+//world.add( new Stone(15*12, 15*25) ) ;
+//world.add( new Stone(15*18, 15*10) ) ;
+//world.add( new Stone(15*8, 15*30) ) ;
 
-world.add( new Stone(15*10, 15*20) ) ;
-world.add( new Stone(15*12, 15*25) ) ;
-world.add( new Stone(15*18, 15*10) ) ;
-world.add( new Stone(15*8, 15*30) ) ;
+//world.add( new Tank(300, 300) ) ;
+//world.add( new Tank(300, 315) ) ;
 let isRunning = true ;
 
 requestAnimationFrame(run);
