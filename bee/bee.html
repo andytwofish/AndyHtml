@@ -24,8 +24,8 @@ class ShieldTank{
     h = 0 ;
     row = Math.floor(Math.random()*39) ;  
     col = Math.floor(Math.random()*39) ; 
-    red = 0 ;
-    green = 0 ;
+    red = 100 ;
+    green = 100 ;
     blue = 0 ;
     life = true ;
 
@@ -162,9 +162,9 @@ class BabyTank{
     h = 0 ;
     row = Math.floor(Math.random()*39) ;  
     col = Math.floor(Math.random()*39) ; 
-    red = 0 ;
-    green = 0 ;
-    blue = 0 ;
+    red = 200 ;
+    green = 10 ;
+    blue = 10 ;
     life = true ;
 
     drawCell(){
@@ -248,9 +248,12 @@ class Tank{
     h = 0 ;
     row = Math.floor(Math.random()*39) ;  
     col = Math.floor(Math.random()*39) ; 
-    red = Math.floor(Math.random()*256) ;
-    green = Math.floor(Math.random()*256) ;
-    blue = Math.floor(Math.random()*256) ;
+    red = 100 ;
+    green = 100 ;
+    blue = 100 ;
+//    red = Math.floor(Math.random()*256) ;
+//    green = Math.floor(Math.random()*256) ;
+//    blue = Math.floor(Math.random()*256) ;
 //    red = Math.floor(Math.random()*56)+200 ;
 //    green = Math.floor(Math.random()*56)+200 ;
 //    blue = Math.floor(Math.random()*56)+200 ;
@@ -586,10 +589,10 @@ class MyTank {
                         let l = (k-1)/2 ;
                         for (let r=-l;r<l+1;r++){
                             for (let c=-l;c<l+1;c++){
-                                tanks [tanks.length] = new MyBomb(this.row+r,this.col+c) ;
+                                tanks [tanks.length] = new MyBullet(this.row+r,this.col+c) ;
                             }
                         }
-                        this.keyDown();
+                        this.keyDown() ;
                         this.time = 0 ;
                     }
                 }
@@ -601,6 +604,8 @@ class MyTank {
                 if ( this.row==tanks[i].row&&this.col==tanks[i].col ){
                     this.HP -=1 ;
                     this.time = 0
+                    this.keyDown() ;
+                    tanks.splice(i,1) ;
                     if(this.HP<=0){
                         isRun = false ;
                         this.life = false ;
@@ -774,7 +779,7 @@ class MyBullet{
 //            setTimeout( this.move.bind(this), 20 ) ;
     
         for (let i=0;i<tanks.length;i++){
-            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof MyBomb)){
+            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)){
                 if ( tanks[i].attack( this.row, this.col ) ) {
                     this.life = false ;
                     return ;
@@ -846,7 +851,7 @@ for (let i=0;i<3;i++){
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new ShieldTank () ;
 }
-Tank.drawBackground () ;
+//Tank.drawBackground () ;
 let countDown = 3000 ;
 let myTank1 = new MyTank(0) ;
 //let myTank2 = new MyTank(2) ;
@@ -864,9 +869,9 @@ function run() {
                     tanks.splice(i--,1) ;
                 }
             }  
-            ctx.fillStyle = `rgb(255,255,255)` ;
+            ctx.fillStyle = `rgb(0,255,255)` ;
             ctx.fillRect( 0 , 0 , 560 , 560 ) ;
-            Tank.drawBackground () ;     
+//            Tank.drawBackground () ;     
             for (let i=0;i<tanks.length;i++){
                 tanks [i].move() ;
             }
