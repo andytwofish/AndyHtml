@@ -140,6 +140,9 @@ class Stone extends DrawableObject {
         ctx.fillStyle = `rgb(0,0,0)` ;
         ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
+    moveCheck(obj) {
+        return false ;
+    }
     touched(obj) {
         if ( obj instanceof Bullet ) {
             if ( this.hp-- <= 0 ) {
@@ -368,6 +371,10 @@ class MyTank extends DrawableObject {
                 this.isAlive = false ;
                 return false ;
             }
+        }
+        if ( obj instanceof Tank ) {
+            this.isAlive = false ;
+            return false ;
         }
     }
 } 
