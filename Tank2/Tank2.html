@@ -249,16 +249,15 @@ class Tank extends DrawableObject {
 
 class MyTank extends DrawableObject {
     distByStep=15 ;
-    gamepadIdx= 0;
     delayCount=0;
     _top=30;
     _bottom=30;
     _left=15;
     _right=15;
     rotation=0;
-    constructor(x, y, gamepadIdx) {
+    constructor(x, y, keyController ) {
         super() ;
-        this.gamepadIdx = gamepadIdx ;
+        this.keyController = keyController ;
         this.x = x ;
         this.y = y ;
     }
@@ -269,33 +268,23 @@ class MyTank extends DrawableObject {
     process() {
         if ( this.delayCount++ > 1 ) {
             this.delayCount=0;
-            const gamepads = navigator.getGamepads();
-            const gamepad = gamepads[this.gamepadIdx] ;
-            if (gamepad) {
-                if ( gamepad.axes[0] == 1 ) {
-                    //console.log("right") ;
-                    this.keyRight();
-                }
-                if ( gamepad.axes[0] == -1 ) {
-                    //console.log("left") ;
-                    this.keyLeft();
-                }
-                if ( gamepad.axes[1] == 1 ) {
-                    //console.log("down") ;
-                    this.keyDown();
-                }
-                if ( gamepad.axes[1] == -1 ) {
-                    //console.log("up") ;
-                    this.keyUp() ;
-                }
-                if ( gamepad.buttons[0].pressed ) {
-                    //console.log("space") ;
-                    this.keySpace();  
-                }
-                if ( gamepad.buttons[1].pressed ) {
-                    this.makeStone();  
-                }
-//                console.log(`x=${this.x}, y=${this.y}`);
+            if ( this.keyController.isArrowRightPressed() ) {
+                this.keyRight();
+            }
+            if ( this.keyController.isArrowLeftPressed() ) {
+                this.keyLeft();
+            }
+            if ( this.keyController.isArrowDownPressed() ) {
+                this.keyDown();
+            }
+            if ( this.keyController.isArrowUpPressed() ) {
+                this.keyUp() ;
+            }
+            if ( this.keyController.isButtonAPressed() ) {
+                this.keySpace();  
+            }
+            if ( this.keyController.isButtonBPressed() ) {
+                this.makeStone();  
             }
         }
     }
@@ -558,6 +547,114 @@ class World {
         return objs ;
     }
 }
+
+class KeyController {
+    keysState = new Map() ;
+    keyCodeToX = "" ;
+    keyCodeToA = "Space" ;
+    keyCodeToB = "" ;
+    keyCodeToY = "" ;
+    constructor( padIdx ) {
+        document.addEventListener("keydown", this._keyDown.bind(this) );
+        document.addEventListener("keyup", this._keyUp.bind(this) );
+        this.padIdx = padIdx ;
+    }
+    _keyDown(event) {
+        this.keysState.set( event.code, true ) ;
+    }
+    _keyUp(event){
+        this.keysState.set( event.code, false ) ;
+    }
+    isArrowLeftPressed() {
+        let flag = this.keysState.get( "ArrowLeft" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if ( gamepad != null && gamepad.axes[0] == -1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isArrowRightPressed() {
+        let flag = this.keysState.get( "ArrowRight" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if ( gamepad != null &&  gamepad.axes[0] == 1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isArrowDownPressed() {
+        let flag = this.keysState.get( "ArrowDown" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.axes[1] == 1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isArrowUpPressed() {
+        let flag = this.keysState.get( "ArrowUp" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.axes[1] == -1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonAPressed() {
+        let flag = this.keysState.get( this.keyCodeToA ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[0].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonBPressed() {
+        let flag = this.keysState.get( this.keyCodeToB ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[1].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonXPressed() {
+        let flag = this.keysState.get( this.keyCodeToX ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[2].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonYPressed() {
+        let flag = this.keysState.get( this.keyCodeToY ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[3].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+
+}
 //============================================================================
 //============================================================================
 //============================================================================
@@ -581,6 +678,8 @@ function run(time) {
 
 }
 
+
+
 //----------------------------------------------------------------------
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');    
@@ -591,15 +690,18 @@ const CELL_SIZE = 15 ;
 const WORLD_WIDTH = TOTAL_COLS*CELL_SIZE ;
 const WORLD_HEIGHT = TOTAL_ROWS*CELL_SIZE;
 let lastTime = 0 ;
-
-let world = new World() ; 
-//world.add( new MyTank(30,400,0) ) ;
-//world.add( new MyTank(300, 400, 2) ) ;
-
-//world.add( new Stone(15*10, 15*20) ) ;
-//world.add( new Stone(15*12, 15*25) ) ;
-//world.add( new Stone(15*18, 15*10) ) ;
-//world.add( new Stone(15*8, 15*30) ) ;
 let isRunning = true ;
-requestAnimationFrame(run);
+
+window.onload=function() {
+    this.world = new World() ; 
+    world.add( new MyTank(30,400, new KeyController(0) ) ) ;
+    //world.add( new MyTank(300, 400, 2) ) ;
+
+    //world.add( new Stone(15*10, 15*20) ) ;
+    //world.add( new Stone(15*12, 15*25) ) ;
+    //world.add( new Stone(15*18, 15*10) ) ;
+    //world.add( new Stone(15*8, 15*30) ) ;
+    requestAnimationFrame(run);
+}
+
 </script>
