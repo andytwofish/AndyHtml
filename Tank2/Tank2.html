@@ -454,7 +454,12 @@ class Bullet extends DrawableObject {
             this.isAlive = false ;
             return false ;
         }
+        if ( obj instanceof MyTank ) {
+            this.isAlive = false ;
+        }
         return true ;
+    }
+    touched(obj) {
     }
 }
 
