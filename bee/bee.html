@@ -380,7 +380,7 @@ class Bullet{
 }
 
 class MyTank {
-    static SHIELD_HIGHEST = 8 ;
+    static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 8 ;
     HP = MyTank.HIGHEST_HP ;
     shieldHp = 0 ;
@@ -845,7 +845,7 @@ let tanks = [] ;
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<3;i++){
+for (let i=0;i<14;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -854,7 +854,7 @@ for (let i=0;i<0;i++){
 //Tank.drawBackground () ;
 let countDown = 3000 ;
 let myTank1 = new MyTank(0) ;
-//let myTank2 = new MyTank(2) ;
+let myTank2 = new MyTank(1) ;
 let isRun = true ;
 let delayCount = 0 ;
 run() ;
@@ -876,7 +876,7 @@ function run() {
                 tanks [i].move() ;
             }
             myTank1.process() ;
-//            myTank2.process() ;
+            myTank2.process() ;
         }
     }else{
             ctx.font = "80px Arial";
