@@ -10,6 +10,13 @@
 <body>
     <canvas id="_Canvas" width="560" height="560"></canvas>
     <img id="babyTankImg" src="./icons8-alien-monster-94.png" alt="Source Image" style="display:none;">
+    <img id="M.shieldImg" src="./icons8-shield-48 2.png" alt="Source Image" style="display:none;">
+    <img id="E.shieldImg" src="./icons8-shield-48.png" alt="Source Image" style="display:none;">
+    <img id="tankImg" src="./icons8-tank-16.png" alt="Source Image" style="display:none;">
+    <img id="M.tankImg" src="./icons8-tank-top-view-50.png" alt="Source Image" style="display:none;">
+    <img id="peopleImg" src="./icons8-top-view-man-48.png" alt="Source Image" style="display:none;">
+    <img id="M.bulletImg" src="./icons8-bullet-64.png" alt="Source Image" style="display:none;">
+    <img id="E.bulletImg" src="./icons8-bullet-24.png" alt="Source Image" style="display:none;">
 </body>
 </html>
 
@@ -31,14 +38,19 @@ class ShieldTank{
     life = true ;
 
     drawCell(){
-        ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
-        ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, this.row*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
+        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        drawImg( "peopleImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 180 ) ;
+    
         if (this.shield){
+            ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
             ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row+1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col+1)*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col+2)*ShieldTank.CELL_SIZE+1, (this.row+1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
+            x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+            y = ((this.row+2)*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+            drawImg( "E.shieldImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
         }   
     }
     cleanCell(){
@@ -107,16 +119,13 @@ class ShieldTank{
         }
 //        this.cleanCell() ;
         let i = Math.floor(Math.random()*2) ;
-        if (i==0){
-            this.h = Math.floor(Math.random()*4)-1 ;
+        this.h = Math.floor(Math.random()*2) ;
+        if (this.h==0){
+            this.h=-1;
         }else{
-            this.h = Math.floor(Math.random()*2) ;
-            if (this.h==0){
-                this.h = -1 ;
-            }
+            this.h=1 ;
         }
-        if (i==0){ 
-            
+        if (i==0){
             this.row+=this.h ;
         }else{
             this.col+=this.h ;
@@ -181,7 +190,7 @@ class BabyTank{
     drawCell(){
         let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "babyTankImg", x, y, BabyTank.CELL_SIZE, BabyTank.CELL_SIZE, 0 ) ;
+        drawImg( "babyTankImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 0 ) ;
     }
 
     cleanCell(){
@@ -283,8 +292,9 @@ class Tank{
         ctx.stroke();
     }
     drawCell(){
-        ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        drawImg( "tankImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 180 ) ;
     }
     cleanCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
@@ -383,8 +393,9 @@ class Bullet{
         
     }
     drawBulletCell(){
-        ctx.fillStyle = `rgb(${ this.red },${ this.green },${ this.blue })` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
+        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        drawImg( "E.bulletImg", x, y, BabyTank.CELL_SIZE, BabyTank.CELL_SIZE, 180 ) ;
     }
     cleanBulletCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
@@ -600,10 +611,8 @@ class MyTank {
                             }
                         }
                         let l = (k-1)/2 ;
-                        for (let r=-l;r<l+1;r++){
-                            for (let c=-l;c<l+1;c++){
-                                tanks [tanks.length] = new MyBullet(this.row+r,this.col+c) ;
-                            }
+                        for (let c=-l;c<l+1;c++){
+                            tanks [tanks.length] = new MyBullet(this.row,this.col+c) ;
                         }
                         this.keyDown() ;
                         this.time = 0 ;
@@ -738,21 +747,19 @@ class MyTank {
     }
 
     drawMyCell(){
-        if (this.loaded3){
-            ctx.fillStyle = `rgb(0,${this.time},${this.time})` ;
-        }else{
-            let color = 255-(255/MyTank.HIGHEST_HP*this.HP) ;
-        ctx.fillStyle = `rgb(${color},0,0)` ;
-        }
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        drawImg( "M.tankImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 0 ) ;
         if (this.shield > 0 ){
             let color = 255-(255/MyTank.SHIELD_HIGHEST*this.shield) ;
             ctx.fillStyle = `rgb(${color},${color},${color})` ;
             ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col+1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col+2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
+            x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+            y = ((this.row-2)*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+            drawImg( "M.shieldImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 180 ) ;
         }   
     }
     cleanMyCell(){
@@ -806,8 +813,9 @@ class MyBullet{
         }
     }
     drawBulletCell(){
-        ctx.fillStyle = `rgb(0,0,0)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
+        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        drawImg( "M.bulletImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
     }
     cleanBulletCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
@@ -858,7 +866,7 @@ let tanks = [] ;
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<20;i++){
+for (let i=0;i<8;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -890,7 +898,7 @@ function run(time) {
                 tanks.splice(i--,1) ;
             }
         }  
-        ctx.fillStyle = `rgb(0,255,255)` ;
+        ctx.fillStyle = `rgb(255,255,255)` ;
         ctx.fillRect( 0 , 0 , 560 , 560 ) ;
         for (let i=0;i<tanks.length;i++){
             tanks [i].move() ;
