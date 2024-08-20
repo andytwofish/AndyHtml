@@ -169,7 +169,7 @@ class Tank extends DrawableObject {
         this.y = y ;
     }
     paint() {
-        ctx.fillStyle = `rgb(55,55,255)` ;
+        ctx.fillStyle = `rgb(55,255,55)` ;
         ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
     }
     fire() {
@@ -235,7 +235,7 @@ class Tank extends DrawableObject {
         }
     }
     moveCheck(obj) {
-        if ( obj instanceof Stone || obj instanceof Tank ) {
+        if ( obj instanceof Stone || obj instanceof Tank || obj instanceof MyTank ) {
             return false ;
         }
         return true ;
@@ -258,6 +258,7 @@ class MyTank extends DrawableObject {
     _left=15;
     _right=15;
     rotation=0;
+    hp = 9 ;
     constructor(x, y, keyController ) {
         super() ;
         this.keyController = keyController ;
@@ -265,8 +266,16 @@ class MyTank extends DrawableObject {
         this.y = y ;
     }
     paint() {
-        ctx.fillStyle = `rgb(0,255,255)` ;
+        if ( this.keyController.padIdx == 0 ) {
+            ctx.fillStyle = `rgb( 255, 100, 100)` ;
+        } else {
+            ctx.fillStyle = `rgb( 100, 100, 255)` ;
+        }
+        console.log( ctx.fillStyle ) ;
         ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
+        ctx.font = "15px Arial";
+        ctx.fillStyle = `rgb(0,0,0)` ;
+        ctx.fillText( this.hp ,this.x, this.y);
     }
     process() {
         if ( this.delayCount++ > 1 ) {
@@ -368,13 +377,17 @@ class MyTank extends DrawableObject {
     touched(obj) {
         if ( obj instanceof Bullet ) {
             if ( obj.isEnemy ) {
-                this.isAlive = false ;
-                return false ;
+                if ( this.hp-- <= 0 ) {
+                    this.isAlive = false ;
+                    return false ;
+                }
             }
         }
         if ( obj instanceof Tank ) {
-            this.isAlive = false ;
-            return false ;
+            if ( this.hp-- <= 0 ) {
+                this.isAlive = false ;
+                return false ;
+            }
         }
     }
 } 
@@ -452,11 +465,12 @@ class World {
     }
     createTank() {
         if ( this.tankLastCreateTime == 0 ) {
-            world.add( new Tank(300, 300) ) ;
             this.tankLastCreateTime = Date.now() ;
         }
-        if ( Date.now() - this.tankLastCreateTime > 3000 ) {
-            world.add( new Tank(300, 300) ) ;
+        if ( Date.now() - this.tankLastCreateTime > 2500 ) {
+            world.add( new Tank(CELL_SIZE, CELL_SIZE*2) ) ;
+            this.tankLastCreateTime = Date.now() ;
+            world.add( new Tank(WORLD_WIDTH-CELL_SIZE, CELL_SIZE*2) ) ;
             this.tankLastCreateTime = Date.now() ;
         }
     }
@@ -701,8 +715,8 @@ let isRunning = true ;
 
 window.onload=function() {
     this.world = new World() ; 
-    world.add( new MyTank(30,400, new KeyController(0) ) ) ;
-    //world.add( new MyTank(300, 400, 2) ) ;
+    world.add( new MyTank(CELL_SIZE, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(0) ) ) ;
+    world.add( new MyTank(WORLD_WIDTH-CELL_SIZE, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(2) ) ) ;
 
     //world.add( new Stone(15*10, 15*20) ) ;
     //world.add( new Stone(15*12, 15*25) ) ;
