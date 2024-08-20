@@ -267,7 +267,7 @@ class MyTank extends DrawableObject {
     _left=25;
     _right=25;
     rotation=0;
-    bulletDist = 5 ;
+    bulletDist = 20 ;
     width = this._left+ this._right ;
     height = this._top + this._bottom ;
     hp = 9 ;
@@ -414,7 +414,7 @@ class MyTank extends DrawableObject {
         if ( this.hp-- <= 0 ) {
             this.isAlive = false ;
         }
-        this.bulletDist = 5 ;
+        this.bulletDist = 20 ;
     }
     touched(obj) {
         if ( obj instanceof Bullet  ) {
