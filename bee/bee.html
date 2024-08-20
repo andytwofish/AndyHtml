@@ -426,26 +426,27 @@ class MyTank {
         document.addEventListener("keyup", this._keyUp.bind(this) );
     }
     fireBomb() {
-        if ( this.bombBeginTime === 0 ) {
+        if ( this.bombBeginTime == 0 ) {
             return ;
         }
-                    if (this.time>8){
-                        let k = 1 ;
-                        for (let z=0;z<1;z=0){
-                            if ((k*k)+30>this.time){
-                                break ;
-                            }else{
-                                k+=2 ;
-                            }
-                        }
-                        let l = (k-1)/2 ;
-                        for (let c=-l;c<l+1;c++){
-                            tanks [tanks.length] = new MyBullet(this.row,this.col+c) ;
-                        }
-                        this.keyDown() ;
-                        this.time = 0 ;
-                    }
+        let deltaTime = Date.now() - this.bombBeginTime ;  // millie seconds
+        let bombLevel = Math.round( deltaTime / 2000 ) ;
+        let rowCount = bombLevel+(bombLevel-1) ;
+        let deltaCol = 0 ;
+        for( let row=0; row<rowCount; row++ ) {
+            let colCount = Math.abs(deltaCol)*2+1  ;
+            //console.log( `${deltaCol}, ${colCount}` ) ;
+            for( let col=0; col<colCount; col++ ) {
+                tanks.push( new MyBomb( this.row-rowCount+row, this.col+deltaCol+col )) ;
+            }
+            if ( row >= bombLevel-1 ) {
+                deltaCol++ ;
+            } else {
+                deltaCol-- ;
+            }
+        }
 
+        this.bombBeginTime = 0 ;
     }
     _keyDown(event) {
         if ( event.code == "IntlRo" ) {
@@ -477,29 +478,42 @@ class MyTank {
         const gamepad = gamepads[this.gamepadIdx] ;
         if (gamepad) {
             if ( gamepad.axes[0] == 1 ) {
+                this.fireBomb();
                 this.keyRight();
             }
             if ( gamepad.axes[0] == -1 ) {
+                this.fireBomb();
                 this.keyLeft();
             }
             if ( gamepad.axes[1] == 1 ) {
+                this.fireBomb();
                 this.keyDown();
             }
             if ( gamepad.axes[1] == -1 ) {
+                this.fireBomb();
                 this.keyUp() ;
             }
             if ( gamepad.buttons[0].pressed ) {
+                this.fireBomb();
                 this.keySpace();  
             }else{
                 this.bulletCount = 0 ;//this.loaded = false ;
             }
             if ( gamepad.buttons[2].pressed ) {
+                this.fireBomb();
                 this.keyShield();  
             }else{
                 this.loaded2 = false ;
             }
             if ( gamepad.buttons[1].pressed ) {
-                this.keyMyBomb() ; 
+                if ( this.bombBeginTime == 0 ) {
+                    this.bombBeginTime = Date.now() ;
+                    console.log(this.bombBeginTime);
+                }
+            } else {
+                if ( this.bombBeginTime != 0 ) {
+                    this.fireBomb() ;
+                }
             }
         }
         for(let i=0;i<tanks.length;i++){
@@ -747,7 +761,7 @@ let tanks = [] ;
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<8;i++){
+for (let i=0;i<0;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
