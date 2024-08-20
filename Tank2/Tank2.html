@@ -372,6 +372,9 @@ class MyTank extends DrawableObject {
         if ( obj instanceof Stone ) {
             return false ;
         }
+        if ( obj instanceof MyTank ) {
+            return false ;
+        }
         return true ;
     }
     touched(obj) {
