@@ -9,6 +9,9 @@
 </head>
 <body>
   <canvas id="_Canvas" width="560" height="560"></canvas>
+  <img id="blackTank" src="./icons8-tank-top-view-100_black.png" alt="Source Image" style="display:none;">
+  <img id="redTank" src="./icons8-tank-top-view-100_red.png" alt="Source Image" style="display:none;">
+
 </body>
 </html>
 
@@ -253,11 +256,13 @@ class Tank extends DrawableObject {
 class MyTank extends DrawableObject {
     distByStep=15 ;
     delayCount=0;
-    _top=30;
-    _bottom=30;
-    _left=15;
-    _right=15;
+    _top=25;
+    _bottom=25;
+    _left=25;
+    _right=25;
     rotation=0;
+    width = this._left+ this._right ;
+    height = this._top + this._bottom ;
     hp = 9 ;
     constructor(x, y, keyController ) {
         super() ;
@@ -266,16 +271,28 @@ class MyTank extends DrawableObject {
         this.y = y ;
     }
     paint() {
+        //if ( this.keyController.padIdx == 0 ) {
+        //    ctx.fillStyle = `rgb( 255, 100, 100)` ;
+        //} else {
+        //    ctx.fillStyle = `rgb( 100, 100, 255)` ;
+        //}
+        //ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
+        //ctx.font = "15px Arial";
+        //ctx.fillStyle = `rgb(0,0,0)` ;
+        //ctx.fillText( this.hp ,this.x, this.y);
+        let tankImgObj = null ;
         if ( this.keyController.padIdx == 0 ) {
-            ctx.fillStyle = `rgb( 255, 100, 100)` ;
+            tankImgObj = document.getElementById("redTank") ;
         } else {
-            ctx.fillStyle = `rgb( 100, 100, 255)` ;
+            tankImgObj = document.getElementById("blackTank") ;
         }
-        console.log( ctx.fillStyle ) ;
-        ctx.fillRect( this.left(),  this.top(),  this.right()-this.left(),  this.bottom()-this.top() ) ;
-        ctx.font = "15px Arial";
-        ctx.fillStyle = `rgb(0,0,0)` ;
-        ctx.fillText( this.hp ,this.x, this.y);
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(( this.rotation * Math.PI) / 180);
+        ctx.translate( -this.x, -this.y);
+        ctx.drawImage(tankImgObj, this.x-this.width/2, this.y-this.height/2, this._right+this._left, this._bottom+ this._top ) ;
+        ctx.restore();
+
     }
     process() {
         if ( this.delayCount++ > 1 ) {
@@ -723,8 +740,8 @@ let isRunning = true ;
 
 window.onload=function() {
     this.world = new World() ; 
-    world.add( new MyTank(CELL_SIZE, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(0) ) ) ;
-    world.add( new MyTank(WORLD_WIDTH-CELL_SIZE, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(1) ) ) ;
+    world.add( new MyTank(CELL_SIZE*2, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(0) ) ) ;
+    world.add( new MyTank(WORLD_WIDTH-CELL_SIZE*2, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(1) ) ) ;
 
     //world.add( new Stone(15*10, 15*20) ) ;
     //world.add( new Stone(15*12, 15*25) ) ;
