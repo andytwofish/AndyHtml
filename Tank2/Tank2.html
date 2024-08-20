@@ -11,7 +11,8 @@
   <canvas id="_Canvas" width="560" height="560"></canvas>
   <img id="blackTank" src="./icons8-tank-top-view-100_black.png" alt="Source Image" style="display:none;">
   <img id="redTank" src="./icons8-tank-top-view-100_red.png" alt="Source Image" style="display:none;">
-
+  <BR>
+  <DIV id="bottomPanel"></DIV>
 </body>
 </html>
 
@@ -246,6 +247,10 @@ class Tank extends DrawableObject {
     touched(obj) {
         if ( obj instanceof Bullet ) {
             if ( !obj.isEnemy) {
+                MyTank.tanks[obj.tankId].score++ ;
+                if ( MyTank.tanks[obj.tankId].bulletDist < 50 ) {
+                    MyTank.tanks[obj.tankId].bulletDist++;
+                }
                 this.isAlive = false ;
                 return false ;
             }
@@ -254,6 +259,10 @@ class Tank extends DrawableObject {
 }
 
 class MyTank extends DrawableObject {
+    static totalTanks = 0 ;
+    static tanks = [] ;
+    tankId = 0 ;
+    score=0;
     distByStep=15 ;
     delayCount=0;
     _top=25;
@@ -261,14 +270,18 @@ class MyTank extends DrawableObject {
     _left=25;
     _right=25;
     rotation=0;
+    bulletDist = 5 ;
     width = this._left+ this._right ;
     height = this._top + this._bottom ;
     hp = 9 ;
-    constructor(x, y, keyController ) {
+    constructor(x, y, keyController, playerNum ) {
         super() ;
+        MyTank.tanks.push( this ) ;
+        this.tankId = MyTank.totalTanks++ ;
         this.keyController = keyController ;
         this.x = x ;
         this.y = y ;
+        this.playerNum = playerNum ;
     }
     paint() {
         //if ( this.keyController.padIdx == 0 ) {
@@ -356,16 +369,16 @@ class MyTank extends DrawableObject {
     keySpace() {
         switch( this.rotation ) {
             case 0:
-                world.add( new Bullet(this.x,this.top()-10, this.rotation, false) );
+                world.add( new Bullet(this.x,this.top()-10, this.rotation, false, this.tankId, this.bulletDist) );
                 break;
             case 90:
-                world.add( new Bullet(this.right()+10,this.y, this.rotation, false) );
+                world.add( new Bullet(this.right()+10,this.y, this.rotation, false, this.tankId, this.bulletDist) );
                 break;
             case 180:
-                world.add( new Bullet(this.x,this.bottom()+10, this.rotation, false) );
+                world.add( new Bullet(this.x,this.bottom()+10, this.rotation, false, this.tankId, this.bulletDist) );
                 break;
             case 270:
-                world.add( new Bullet(this.left()-10,this.y, this.rotation, false) );
+                world.add( new Bullet(this.left()-10,this.y, this.rotation, false, this.tankId, this.bulletDist) );
                 break;
         }
     }
@@ -416,17 +429,20 @@ class MyTank extends DrawableObject {
 
 class Bullet extends DrawableObject {
     dist = 20 ;
+    tankId = -1 ;
     _top=5;
     _bottom=5;
     _left=3;
     _right=3;
     isEnemy=false ;
-    constructor(x,y,rotation, isEnemy) {
+    constructor(x,y,rotation, isEnemy, tankId, dist) {
         super();
         this.x = x ;
         this.y = y ;
         this.rotation = rotation ;
         this.isEnemy = isEnemy ;
+        this.tankId = tankId ;
+        this.dist = dist ;
     }
     
     process() {
@@ -741,7 +757,7 @@ let isRunning = true ;
 window.onload=function() {
     this.world = new World() ; 
     world.add( new MyTank(CELL_SIZE*2, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(0) ) ) ;
-    world.add( new MyTank(WORLD_WIDTH-CELL_SIZE*2, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(1) ) ) ;
+    world.add( new MyTank(WORLD_WIDTH-CELL_SIZE*2, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(1) ) );
 
     //world.add( new Stone(15*10, 15*20) ) ;
     //world.add( new Stone(15*12, 15*25) ) ;
