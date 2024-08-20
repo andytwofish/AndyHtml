@@ -8,7 +8,8 @@
   </style>
 </head>
 <body>
-  <canvas id="_Canvas" width="560" height="560"></canvas>
+    <canvas id="_Canvas" width="560" height="560"></canvas>
+    <img id="babyTankImg" src="./icons8-alien-monster-94.png" alt="Source Image" style="display:none;">
 </body>
 </html>
 
@@ -157,6 +158,16 @@ class ShieldTank{
 }
 
 
+function drawImg(imgId, x, y, width, height, rotation) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(( rotation * Math.PI) / 180);
+        ctx.translate( -x, -y);
+        let imgObj = document.getElementById( imgId) ;
+        ctx.drawImage(imgObj, x-width/2, y-height/2, width, height ) ;
+        ctx.restore();    
+}
+
 class BabyTank{
     static CELL_SIZE = 14 ;
     h = 0 ;
@@ -168,9 +179,11 @@ class BabyTank{
     life = true ;
 
     drawCell(){
-        ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
-        ctx.fillRect( this.col*BabyTank.CELL_SIZE+1, this.row*BabyTank.CELL_SIZE+1, BabyTank.CELL_SIZE-2, BabyTank.CELL_SIZE-2 ) ;
+        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        drawImg( "babyTankImg", x, y, BabyTank.CELL_SIZE, BabyTank.CELL_SIZE, 0 ) ;
     }
+
     cleanCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
         ctx.fillRect( this.col*BabyTank.CELL_SIZE+1, this.row*BabyTank.CELL_SIZE+1,BabyTank.CELL_SIZE-2, BabyTank.CELL_SIZE-2 ) ;
@@ -856,47 +869,47 @@ let countDown = 3000 ;
 let myTank1 = new MyTank(0) ;
 let myTank2 = new MyTank(1) ;
 let isRun = true ;
-let delayCount = 0 ;
-run() ;
+let lastTime = 0 ;
 
-function run() {
+function run(time) {
+    if (lastTime === 0) {
+        lastTime = time;
+    }
+
+    // 計算自上次更新以來經過的時間
+    const deltaTime = time - lastTime
+    if ( deltaTime < 50 ) {
+        requestAnimationFrame(run);
+        return ;
+    }
+    lastTime = time ;
+
     if (isRun){
-//        console.log(tanks.length) ;
-        if ( delayCount++ > 5 ) {
-            delayCount=0;
-            for (let i=0;i<tanks.length;i++){
-                if (!tanks [i].life ){
-                    tanks.splice(i--,1) ;
-                }
-            }  
-            ctx.fillStyle = `rgb(0,255,255)` ;
-            ctx.fillRect( 0 , 0 , 560 , 560 ) ;
-//            Tank.drawBackground () ;     
-            for (let i=0;i<tanks.length;i++){
-                tanks [i].move() ;
+        for (let i=0;i<tanks.length;i++){
+            if (!tanks [i].life ){
+                tanks.splice(i--,1) ;
             }
-            myTank1.process() ;
-            myTank2.process() ;
+        }  
+        ctx.fillStyle = `rgb(0,255,255)` ;
+        ctx.fillRect( 0 , 0 , 560 , 560 ) ;
+        for (let i=0;i<tanks.length;i++){
+            tanks [i].move() ;
         }
+        myTank1.process() ;
+        myTank2.process() ;
     }else{
-            ctx.font = "80px Arial";
-            ctx.fillText("GAME OVER",20,350);
+        ctx.font = "80px Arial";
+        ctx.fillText("GAME OVER",20,350);
     }
     if (tanks.length==0){
         ctx.font = "200px Arial";
         ctx.fillText("WIN",50,350 );
     }
-    //myTank.cleanMyCell () ;
-    //myTank.drawMyCell () ;
-    //if ( --countDown > 0 ) {
-        requestAnimationFrame(run);
-    //}
+    requestAnimationFrame(run);
 }
 
-function process2() {
-
- 
+window.onload=function() {
+    requestAnimationFrame(run);
 }
-requestAnimationFrame(run);
 
 </script>
