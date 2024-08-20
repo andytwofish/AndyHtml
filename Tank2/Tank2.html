@@ -179,16 +179,16 @@ class Tank extends DrawableObject {
     fire() {
         switch( this.rotation ) {
             case 0:
-                world.add( new Bullet(this.x,this.top()-10, this.rotation, true) );
+                world.add( new Bullet(this.x,this.top()-10, this.rotation, true, -1, 20 ) );
                 break;
             case 90:
-                world.add( new Bullet(this.right()+10,this.y, this.rotation, true) );
+                world.add( new Bullet(this.right()+10,this.y, this.rotation, true, -1, 20) );
                 break;
             case 180:
-                world.add( new Bullet(this.x,this.bottom()+10, this.rotation, true) );
+                world.add( new Bullet(this.x,this.bottom()+10, this.rotation, true, -1, 20) );
                 break;
             case 270:
-                world.add( new Bullet(this.left()-10,this.y, this.rotation, true) );
+                world.add( new Bullet(this.left()-10,this.y, this.rotation, true, -1, 20) );
                 break;
         }
     }
@@ -247,10 +247,7 @@ class Tank extends DrawableObject {
     touched(obj) {
         if ( obj instanceof Bullet ) {
             if ( !obj.isEnemy) {
-                MyTank.tanks[obj.tankId].score++ ;
-                if ( MyTank.tanks[obj.tankId].bulletDist < 50 ) {
-                    MyTank.tanks[obj.tankId].bulletDist++;
-                }
+                MyTank.tanks[obj.tankId].addScore(1) ;
                 this.isAlive = false ;
                 return false ;
             }
@@ -330,6 +327,12 @@ class MyTank extends DrawableObject {
             }
         }
     }
+    addScore(score) {
+        this.score+=score ;
+        if ( this.bulletDist < 50 ) {
+            this.bulletDist++;
+        }
+    }
     keyUp() {
         if ( this.rotation == 0 ) {
             if ( this.top()-this.distByStep >= 0 ) {
@@ -407,20 +410,20 @@ class MyTank extends DrawableObject {
         }
         return true ;
     }
+    onHit() {
+        if ( this.hp-- <= 0 ) {
+            this.isAlive = false ;
+        }
+        this.bulletDist = 5 ;
+    }
     touched(obj) {
-        if ( obj instanceof Bullet ) {
+        if ( obj instanceof Bullet  ) {
             if ( obj.isEnemy ) {
-                if ( this.hp-- <= 0 ) {
-                    this.isAlive = false ;
-                    return false ;
-                }
+                this.onHit() ;
             }
         }
         if ( obj instanceof Tank ) {
-            if ( this.hp-- <= 0 ) {
-                this.isAlive = false ;
-                return false ;
-            }
+            this.onHit() ;
         }
     }
 } 
