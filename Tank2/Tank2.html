@@ -454,7 +454,12 @@ class Bullet extends DrawableObject {
             this.isAlive = false ;
             return false ;
         }
+        if ( obj instanceof MyTank ) {
+            this.isAlive = false ;
+        }
         return true ;
+    }
+    touched(obj) {
     }
 }
 
@@ -716,7 +721,7 @@ let isRunning = true ;
 window.onload=function() {
     this.world = new World() ; 
     world.add( new MyTank(CELL_SIZE, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(0) ) ) ;
-    world.add( new MyTank(WORLD_WIDTH-CELL_SIZE, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(2) ) ) ;
+    world.add( new MyTank(WORLD_WIDTH-CELL_SIZE*2, WORLD_HEIGHT-CELL_SIZE*2, new KeyController(2) ) ) ;
 
     //world.add( new Stone(15*10, 15*20) ) ;
     //world.add( new Stone(15*12, 15*25) ) ;
