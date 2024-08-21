@@ -54,15 +54,6 @@ class ShieldTank{
             drawImg( "E.shieldImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
         }   
     }
-    cleanCell(){
-        ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, this.row*ShieldTank.CELL_SIZE+1,ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-        ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row+1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-        ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-        ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-        ctx.fillRect( (this.col+1)*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-        ctx.fillRect( (this.col+2)*ShieldTank.CELL_SIZE+1, (this.row+1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-    }
 
 
     //傳入被攻的位置，
@@ -193,13 +184,6 @@ class BabyTank{
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         drawImg( "babyTankImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 0 ) ;
     }
-
-    cleanCell(){
-        ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*BabyTank.CELL_SIZE+1, this.row*BabyTank.CELL_SIZE+1,BabyTank.CELL_SIZE-2, BabyTank.CELL_SIZE-2 ) ;
-    }
-
-
     //傳入被攻的位置，
     //傳出boolean  true:有打到  false:沒打到
     attack( row, col ) {
@@ -297,11 +281,6 @@ class Tank{
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         drawImg( "tankImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 180 ) ;
     }
-    cleanCell(){
-        ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
-    }
-
     //傳入被攻的位置，
     //傳出boolean  true:有打到  false:沒打到
     attack( row, col ) {
@@ -397,10 +376,6 @@ class Bullet{
         let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         drawImg( "M.bulletImg", x, y, BabyTank.CELL_SIZE, BabyTank.CELL_SIZE, 180 ) ;
-    }
-    cleanBulletCell(){
-        ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
     }
 }
 
@@ -661,17 +636,6 @@ class MyTank {
             drawImg( "M.shieldImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 180 ) ;
         }   
     }
-    cleanMyCell(){
-        ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
-        if (this.shield > 0 ){
-            ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( this.col*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-        }   
-    }
 }
 
 class MyBullet{
@@ -716,10 +680,6 @@ class MyBullet{
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         drawImg( "lightImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
     }
-    cleanBulletCell(){
-        ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
-    }
 }
 class MyBomb{
     row = 0 ;
@@ -755,10 +715,6 @@ class MyBomb{
     drawBulletCell(){
 //        ctx.fillStyle = `rgb(0,240,240)` ;
 //        ctx.fillRect( this.col*Tank.CELL_SIZE, this.row*Tank.CELL_SIZE, Tank.CELL_SIZE, Tank.CELL_SIZE ) ;
-    }
-    cleanBulletCell(){
-        ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE, this.row*Tank.CELL_SIZE, Tank.CELL_SIZE, Tank.CELL_SIZE ) ;
     }
 }
 class Light extends MyBomb{
