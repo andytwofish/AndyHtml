@@ -13,10 +13,11 @@
     <img id="M.shieldImg" src="./icons8-shield-48 2.png" alt="Source Image" style="display:none;">
     <img id="E.shieldImg" src="./icons8-shield-48.png" alt="Source Image" style="display:none;">
     <img id="tankImg" src="./icons8-tank-16.png" alt="Source Image" style="display:none;">
-    <img id="M.tankImg" src="./icons8-tank-top-view-50.png" alt="Source Image" style="display:none;">
-    <img id="peopleImg" src="./icons8-top-view-man-48.png" alt="Source Image" style="display:none;">
+    <img id="M.tankImg" src="./icons8-tank-top-view-50 1.png" alt="Source Image" style="display:none;">
+    <img id="peopleImg" src="./icons8-top-view-man-48 1.png" alt="Source Image" style="display:none;">
     <img id="M.bulletImg" src="./icons8-bullet-64.png" alt="Source Image" style="display:none;">
     <img id="E.bulletImg" src="./icons8-bullet-24.png" alt="Source Image" style="display:none;">
+    <img id="lightImg" src="./—Pngtree—light effect of lightning blue_6183369.png" alt="Source Image" style="display:none;">
 </body>
 </html>
 
@@ -395,7 +396,7 @@ class Bullet{
     drawBulletCell(){
         let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "E.bulletImg", x, y, BabyTank.CELL_SIZE, BabyTank.CELL_SIZE, 180 ) ;
+        drawImg( "M.bulletImg", x, y, BabyTank.CELL_SIZE, BabyTank.CELL_SIZE, 180 ) ;
     }
     cleanBulletCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
@@ -433,6 +434,7 @@ class MyTank {
         let bombLevel = Math.round( deltaTime / 2000 ) ;
         let rowCount = bombLevel+(bombLevel-1) ;
         let deltaCol = 0 ;
+
         for( let row=0; row<rowCount; row++ ) {
             let colCount = Math.abs(deltaCol)*2+1  ;
             //console.log( `${deltaCol}, ${colCount}` ) ;
@@ -445,7 +447,9 @@ class MyTank {
                 deltaCol-- ;
             }
         }
-
+        if (bombLevel>1){
+            tanks.push( new Light( this.row-((rowCount+1)/2) , this.col , rowCount*BabyTank.CELL_SIZE , rowCount*BabyTank.CELL_SIZE )) ;
+        }
         this.bombBeginTime = 0 ;
     }
     _keyDown(event) {
@@ -646,7 +650,7 @@ class MyTank {
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         drawImg( "M.tankImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 0 ) ;
         if (this.shield > 0 ){
-            let color = 255-(255/MyTank.SHIELD_HIGHEST*this.shield) ;
+            let color = 255/MyTank.SHIELD_HIGHEST*this.shield ;
             ctx.fillStyle = `rgb(${color},${color},${color})` ;
             ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
@@ -694,7 +698,7 @@ class MyBullet{
 //            setTimeout( this.move.bind(this), 20 ) ;
     
         for (let i=0;i<tanks.length;i++){
-            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)){
+            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)&& !(tanks[i] instanceof  Light)){
                 if ( tanks[i].attack( this.row, this.col ) ) {
                     this.life = false ;
                     return ;
@@ -710,7 +714,7 @@ class MyBullet{
     drawBulletCell(){
         let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "M.bulletImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
+        drawImg( "lightImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
     }
     cleanBulletCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
@@ -724,7 +728,6 @@ class MyBomb{
     constructor(row,col) {
         this.row = row ;
         this.col = col ;
-        this.move();
     }
     
     move(){
@@ -737,10 +740,12 @@ class MyBomb{
         }
         this.drawBulletCell() ;
         for (let i=0;i<tanks.length;i++){
-            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet) && !(tanks[i] instanceof MyBomb)){
+            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet) && !(tanks[i] instanceof MyBomb)&& !(tanks[i] instanceof  Light)){
                 if ( tanks[i].attack( this.row, this.col ) ) {
+                    if (!tanks[i] instanceof Light ){
                     this.life = false ;
                     return ;
+                    }
                 } 
             }
         }
@@ -748,20 +753,57 @@ class MyBomb{
         
     }
     drawBulletCell(){
-        ctx.fillStyle = `rgb(0,0,0)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+4, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-8, Tank.CELL_SIZE-2 ) ;
-//        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+//        ctx.fillStyle = `rgb(0,240,240)` ;
+//        ctx.fillRect( this.col*Tank.CELL_SIZE, this.row*Tank.CELL_SIZE, Tank.CELL_SIZE, Tank.CELL_SIZE ) ;
     }
     cleanBulletCell(){
         ctx.fillStyle = `rgb(255,255,255)` ;
-        ctx.fillRect( this.col*Tank.CELL_SIZE+1, this.row*Tank.CELL_SIZE+1, Tank.CELL_SIZE-2, Tank.CELL_SIZE-2 ) ;
+        ctx.fillRect( this.col*Tank.CELL_SIZE, this.row*Tank.CELL_SIZE, Tank.CELL_SIZE, Tank.CELL_SIZE ) ;
+    }
+}
+class Light extends MyBomb{
+    rotation = 0 ;
+    constructor(row,col,width,height) {
+        super(row,col) ;
+        this.width=width ;
+        this.height = height ;
+    }
+    move(){
+        if ( !this.life ) {
+            return ;
+        }
+        this.row-=1 ;
+        if ((this.row+((this.height+1)/2))<0){
+            this.life=false ; 
+        }
+        this.drawBulletCell() ;
+        for (let i=0;i<tanks.length;i++){
+            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet) && !(tanks[i] instanceof MyBomb)&& !(tanks[i] instanceof  Light)){
+                if ( tanks[i].attack( this.row, this.col ) ) {
+                    if (!tanks[i] instanceof Light ){
+                    this.life = false ;
+                    return ;
+                    }
+                } 
+            }
+        }
+        
+        
+    }
+    drawBulletCell(){
+        console.log(this.row);
+        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        drawImg( "lightImg", x, y, this.width*5/4, this.height*5/4, this.rotation ) ;
+        console.log(`${this.width},${this.width}`);
+        this.rotation+= 20 ;
     }
 }
 let tanks = [] ; 
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<0;i++){
+for (let i=0;i<8;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -793,7 +835,7 @@ function run(time) {
                 tanks.splice(i--,1) ;
             }
         }  
-        ctx.fillStyle = `rgb(255,255,255)` ;
+        ctx.fillStyle = `rgb(0,0,0)` ;
         ctx.fillRect( 0 , 0 , 560 , 560 ) ;
         for (let i=0;i<tanks.length;i++){
             tanks [i].move() ;
