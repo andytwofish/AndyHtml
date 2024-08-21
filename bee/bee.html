@@ -400,6 +400,19 @@ class MyTank {
         this.gamepadIdx = gamepadIdx ;
         document.addEventListener("keydown", this._keyDown.bind(this) );
         document.addEventListener("keyup", this._keyUp.bind(this) );
+        this.audio = document.createElement("audio");
+        this.bombAudio = document.createElement("audio");
+        this.bulletAudio = document.createElement("audio");
+    }
+    attacked() {
+        this.audio.src = "y1491.mp3";
+        this.audio.play();
+        this.HP-- ;
+        if(this.HP<=0){
+            isRun = false ;
+            this.life = false ;
+            //tanks.splice(i,1) ;
+        }
     }
     fireBomb() {
         if ( this.bombBeginTime == 0 ) {
@@ -424,6 +437,9 @@ class MyTank {
         }
         if (bombLevel>1){
             tanks.push( new Light( this.row-((rowCount+1)/2) , this.col , rowCount*BabyTank.CELL_SIZE , rowCount*BabyTank.CELL_SIZE )) ;
+        } else {
+            this.bombAudio.src = "y2134.mp3";
+            this.bombAudio.play();
         }
         this.bombBeginTime = 0 ;
     }
@@ -498,16 +514,10 @@ class MyTank {
         for(let i=0;i<tanks.length;i++){
             if (tanks[i] instanceof Bullet ){
                 if ( this.row==tanks[i].row&&this.col==tanks[i].col ){
-                    this.HP -=1 ;
+                    this.attacked() ;
                     this.time = 0
                     this.keyDown() ;
                     tanks.splice(i,1) ;
-                    if(this.HP<=0){
-                        isRun = false ;
-                        this.life = false ;
-                        tanks.splice(i,1) ;
-                        return ;
-                    }
                 }
                 if ( this.shield > 0 ){
                     if ( (this.row-1)==tanks[i].row&&(this.col-2)==tanks[i].col ){
@@ -580,6 +590,10 @@ class MyTank {
             if ( this.shield <= 0 ) {
                 this.bulletCount = 5 ;
                 tanks [tanks.length] = new MyBullet(this.row,this.col) ;
+                this.bulletAudio.src = "y2134.mp3";
+                this.bulletAudio.pause(); 
+                this.bulletAudio.currentTime = 0;
+                this.bulletAudio.play();
             }
         }
     }
@@ -767,8 +781,7 @@ for (let i=0;i<0;i++){
 }
 //Tank.drawBackground () ;
 let countDown = 3000 ;
-let myTank1 = new MyTank(0) ;
-let myTank2 = new MyTank(1) ;
+
 let isRun = true ;
 let lastTime = 0 ;
 
@@ -810,6 +823,8 @@ function run(time) {
 }
 
 window.onload=function() {
+    this.myTank1 = new MyTank(0) ;
+    this.myTank2 = new MyTank(1) ;
     requestAnimationFrame(run);
 }
 
