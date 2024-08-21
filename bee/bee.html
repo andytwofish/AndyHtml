@@ -37,7 +37,7 @@ class ShieldTank{
     green = 100 ;
     blue = 0 ;
     life = true ;
-
+    lastMoveTime = 0 ;
     drawCell(){
         let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
         let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
@@ -110,18 +110,20 @@ class ShieldTank{
         }else{
             this.shieldGenerated+=1 ;
         }
-//        this.cleanCell() ;
-        let i = Math.floor(Math.random()*2) ;
-        this.h = Math.floor(Math.random()*2) ;
-        if (this.h==0){
-            this.h=-1;
-        }else{
-            this.h=1 ;
-        }
-        if (i==0){
-            this.row+=this.h ;
-        }else{
-            this.col+=this.h ;
+        if ( Date.now() - this.lastMoveTime > 500 ) {
+            let i = Math.floor(Math.random()*2) ;
+            this.h = Math.floor(Math.random()*2) ;
+            if (this.h==0){
+                this.h=-1;
+            }else{
+                this.h=1 ;
+            }
+            if (i==0){
+                this.row+=this.h ;
+            }else{
+                this.col+=this.h ;
+            }
+            this.lastMoveTime = Date.now() ;
         }
         if (this.row<0){
             this.row = 0  ;
@@ -398,7 +400,7 @@ class MyTank {
     shield = 0 ;
     bulletCount = 0 ;
     bombBeginTime = 0 ; 
-
+    lastBulletTime = 0 ;
     constructor(row, col, keyController ) {
         this.tankId = MyTank.totalTanks++ ;
         this.keyController = keyController ;
@@ -587,11 +589,14 @@ class MyTank {
     }
     keySpace() {
         if ( this.shield <= 0 ) {
-            tanks [tanks.length] = new MyBullet(this.row,this.col) ;
-            this.bulletAudio.src = "y2271.mp3";
-            this.bulletAudio.pause(); 
-            this.bulletAudio.currentTime = 0;
-            this.bulletAudio.play();
+            if ( Date.now() - this.lastBulletTime > 300 ) {
+                tanks [tanks.length] = new MyBullet(this.row,this.col) ;
+                this.bulletAudio.src = "y2271.mp3";
+                this.bulletAudio.pause(); 
+                this.bulletAudio.currentTime = 0;
+                this.bulletAudio.play();
+                this.lastBulletTime = Date.now() ;
+            }
         }
     }
     keyShield() {
