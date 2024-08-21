@@ -438,7 +438,7 @@ class MyTank {
         if (bombLevel>1){
             tanks.push( new Light( this.row-((rowCount+1)/2) , this.col , rowCount*BabyTank.CELL_SIZE , rowCount*BabyTank.CELL_SIZE )) ;
         } else {
-            this.bombAudio.src = "y2134.mp3";
+            this.bombAudio.src = "y2271.mp3";
             this.bombAudio.play();
         }
         this.bombBeginTime = 0 ;
@@ -590,7 +590,7 @@ class MyTank {
             if ( this.shield <= 0 ) {
                 this.bulletCount = 5 ;
                 tanks [tanks.length] = new MyBullet(this.row,this.col) ;
-                this.bulletAudio.src = "y2134.mp3";
+                this.bulletAudio.src = "y2271.mp3";
                 this.bulletAudio.pause(); 
                 this.bulletAudio.currentTime = 0;
                 this.bulletAudio.play();
