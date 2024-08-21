@@ -271,14 +271,13 @@ class MyTank extends DrawableObject {
     width = this._left+ this._right ;
     height = this._top + this._bottom ;
     hp = 9 ;
-    constructor(x, y, keyController, playerNum ) {
+    constructor(x, y, keyController ) {
         super() ;
         MyTank.tanks.push( this ) ;
         this.tankId = MyTank.totalTanks++ ;
         this.keyController = keyController ;
         this.x = x ;
         this.y = y ;
-        this.playerNum = playerNum ;
     }
     paint() {
         //if ( this.keyController.padIdx == 0 ) {

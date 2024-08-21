@@ -60,7 +60,7 @@ class ShieldTank{
     //傳出boolean  true:有打到  false:沒打到
     attack( row, col ) {
         if (this.shield){
-            console.log(`${this.row}, ${this.col}`) ;
+            //console.log(`${row}, ${col}, ${this.row}, ${this.col}`) ;
             if ( row==this.row+1&&col==this.col-2 ){
                 this.shield = false ;
                 if (this.row>0){
@@ -97,7 +97,6 @@ class ShieldTank{
                 return true;
             }
         }
-        console.log('non attacted') ;
         if ( row==this.row&&col==this.col ){
             this.life = false ;
             return true;
@@ -382,6 +381,7 @@ class Bullet{
 }
 
 class MyTank {
+    static totalTanks = 0 ;
     static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 8 ;
     HP = MyTank.HIGHEST_HP ;
@@ -398,10 +398,12 @@ class MyTank {
     shield = 0 ;
     bulletCount = 0 ;
     bombBeginTime = 0 ; 
-    constructor(gamepadIdx) {
-        this.gamepadIdx = gamepadIdx ;
-        document.addEventListener("keydown", this._keyDown.bind(this) );
-        document.addEventListener("keyup", this._keyUp.bind(this) );
+
+    constructor(row, col, keyController ) {
+        this.tankId = MyTank.totalTanks++ ;
+        this.keyController = keyController ;
+        this.row = row ;
+        this.col = col ;
         this.audio = document.createElement("audio");
         this.bombAudio = document.createElement("audio");
         this.bulletAudio = document.createElement("audio");
@@ -471,46 +473,42 @@ class MyTank {
         this.loaded2 = false ;
     }
     process() {
-        const gamepads = navigator.getGamepads();
-        const gamepad = gamepads[this.gamepadIdx] ;
-        if (gamepad) {
-            if ( gamepad.axes[0] == 1 ) {
-                this.fireBomb();
-                this.keyRight();
+        if ( this.keyController.isArrowRightPressed() ) {
+            this.fireBomb();
+            this.keyRight();
+        }
+        if ( this.keyController.isArrowLeftPressed() ) {
+            this.fireBomb();
+            this.keyLeft();
+        }
+        if ( this.keyController.isArrowDownPressed() ) {
+            this.fireBomb();
+            this.keyDown();
+        }
+        if ( this.keyController.isArrowUpPressed()) {
+            this.fireBomb();
+            this.keyUp() ;
+        }
+        if ( this.keyController.isButtonAPressed() ) {
+            this.fireBomb();
+            this.keySpace();  
+        }else{
+            this.bulletCount = 0 ;//this.loaded = false ;
+        }
+        if ( this.keyController.isButtonXPressed() ) {
+            this.fireBomb();
+            this.keyShield();  
+        }else{
+            this.loaded2 = false ;
+        }
+        if ( this.keyController.isButtonBPressed() ) {
+            if ( this.bombBeginTime == 0 ) {
+                this.bombBeginTime = Date.now() ;
+                console.log(this.bombBeginTime);
             }
-            if ( gamepad.axes[0] == -1 ) {
-                this.fireBomb();
-                this.keyLeft();
-            }
-            if ( gamepad.axes[1] == 1 ) {
-                this.fireBomb();
-                this.keyDown();
-            }
-            if ( gamepad.axes[1] == -1 ) {
-                this.fireBomb();
-                this.keyUp() ;
-            }
-            if ( gamepad.buttons[0].pressed ) {
-                this.fireBomb();
-                this.keySpace();  
-            }else{
-                this.bulletCount = 0 ;//this.loaded = false ;
-            }
-            if ( gamepad.buttons[2].pressed ) {
-                this.fireBomb();
-                this.keyShield();  
-            }else{
-                this.loaded2 = false ;
-            }
-            if ( gamepad.buttons[1].pressed ) {
-                if ( this.bombBeginTime == 0 ) {
-                    this.bombBeginTime = Date.now() ;
-                    console.log(this.bombBeginTime);
-                }
-            } else {
-                if ( this.bombBeginTime != 0 ) {
-                    this.fireBomb() ;
-                }
+        } else {
+            if ( this.bombBeginTime != 0 ) {
+                this.fireBomb() ;
             }
         }
         for(let i=0;i<tanks.length;i++){
@@ -588,15 +586,12 @@ class MyTank {
         }
     }
     keySpace() {
-        if ( this.bulletCount-- < 0 ) {
-            if ( this.shield <= 0 ) {
-                this.bulletCount = 5 ;
-                tanks [tanks.length] = new MyBullet(this.row,this.col) ;
-                this.bulletAudio.src = "y2271.mp3";
-                this.bulletAudio.pause(); 
-                this.bulletAudio.currentTime = 0;
-                this.bulletAudio.play();
-            }
+        if ( this.shield <= 0 ) {
+            tanks [tanks.length] = new MyBullet(this.row,this.col) ;
+            this.bulletAudio.src = "y2271.mp3";
+            this.bulletAudio.pause(); 
+            this.bulletAudio.currentTime = 0;
+            this.bulletAudio.play();
         }
     }
     keyShield() {
@@ -661,7 +656,7 @@ class MyBullet{
     constructor(row,col) {
         this.row = row ;
         this.col = col ;
-        this.move();
+        console.log('=======');
     }
     
     move(){
@@ -679,8 +674,8 @@ class MyBullet{
         for (let i=0;i<tanks.length;i++){
             //if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)&& !(tanks[i] instanceof  Light)){
                 if ( tanks[i] instanceof ShieldTank ) {        
-                    console.log(`MyBullet ${this.row},${this.col}`);
                     if ( tanks[i].attack( this.row, this.col ) ) {
+                        console.log('--------------------中');
                         this.life = false ;
                         return ;
                     } 
@@ -773,6 +768,116 @@ class Light extends MyBomb{
         this.rotation+= 20 ;
     }
 }
+
+class KeyController {
+    keysState = new Map() ;
+    keyCodeToX = "" ;
+    keyCodeToA = "" ;
+    keyCodeToB = "" ;
+    keyCodeToY = "" ;
+    constructor( padIdx ) {
+        document.addEventListener("keydown", this._keyDown.bind(this) );
+        document.addEventListener("keyup", this._keyUp.bind(this) );
+        this.padIdx = padIdx ;
+    }
+    _keyDown(event) {
+        this.keysState.set( event.code, true ) ;
+    }
+    _keyUp(event){
+        this.keysState.set( event.code, false ) ;
+    }
+    isArrowLeftPressed() {
+        let flag = this.keysState.get( "ArrowLeft" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if ( gamepad != null && gamepad.axes[0] == -1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isArrowRightPressed() {
+        let flag = this.keysState.get( "ArrowRight" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if ( gamepad != null &&  gamepad.axes[0] == 1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isArrowDownPressed() {
+        let flag = this.keysState.get( "ArrowDown" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.axes[1] == 1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isArrowUpPressed() {
+        let flag = this.keysState.get( "ArrowUp" ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.axes[1] == -1 ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonAPressed() {
+        let flag = this.keysState.get( this.keyCodeToA ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[0].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonBPressed() {
+        let flag = this.keysState.get( this.keyCodeToB ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[1].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonXPressed() {
+        let flag = this.keysState.get( this.keyCodeToX ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[2].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+    isButtonYPressed() {
+        let flag = this.keysState.get( this.keyCodeToY ) ;
+        if ( flag != null && flag == true ) {
+            return true ;
+        }
+        let gamepad = navigator.getGamepads()[this.padIdx] ;
+        if (  gamepad != null && gamepad.buttons[3].pressed ) {
+            return true ;
+        }
+        return false ;
+    }
+
+}
+//=============================================
+
 let tanks = [] ; 
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
@@ -827,8 +932,8 @@ function run(time) {
 }
 
 window.onload=function() {
-    this.myTank1 = new MyTank(0) ;
-    this.myTank2 = new MyTank(1) ;
+    this.myTank1 = new MyTank(30, 20, new KeyController(0) );
+    this.myTank2 = new MyTank(30, 20, new KeyController(1) );
     requestAnimationFrame(run);
 }
 
