@@ -60,6 +60,7 @@ class ShieldTank{
     //傳出boolean  true:有打到  false:沒打到
     attack( row, col ) {
         if (this.shield){
+            console.log(`${this.row}, ${this.col}`) ;
             if ( row==this.row+1&&col==this.col-2 ){
                 this.shield = false ;
                 if (this.row>0){
@@ -96,6 +97,7 @@ class ShieldTank{
                 return true;
             }
         }
+        console.log('non attacted') ;
         if ( row==this.row&&col==this.col ){
             this.life = false ;
             return true;
@@ -674,14 +676,16 @@ class MyBullet{
 
         this.drawBulletCell() ;
 //            setTimeout( this.move.bind(this), 20 ) ;
-    
         for (let i=0;i<tanks.length;i++){
-            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)&& !(tanks[i] instanceof  Light)){
-                if ( tanks[i].attack( this.row, this.col ) ) {
-                    this.life = false ;
-                    return ;
-                } 
-            }
+            //if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)&& !(tanks[i] instanceof  Light)){
+                if ( tanks[i] instanceof ShieldTank ) {        
+                    console.log(`MyBullet ${this.row},${this.col}`);
+                    if ( tanks[i].attack( this.row, this.col ) ) {
+                        this.life = false ;
+                        return ;
+                    } 
+                }
+            //}
             // if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
             //     tanks.splice(i,1) ;
             //     this.life = false ;
@@ -773,10 +777,10 @@ let tanks = [] ;
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<8;i++){
+for (let i=0;i<0;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
-for (let i=0;i<0;i++){
+for (let i=0;i<1;i++){
     tanks [tanks.length] = new ShieldTank () ;
 }
 //Tank.drawBackground () ;
