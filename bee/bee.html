@@ -208,6 +208,69 @@ class ShieldPeople extends Tank {
 
 }
 
+class SuperTank extends Tank {
+    lastFireTS = 0 ;
+    hp = 1 ;
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0).add(0,-1).add(0,-2).add(0,-3).add(0,-4).add(0,1).add(0,2).add(0,3).add(0,4) ;
+        part0.add(-1,0).add(-1,-1).add(-1,1) ;
+
+        let part1 = new Part() ;
+        part1.add(1,-4) ;
+
+        let part2 = new Part() ;
+        part2.add(1,-2) ;
+
+        let part3 = new Part() ;
+        part3.add(1,0) ;
+
+        let part4 = new Part() ;
+        part4.add(1,2) ;
+
+        let part5 = new Part() ;
+        part5.add(1,4) ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+        this.parts.push( part1 ) ;
+        this.parts.push( part2 ) ;
+        this.parts.push( part3 ) ;
+        this.parts.push( part4 ) ;
+        this.parts.push( part5 ) ;
+    }
+
+    draw(){
+        this.autoDraw() ;
+    }
+
+    attackedPart(partIdx) {
+        if ( partIdx == 0) {
+            this.hp = 0 ;
+            for( let i=1; i<this.parts.length; i++) {
+                if ( this.parts[i].isOn ) {
+                    this.hp = 1 ;
+                }
+            }
+        } else {
+            this.parts[partIdx].isOn = false ;
+        }
+    }
+
+    process(){
+        if ( Date.now() - this.lastFireTS > 2000 ) {
+            this.lastFireTS = Date.now() ;
+            for( let i=1; i<this.parts.length; i++ ) {
+                if ( this.parts[i].isOn ) {
+                    tanks.push( new Bullet(this.row+1,this.col+this.parts[i].coords[0].col,200,200,200) );
+                }
+            }
+        }
+        this.move() ;
+        this.draw() ;
+    }
+
+}
 
 
 class BabyTank extends Tank {
@@ -754,7 +817,7 @@ const TOTAL_COLS = 40 ;
 let isRun = true ;
 let lastTime = 0 ;
 let tanks = [] ; 
-
+let superTankCount = 3 ;
 
 function drawImg(imgId, x, y, width, height, rotation) {
         ctx.save();
@@ -820,6 +883,11 @@ function run(time) {
     }else{
         ctx.font = "80px Arial";
         ctx.fillText("GAME OVER",20,350);
+    }
+    if ( tanks.length<2) {
+        if ( superTankCount-- > 0 ) {
+            tanks.push( new SuperTank() ) ;
+        }
     }
     if (tanks.length==0){
         ctx.font = "200px Arial";
