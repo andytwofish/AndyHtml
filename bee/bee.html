@@ -306,7 +306,7 @@ class Bullet{
     red = 0 ;
     green = 0 ;
     blue = 0 ;
-    life = true ;
+    hp = 1 ;
     constructor(row,col,red,green,blue) {
         this.row = row ;
         this.col = col ;
@@ -317,13 +317,13 @@ class Bullet{
     }
     
     process(){
-        if ( !this.life ) {
+        if ( this.hp==0 ) {
             return ;
         }
 //        this.cleanBulletCell() ;
         this.row+=1 ;    
         if (this.row>39){
-            this.life=false ; 
+            this.hp=0 ; 
         } 
         
         this.drawBulletCell() ;
@@ -582,26 +582,26 @@ class MyTank {
 class MyBullet{
     row = 0 ;
     col = 0 ;
-    life = true ;
+    hp = 1 ;
     constructor(row,col) {
         this.row = row ;
         this.col = col ;
     }
     
     process(){
-        if ( !this.life ) {
+        if ( this.hp == 0) {
             return ;
         }
         this.row-=1 ;    
         if (this.row<0){
-            this.life=false ; 
+            this.hp=0 ; 
         } 
 
         this.drawBulletCell() ;
         for (let i=0;i<tanks.length;i++){
             if ( tanks[i] instanceof Tank ) {        
                 if ( tanks[i].attack( this.row, this.col ) ) {
-                    this.life = false ;
+                    this.hp = 0 ;
                     return ;
                 } 
             }
@@ -616,25 +616,25 @@ class MyBullet{
 class MyBomb{
     row = 0 ;
     col = 0 ;
-    life = true ;
+    hp = 8 ;
     constructor(row,col) {
         this.row = row ;
         this.col = col ;
     }
     
     process(){
-        if ( !this.life ) {
+        if ( this.hp==0 ) {
             return ;
         }
         this.row-=1 ;    
         if (this.row<0){
-            this.life=false ; 
+            this.hp=0 ; 
         }
         for (let i=0;i<tanks.length;i++){
             if ( (tanks[i] instanceof Tank) ){
                 if ( tanks[i].attack( this.row, this.col ) ) {
                     if (!tanks[i] instanceof Light ){
-                        this.life = false ;
+                        this.hp = 0 ;
                     return ;
                     }
                 } 
@@ -653,19 +653,19 @@ class Light extends MyBomb{
         this.height = height ;
     }
     process(){
-        if ( !this.life ) {
+        if ( this.hp==0 ) {
             return ;
         }
         this.row-=1 ;
         if ((this.row+((this.height+1)/2))<0){
-            this.life=false ; 
+            this.hp=0 ; 
         }
         this.drawBulletCell() ;
         for (let i=0;i<tanks.length;i++){
             if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet) && !(tanks[i] instanceof MyBomb)&& !(tanks[i] instanceof  Light)){
                 if ( tanks[i].attack( this.row, this.col ) ) {
                     if (!tanks[i] instanceof Light ){
-                    this.life = false ;
+                    this.hp = 0 ;
                     return ;
                     }
                 } 
@@ -881,6 +881,7 @@ function run(time) {
         myTank1.process() ;
         myTank2.process() ;
     }else{
+        ctx.fillStyle = `rgb(255,0,0)` ;
         ctx.font = "80px Arial";
         ctx.fillText("GAME OVER",20,350);
     }
@@ -890,6 +891,7 @@ function run(time) {
         }
     }
     if (tanks.length==0){
+        ctx.fillStyle = `rgb(0,255,0)` ;
         ctx.font = "200px Arial";
         ctx.fillText("WIN",50,350 );
     }
