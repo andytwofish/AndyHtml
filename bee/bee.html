@@ -252,33 +252,16 @@ class BabyTank{
 }
 
 class Tank{
-
-    life = true ;
-    h = 0 ;
-    row = Math.floor(Math.random()*39) ;  
+    static directionMap = [0, 90, 180, 270] ;
+    hp = 1 ;
+    row = Math.floor(Math.random()*19) ;  
     col = Math.floor(Math.random()*39) ; 
-    red = 100 ;
-    green = 100 ;
-    blue = 100 ;
-//    red = Math.floor(Math.random()*256) ;
-//    green = Math.floor(Math.random()*256) ;
-//    blue = Math.floor(Math.random()*256) ;
-//    red = Math.floor(Math.random()*56)+200 ;
-//    green = Math.floor(Math.random()*56)+200 ;
-//    blue = Math.floor(Math.random()*56)+200 ;
-    static drawBackground(){
-        ctx.strokeStyle = "orange";
-        for (let i=0;i<40+1;i++){
-            ctx.moveTo(CELL_SIZE*i,0 );
-            ctx.lineTo(CELL_SIZE*i,CELL_SIZE*40);
-        } 
-        for (let j=0;j<40+1;j++){
-            ctx.moveTo(0,CELL_SIZE*j );
-            ctx.lineTo(CELL_SIZE*40,CELL_SIZE*j);    
-        }
-        ctx.stroke();
+    lastFireTS = 0 ;
+    constructor() {
+        this.rollTheDice() ;
     }
-    drawCell(){
+
+    draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
@@ -287,59 +270,56 @@ class Tank{
     //傳出boolean  true:有打到  false:沒打到
     attack( row, col ) {
         if ( row==this.row&&col==this.col ){
-            this.life = false ;
+            this.hp = 0 ;
             return true ;
         }
         return false ;
     }
 
-    move(){
-//        this.cleanCell() ;
-        let i = Math.floor(Math.random()*2) ;
-        this.h = Math.floor(Math.random()*2) ;
-        if (this.h==0){
-            this.h=-1;
-        }else{
-            this.h=1 ;
+    rollTheDice() {
+        this.distance = Math.floor(Math.random()*8) ; 
+        this.direction = Tank.directionMap[Math.floor(Math.random()*4)] ;
+        this.moveDelayCount = Math.floor(Math.random()*4)*3+3 ; 
+    }
+
+    move() {
+        if ( this.distance-- < 0 && this.moveDelayCount-- <= 0 ) {
+            this.rollTheDice() ;
         }
-        if (i==0){
-            this.row+=this.h ;
-        }else{
-            this.col+=this.h ;
+        if ( this.distance < 0 ) {
+            return ;
         }
-        if (this.row<0){
-            this.row = 0  ;
+        switch( this.direction ) {
+            case 0:
+                if ( this.row-1 >= 0 ) {
+                    this.row-=1 ;
+                }
+                break;
+            case 90:
+                if ( this.col+1 <= TOTAL_COLS ) {
+                    this.col+=1 ;
+                }
+                break;
+            case 180:
+                if ( this.row+1 <= 19 ) {
+                    this.row+=1;
+                }
+                break;
+            case 270:
+                if ( this.col-1 >= 0 ) {
+                    this.col-=1;
+                }
+                break;
         }
-        if (this.row>19){
-            this.row = 19 ;
+    }
+
+    process(){
+        if ( Date.now() - this.lastFireTS > 500 ) {
+            this.lastFireTS = Date.now() ;
+            tanks.push( new Bullet(this.row,this.col,this.red,this.green,this.blue) );
         }
-        if (this.col<0){
-            this.col = 0 ;
-        }
-        if (this.col>39){
-            this.col = 39 ;
-        }
-        if ( Math.floor(Math.random()*60)<=0 ) {
-            tanks [tanks.length] = new Bullet(this.row,this.col,this.red,this.green,this.blue) ;
-        }
-        this.drawCell() ;
-        //for (let i=0;i<tanks.length;i++){
-        //    if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
-        //        tanks.splice(i,1) ;
-        //        if (tanks.length==0){
-        //            console.log("ture:0") ; 
-        //        }else{
-        //            console.log(`false:${tanks.length}`) ;
-        //        }
-        //        return ;
-        //    }
-        // }
-        // for (let i=0;i<tanks.length;i++){
-        //     if ( tanks[i] !=this&&tanks[i].row==this.row&&tanks[i].col==this.col ){
-        //         tanks.splice(i,1) ;
-        //         return ;
-        //     }
-        // }
+        this.move() ;
+        this.draw() ;
     }
 }
 
@@ -360,7 +340,7 @@ class Bullet{
         //this.move();
     }
     
-    move(){
+    process(){
         if ( !this.life ) {
             return ;
         }
@@ -881,22 +861,40 @@ class KeyController {
 
 }
 //=============================================
-
+//Tank.drawBackground () ;
+let countDown = 3000 ;
+const CELL_SIZE = 14 ;
+const TOTAL_ROWS = 40 ;
+const TOTAL_COLS = 40 ;
+let isRun = true ;
+let lastTime = 0 ;
 let tanks = [] ; 
-for (let i=0;i<0;i++){
+
+
+function drawBackground(){
+    ctx.strokeStyle = "orange";
+    for (let i=0;i<40+1;i++){
+        ctx.moveTo(CELL_SIZE*i,0 );
+        ctx.lineTo(CELL_SIZE*i,CELL_SIZE*40);
+    } 
+    for (let j=0;j<40+1;j++){
+        ctx.moveTo(0,CELL_SIZE*j );
+        ctx.lineTo(CELL_SIZE*40,CELL_SIZE*j);    
+    }
+    ctx.stroke();
+}
+
+
+
+for (let i=0;i<2;i++){
     tanks [tanks.length] = new Tank () ;
 }
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
-for (let i=0;i<1;i++){
+for (let i=0;i<0;i++){
     tanks [tanks.length] = new ShieldTank () ;
 }
-//Tank.drawBackground () ;
-let countDown = 3000 ;
-const CELL_SIZE = 14 ;
-let isRun = true ;
-let lastTime = 0 ;
 
 function run(time) {
     if (lastTime === 0) {
@@ -913,14 +911,14 @@ function run(time) {
 
     if (isRun){
         for (let i=0;i<tanks.length;i++){
-            if (!tanks [i].life ){
+            if (tanks [i].hp<=0 ){
                 tanks.splice(i--,1) ;
             }
         }  
         ctx.fillStyle = `rgb(0,0,0)` ;
         ctx.fillRect( 0 , 0 , 560 , 560 ) ;
         for (let i=0;i<tanks.length;i++){
-            tanks [i].move() ;
+            tanks [i].process() ;
         }
         myTank1.process() ;
         myTank2.process() ;
