@@ -251,6 +251,22 @@ class BabyTank{
     }
 }
 
+class Coord {
+    row=0;
+    col=0;
+}
+
+class Part {
+    coords = [] ;
+    add(row,col) {
+        let coord = new Coord() ;
+        coord.row = row ;
+        coord.col = col ;
+        this.coords.push( coord ) ;
+        return this ;
+    }
+}
+
 class Tank{
     static directionMap = [0, 90, 180, 270] ;
     hp = 1 ;
@@ -258,7 +274,20 @@ class Tank{
     col = Math.floor(Math.random()*39) ; 
     lastFireTS = 0 ;
     constructor() {
+        this.init() ;
         this.rollTheDice() ;
+    }
+
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+
+        let part1 = new Part() ;
+        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+        //this.parts.push( part1 ) ;
     }
 
     draw(){
@@ -266,12 +295,23 @@ class Tank{
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
     }
+
+    attackedPart(partIdx) {
+        console.log( partIdx ) ;
+        this.hp = 0 ;
+    }
     //傳入被攻的位置，
     //傳出boolean  true:有打到  false:沒打到
     attack( row, col ) {
-        if ( row==this.row&&col==this.col ){
-            this.hp = 0 ;
-            return true ;
+        console.log('attack') ;
+        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
+            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
+                let coord = this.parts[partIdx].coords[i] ;
+                if ( row == this.row+coord.row && col == this.col+coord.col ) {
+                    this.attackedPart(partIdx) ;
+                    return true ;
+                }
+            }
         }
         return false ;
     }
@@ -314,7 +354,7 @@ class Tank{
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 500 ) {
+        if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
             tanks.push( new Bullet(this.row,this.col,this.red,this.green,this.blue) );
         }
@@ -643,7 +683,7 @@ class MyBullet{
         console.log('=======');
     }
     
-    move(){
+    process(){
         if ( !this.life ) {
             return ;
         }
@@ -657,7 +697,7 @@ class MyBullet{
 //            setTimeout( this.move.bind(this), 20 ) ;
         for (let i=0;i<tanks.length;i++){
             //if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)&& !(tanks[i] instanceof  Light)){
-                if ( tanks[i] instanceof ShieldTank ) {        
+                if ( tanks[i] instanceof Tank ) {        
                     if ( tanks[i].attack( this.row, this.col ) ) {
                         console.log('--------------------中');
                         this.life = false ;
