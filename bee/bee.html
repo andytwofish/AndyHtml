@@ -609,15 +609,32 @@ class Light extends MyBomb{
 }
 
 class KeyController {
+    static ids = 0 ;
+    id = KeyController.ids++ ;
     keysState = new Map() ;
-    keyCodeToX = "" ;
-    keyCodeToA = "" ;
-    keyCodeToB = "" ;
-    keyCodeToY = "" ;
     constructor( padIdx ) {
+        this.padIdx = padIdx ;
+        if ( this.id == 0 ) {
+            this.keyCodeLeft = "ArrowLeft" ;
+            this.keyCodeRight = "ArrowRight" ;
+            this.keyCodeDown = "ArrowDown" ;
+            this.keyCodeUp = "ArrowUp" ;
+            this.keyCodeToX = "KeyH" ;
+            this.keyCodeToA = "KeyN" ;
+            this.keyCodeToB = "KeyM" ;
+            this.keyCodeToY = "KeyJ" ;
+        } else {
+            this.keyCodeLeft = "KeyA" ;
+            this.keyCodeRight = "KeyD" ;
+            this.keyCodeDown = "KeyS" ;
+            this.keyCodeUp = "KeyW" ;
+            this.keyCodeToX = "KeyF" ;
+            this.keyCodeToA = "KeyC" ;
+            this.keyCodeToB = "KeyV" ;
+            this.keyCodeToY = "KeyG" ;
+        }
         document.addEventListener("keydown", this._keyDown.bind(this) );
         document.addEventListener("keyup", this._keyUp.bind(this) );
-        this.padIdx = padIdx ;
     }
     _keyDown(event) {
         this.keysState.set( event.code, true ) ;
@@ -626,7 +643,7 @@ class KeyController {
         this.keysState.set( event.code, false ) ;
     }
     isArrowLeftPressed() {
-        let flag = this.keysState.get( "ArrowLeft" ) ;
+        let flag = this.keysState.get( this.keyCodeLeft ) ;
         if ( flag != null && flag == true ) {
             return true ;
         }
@@ -637,7 +654,7 @@ class KeyController {
         return false ;
     }
     isArrowRightPressed() {
-        let flag = this.keysState.get( "ArrowRight" ) ;
+        let flag = this.keysState.get( this.keyCodeRight ) ;
         if ( flag != null && flag == true ) {
             return true ;
         }
@@ -648,7 +665,7 @@ class KeyController {
         return false ;
     }
     isArrowDownPressed() {
-        let flag = this.keysState.get( "ArrowDown" ) ;
+        let flag = this.keysState.get( this.keyCodeDown ) ;
         if ( flag != null && flag == true ) {
             return true ;
         }
@@ -659,7 +676,7 @@ class KeyController {
         return false ;
     }
     isArrowUpPressed() {
-        let flag = this.keysState.get( "ArrowUp" ) ;
+        let flag = this.keysState.get( this.keyCodeUp ) ;
         if ( flag != null && flag == true ) {
             return true ;
         }
