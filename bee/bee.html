@@ -34,6 +34,7 @@ class Coord {
 class Part {
     coords = [] ;
     isOn = true ;
+    fillStyle = `rgb(100,100,100)` ;
     add(row,col) {
         let coord = new Coord() ;
         coord.row = row ;
@@ -64,6 +65,19 @@ class Tank{
         this.parts = [] ;
         this.parts.push( part0 ) ;
         //this.parts.push( part1 ) ;
+    }
+
+    autoDraw() {
+        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
+            if ( !this.parts[partIdx].isOn ) {
+                continue ;
+            }
+            ctx.fillStyle = this.parts[partIdx].fillStyle ;
+            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
+                let coord = this.parts[partIdx].coords[i] ;
+                ctx.fillRect( (this.col+coord.col)*CELL_SIZE+1, (this.row+coord.row)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            }
+        }
     }
 
     draw(){
