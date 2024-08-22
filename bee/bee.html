@@ -205,12 +205,12 @@ class BabyTank extends Tank {
     }
 
     process(){
-        if ( Math.floor(Math.random()*200)<=0 ) {
+        if ( Math.floor(Math.random()*40)<=0 ) {
             tanks [tanks.length] = new Tank () ;
             tanks [tanks.length-1].row = this.row+=1 ;
             tanks [tanks.length-1].col = this.col ;
         }
-        if ( Math.floor(Math.random()*200)<=0 ) {
+        if ( Math.floor(Math.random()*40)<=0 ) {
             tanks [tanks.length] = new ShieldPeople () ;
             tanks [tanks.length-1].row = this.row+=1 ;
             tanks [tanks.length-1].col = this.col ;
@@ -553,7 +553,6 @@ class MyBomb{
         if (this.row<0){
             this.life=false ; 
         }
-        this.drawBulletCell() ;
         for (let i=0;i<tanks.length;i++){
             if ( (tanks[i] instanceof Tank) ){
                 if ( tanks[i].attack( this.row, this.col ) ) {
