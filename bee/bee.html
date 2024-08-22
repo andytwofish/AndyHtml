@@ -113,7 +113,7 @@ class Tank{
                 }
                 break;
             case 90:
-                if ( this.col+1 <= TOTAL_COLS ) {
+                if ( this.col+1 <= TOTAL_COLS-1 ) {
                     this.col+=1 ;
                 }
                 break;
@@ -205,12 +205,12 @@ class BabyTank extends Tank {
     }
 
     process(){
-        if ( Math.floor(Math.random()*400)<=0 ) {
+        if ( Math.floor(Math.random()*200)<=0 ) {
             tanks [tanks.length] = new Tank () ;
             tanks [tanks.length-1].row = this.row+=1 ;
             tanks [tanks.length-1].col = this.col ;
         }
-        if ( Math.floor(Math.random()*400)<=0 ) {
+        if ( Math.floor(Math.random()*200)<=0 ) {
             tanks [tanks.length] = new ShieldPeople () ;
             tanks [tanks.length-1].row = this.row+=1 ;
             tanks [tanks.length-1].col = this.col ;
