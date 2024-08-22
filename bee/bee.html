@@ -39,19 +39,19 @@ class ShieldTank{
     life = true ;
     lastMoveTime = 0 ;
     drawCell(){
-        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "peopleImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 180 ) ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "peopleImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
     
         if (this.shield){
             ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
-            ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row+1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+1)*ShieldTank.CELL_SIZE+1, (this.row+2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+2)*ShieldTank.CELL_SIZE+1, (this.row+1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-            y = ((this.row+2)*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-            drawImg( "E.shieldImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
+            ctx.fillRect( (this.col-2)*CELL_SIZE+1, (this.row+1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            ctx.fillRect( (this.col-1)*CELL_SIZE+1, (this.row+2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            ctx.fillRect( (this.col+1)*CELL_SIZE+1, (this.row+2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            ctx.fillRect( (this.col+2)*CELL_SIZE+1, (this.row+1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            y = ((this.row+2)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "E.shieldImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 0 ) ;
         }   
     }
 
@@ -183,9 +183,9 @@ class BabyTank{
     life = true ;
 
     drawCell(){
-        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "babyTankImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 0 ) ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "babyTankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
     }
     //傳入被攻的位置，
     //傳出boolean  true:有打到  false:沒打到
@@ -253,7 +253,6 @@ class BabyTank{
 
 class Tank{
 
-    static CELL_SIZE = 14 ;
     life = true ;
     h = 0 ;
     row = Math.floor(Math.random()*39) ;  
@@ -270,19 +269,19 @@ class Tank{
     static drawBackground(){
         ctx.strokeStyle = "orange";
         for (let i=0;i<40+1;i++){
-            ctx.moveTo(Tank.CELL_SIZE*i,0 );
-            ctx.lineTo(Tank.CELL_SIZE*i,Tank.CELL_SIZE*40);
+            ctx.moveTo(CELL_SIZE*i,0 );
+            ctx.lineTo(CELL_SIZE*i,CELL_SIZE*40);
         } 
         for (let j=0;j<40+1;j++){
-            ctx.moveTo(0,Tank.CELL_SIZE*j );
-            ctx.lineTo(Tank.CELL_SIZE*40,Tank.CELL_SIZE*j);    
+            ctx.moveTo(0,CELL_SIZE*j );
+            ctx.lineTo(CELL_SIZE*40,CELL_SIZE*j);    
         }
         ctx.stroke();
     }
     drawCell(){
-        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "tankImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 180 ) ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
     }
     //傳入被攻的位置，
     //傳出boolean  true:有打到  false:沒打到
@@ -376,9 +375,9 @@ class Bullet{
         
     }
     drawBulletCell(){
-        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "M.bulletImg", x, y, BabyTank.CELL_SIZE, BabyTank.CELL_SIZE, 180 ) ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, 180 ) ;
     }
 }
 
@@ -442,7 +441,7 @@ class MyTank {
             }
         }
         if (bombLevel>1){
-            tanks.push( new Light( this.row-((rowCount+1)/2) , this.col , rowCount*BabyTank.CELL_SIZE , rowCount*BabyTank.CELL_SIZE )) ;
+            tanks.push( new Light( this.row-((rowCount+1)/2) , this.col , rowCount*CELL_SIZE , rowCount*CELL_SIZE )) ;
         } else {
             this.bombAudio.src = "y2271.mp3";
             this.bombAudio.play();
@@ -637,19 +636,19 @@ class MyTank {
     }
 
     drawMyCell(){
-        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "M.tankImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 0 ) ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "M.tankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
         if (this.shield > 0 ){
             let color = 255/MyTank.SHIELD_HIGHEST*this.shield ;
             ctx.fillStyle = `rgb(${color},${color},${color})` ;
-            ctx.fillRect( (this.col-2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col-1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+1)*ShieldTank.CELL_SIZE+1, (this.row-2)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+2)*ShieldTank.CELL_SIZE+1, (this.row-1)*ShieldTank.CELL_SIZE+1, ShieldTank.CELL_SIZE-2, ShieldTank.CELL_SIZE-2 ) ;
-            x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-            y = ((this.row-2)*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-            drawImg( "M.shieldImg", x, y, BabyTank.CELL_SIZE*2, BabyTank.CELL_SIZE*2, 180 ) ;
+            ctx.fillRect( (this.col-2)*CELL_SIZE+1, (this.row-1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            ctx.fillRect( (this.col-1)*CELL_SIZE+1, (this.row-2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            ctx.fillRect( (this.col+1)*CELL_SIZE+1, (this.row-2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            ctx.fillRect( (this.col+2)*CELL_SIZE+1, (this.row-1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            y = ((this.row-2)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "M.shieldImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
         }   
     }
 }
@@ -694,9 +693,9 @@ class MyBullet{
         }
     }
     drawBulletCell(){
-        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        drawImg( "lightImg", x, y, BabyTank.CELL_SIZE*3/2, BabyTank.CELL_SIZE*3/2, 0 ) ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "lightImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 0 ) ;
     }
 }
 class MyBomb{
@@ -732,7 +731,7 @@ class MyBomb{
     }
     drawBulletCell(){
 //        ctx.fillStyle = `rgb(0,240,240)` ;
-//        ctx.fillRect( this.col*Tank.CELL_SIZE, this.row*Tank.CELL_SIZE, Tank.CELL_SIZE, Tank.CELL_SIZE ) ;
+//        ctx.fillRect( this.col*CELL_SIZE, this.row*CELL_SIZE, CELL_SIZE, CELL_SIZE ) ;
     }
 }
 class Light extends MyBomb{
@@ -766,8 +765,8 @@ class Light extends MyBomb{
     }
     drawBulletCell(){
         console.log(this.row);
-        let x = (this.col*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
-        let y = (this.row*BabyTank.CELL_SIZE+1) + BabyTank.CELL_SIZE/2 ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "lightImg", x, y, this.width*5/4, this.height*5/4, this.rotation ) ;
         console.log(`${this.width},${this.width}`);
         this.rotation+= 20 ;
@@ -895,7 +894,7 @@ for (let i=0;i<1;i++){
 }
 //Tank.drawBackground () ;
 let countDown = 3000 ;
-
+const CELL_SIZE = 14 ;
 let isRun = true ;
 let lastTime = 0 ;
 
