@@ -395,6 +395,7 @@ class MyTank {
         this.bulletAudio = document.createElement("audio");
     }
     attacked() {
+        this.bombBeginTime = 0 ;
         this.audio.src = "y1491.mp3";
         this.audio.play();
         this.HP-- ;
@@ -404,12 +405,25 @@ class MyTank {
             //tanks.splice(i,1) ;
         }
     }
-    fireBomb() {
+
+    getBombLevel() {
         if ( this.bombBeginTime == 0 ) {
+            return 0 ;
+        }
+        let deltaTime = Date.now() - this.bombBeginTime ;  
+        let bombLevel = Math.round( deltaTime / 2000 ) ;
+        if ( bombLevel > 8 ) {
+            bombLevel = 8 ;
+        }
+        return bombLevel ;
+    }
+
+    fireBomb() {
+        let bombLevel = this.getBombLevel() ;
+        if ( bombLevel == 0 ) {
             return ;
         }
-        let deltaTime = Date.now() - this.bombBeginTime ;  // millie seconds
-        let bombLevel = Math.round( deltaTime / 2000 ) ;
+
         let rowCount = bombLevel+(bombLevel-1) ;
         let deltaCol = 0 ;
 
@@ -426,7 +440,7 @@ class MyTank {
             }
         }
         if (bombLevel>1){
-            tanks.push( new Light( this.row-((rowCount+1)/2) , this.col , rowCount*CELL_SIZE , rowCount*CELL_SIZE )) ;
+            tanks.push( new Light( this.row , this.col , rowCount*CELL_SIZE , rowCount*CELL_SIZE )) ;
         } else {
             this.bombAudio.src = "y2271.mp3";
             this.bombAudio.play();
@@ -435,29 +449,25 @@ class MyTank {
     }
     process() {
         if ( this.keyController.isArrowRightPressed() ) {
-            this.fireBomb();
             this.keyRight();
         }
         if ( this.keyController.isArrowLeftPressed() ) {
-            this.fireBomb();
             this.keyLeft();
         }
         if ( this.keyController.isArrowDownPressed() ) {
-            this.fireBomb();
             this.keyDown();
         }
         if ( this.keyController.isArrowUpPressed()) {
-            this.fireBomb();
             this.keyUp() ;
         }
         if ( this.keyController.isButtonAPressed() ) {
-            this.fireBomb();
+            this.bombBeginTime = 0;
             this.keySpace();  
         }else{
             this.bulletCount = 0 ;//this.loaded = false ;
         }
         if ( this.keyController.isButtonXPressed() ) {
-            this.fireBomb();
+            this.bombBeginTime = 0 ;
             this.keyShield();  
         }else{
             this.loaded2 = false ;
@@ -595,6 +605,7 @@ class MyTank {
         }
     }
 
+
     drawMyCell(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
@@ -610,6 +621,16 @@ class MyTank {
             y = ((this.row-2)*CELL_SIZE+1) + CELL_SIZE/2 ;
             drawImg( "M.shieldImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
         }   
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        for( let i=0; i<this.HP; i++ ) {
+            ctx.fillRect( (this.col-1)*CELL_SIZE, (this.row*CELL_SIZE)+20-i*4, 3, 3 ) ;
+        }
+
+        let bombLevel = this.getBombLevel() ;
+        ctx.fillStyle = `rgb(0,255,255)` ;
+        for( let i=0; i<bombLevel; i++ ) {
+            ctx.fillRect( (this.col-1)*CELL_SIZE+5, (this.row*CELL_SIZE)+20-i*4, 3, 3 ) ;
+        }
     }
 }
 
