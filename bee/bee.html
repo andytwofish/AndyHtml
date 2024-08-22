@@ -46,7 +46,7 @@ class Part {
 
 class Tank{
     static directionMap = [0, 90, 180, 270] ;
-    hp = 4 ;
+    hp = 3 ;
     row = Math.floor(Math.random()*19) ;  
     col = Math.floor(Math.random()*39) ; 
     lastFireTS = 0 ;
@@ -282,12 +282,12 @@ class BabyTank extends Tank {
     }
 
     process(){
-        if ( Math.floor(Math.random()*40)<=0 ) {
+        if ( Math.floor(Math.random()*100)<=0 ) {
             tanks [tanks.length] = new Tank () ;
             tanks [tanks.length-1].row = this.row+=1 ;
             tanks [tanks.length-1].col = this.col ;
         }
-        if ( Math.floor(Math.random()*40)<=0 ) {
+        if ( Math.floor(Math.random()*100)<=0 ) {
             tanks [tanks.length] = new ShieldPeople () ;
             tanks [tanks.length-1].row = this.row+=1 ;
             tanks [tanks.length-1].col = this.col ;
@@ -817,7 +817,7 @@ const TOTAL_COLS = 40 ;
 let isRun = true ;
 let lastTime = 0 ;
 let tanks = [] ; 
-let superTankCount = 3 ;
+let superTankCount = 1 ;
 
 function drawImg(imgId, x, y, width, height, rotation) {
         ctx.save();
@@ -854,6 +854,16 @@ for (let i=0;i<0;i++){
     tanks [tanks.length] = new ShieldPeople () ;
 }
 
+function getTankNumbers() {
+    let count = 0 ;
+    for( let i=0; i<tanks.length; i++ ) {
+        if ( tanks[i] instanceof Tank ) {
+            count++ ;
+        }
+    }
+    return count ;
+}
+
 function run(time) {
     if (lastTime === 0) {
         lastTime = time;
@@ -885,12 +895,14 @@ function run(time) {
         ctx.font = "80px Arial";
         ctx.fillText("GAME OVER",20,350);
     }
-    if ( tanks.length<2) {
-        if ( superTankCount-- > 0 ) {
-            tanks.push( new SuperTank() ) ;
+    if ( getTankNumbers() == 0 ) {
+        if ( superTankCount++ <= 6 ) {
+            for ( let i= 0;i<superTankCount;i++ ) {
+                tanks.push( new SuperTank() ) ;
+            }
         }
     }
-    if (tanks.length==0){
+    if (tanks.length==0 && superTankCount > 8 ){
         ctx.fillStyle = `rgb(0,255,0)` ;
         ctx.font = "200px Arial";
         ctx.fillText("WIN",50,350 );
@@ -904,4 +916,4 @@ window.onload=function() {
     requestAnimationFrame(run);
 }
 
-</script>
+</script> 
