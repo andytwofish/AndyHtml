@@ -220,10 +220,7 @@ class BabyTank extends Tank {
         this.draw() ;
     }
 
-
 }
-
-
 
 class Bullet{
     bullet = [] ;
@@ -272,12 +269,7 @@ class MyTank {
     time = 0 ;
     row = 30 ;
     col = 20 ;
-    loaded = false ;
     loaded2 = false ;
-    isKeyDown = false ;
-    lastKeyEvent=0;
-    keyDelayCount=0;
-    gamepadIdx= 0;
     shield = 0 ;
     bulletCount = 0 ;
     bombBeginTime = 0 ; 
@@ -329,31 +321,6 @@ class MyTank {
             this.bombAudio.play();
         }
         this.bombBeginTime = 0 ;
-    }
-    _keyDown(event) {
-        if ( event.code == "IntlRo" ) {
-            return ;
-        }
-        if ( this.lastKeyEvent > 0 && event.code == this.lastKeyEvent.code && this.isKeyDown ){
-            return ;
-        }
-        this.lastKeyEvent = event ;
-        this.isKeyDown = true ;
-        this.keyEvent(event) ;
-        setTimeout( this._keyLoop.bind(this), 84 ) ;
-    }
-    _keyLoop() {
-        if ( this.isKeyDown ) {
-            this.keyEvent(this.lastKeyEvent) ;
-            setTimeout( this._keyLoop.bind(this), 50 ) ;
-        }
-    }
-    _keyUp(event) {
-        this.time = 0 ;
-        this.lastKeyEvent = 0 ;
-        this.isKeyDown = false ;
-        this.loaded = false ;
-        this.loaded2 = false ;
     }
     process() {
         if ( this.keyController.isArrowRightPressed() ) {
@@ -548,29 +515,19 @@ class MyBullet{
         if ( !this.life ) {
             return ;
         }
-//        this.cleanBulletCell() ;
         this.row-=1 ;    
         if (this.row<0){
             this.life=false ; 
         } 
 
         this.drawBulletCell() ;
-//            setTimeout( this.move.bind(this), 20 ) ;
         for (let i=0;i<tanks.length;i++){
-            //if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet)&& !(tanks[i] instanceof  MyBomb)&& !(tanks[i] instanceof  Light)){
-                if ( tanks[i] instanceof Tank ) {        
-                    if ( tanks[i].attack( this.row, this.col ) ) {
-                        console.log('--------------------中');
-                        this.life = false ;
-                        return ;
-                    } 
-                }
-            //}
-            // if ( tanks[i].row==this.row&&tanks[i].col==this.col ){
-            //     tanks.splice(i,1) ;
-            //     this.life = false ;
-            //     return ;
-            // }
+            if ( tanks[i] instanceof Tank ) {        
+                if ( tanks[i].attack( this.row, this.col ) ) {
+                    this.life = false ;
+                    return ;
+                } 
+            }
         }
     }
     drawBulletCell(){
@@ -588,7 +545,7 @@ class MyBomb{
         this.col = col ;
     }
     
-    move(){
+    process(){
         if ( !this.life ) {
             return ;
         }
@@ -598,10 +555,10 @@ class MyBomb{
         }
         this.drawBulletCell() ;
         for (let i=0;i<tanks.length;i++){
-            if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet) && !(tanks[i] instanceof MyBomb)&& !(tanks[i] instanceof  Light)){
+            if ( (tanks[i] instanceof Tank) ){
                 if ( tanks[i].attack( this.row, this.col ) ) {
                     if (!tanks[i] instanceof Light ){
-                    this.life = false ;
+                        this.life = false ;
                     return ;
                     }
                 } 
@@ -610,10 +567,7 @@ class MyBomb{
         
         
     }
-    drawBulletCell(){
-//        ctx.fillStyle = `rgb(0,240,240)` ;
-//        ctx.fillRect( this.col*CELL_SIZE, this.row*CELL_SIZE, CELL_SIZE, CELL_SIZE ) ;
-    }
+
 }
 class Light extends MyBomb{
     rotation = 0 ;
@@ -622,7 +576,7 @@ class Light extends MyBomb{
         this.width=width ;
         this.height = height ;
     }
-    move(){
+    process(){
         if ( !this.life ) {
             return ;
         }
@@ -762,7 +716,7 @@ class KeyController {
 
 }
 //=============================================
-//Tank.drawBackground () ;
+
 let countDown = 3000 ;
 const CELL_SIZE = 14 ;
 const TOTAL_ROWS = 40 ;
