@@ -26,25 +26,145 @@
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');     
 
-class ShieldTank{
-    shieldGenerated = 0 ;
-    static CELL_SIZE = 14 ;
-    shield = true ;
-    h = 0 ;
-    row = Math.floor(Math.random()*39) ;  
+class Coord {
+    row=0;
+    col=0;
+}
+
+class Part {
+    coords = [] ;
+    isOn = true ;
+    add(row,col) {
+        let coord = new Coord() ;
+        coord.row = row ;
+        coord.col = col ;
+        this.coords.push( coord ) ;
+        return this ;
+    }
+}
+
+class Tank{
+    static directionMap = [0, 90, 180, 270] ;
+    hp = 1 ;
+    row = Math.floor(Math.random()*19) ;  
     col = Math.floor(Math.random()*39) ; 
-    red = 100 ;
-    green = 100 ;
-    blue = 0 ;
-    life = true ;
-    lastMoveTime = 0 ;
-    drawCell(){
+    lastFireTS = 0 ;
+    constructor() {
+        this.init() ;
+        this.rollTheDice() ;
+    }
+
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+
+        let part1 = new Part() ;
+        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+        //this.parts.push( part1 ) ;
+    }
+
+    draw(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
+    }
+
+    attackedPart(partIdx) {
+        console.log( partIdx ) ;
+        this.hp = 0 ;
+    }
+    //傳入被攻的位置，
+    //傳出boolean  true:有打到  false:沒打到
+    attack( row, col ) {
+        console.log('attack') ;
+        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
+            if ( !this.parts[partIdx].isOn ) {
+                continue ;
+            }
+            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
+                let coord = this.parts[partIdx].coords[i] ;
+                if ( row == this.row+coord.row && col == this.col+coord.col ) {
+                    this.attackedPart(partIdx) ;
+                    return true ;
+                }
+            }
+        }
+        return false ;
+    }
+
+    rollTheDice() {
+        this.distance = Math.floor(Math.random()*8) ; 
+        this.direction = Tank.directionMap[Math.floor(Math.random()*4)] ;
+        this.moveDelayCount = Math.floor(Math.random()*4)*3+3 ; 
+    }
+
+    move() {
+        if ( this.distance-- < 0 && this.moveDelayCount-- <= 0 ) {
+            this.rollTheDice() ;
+        }
+        if ( this.distance < 0 ) {
+            return ;
+        }
+        switch( this.direction ) {
+            case 0:
+                if ( this.row-1 >= 0 ) {
+                    this.row-=1 ;
+                }
+                break;
+            case 90:
+                if ( this.col+1 <= TOTAL_COLS ) {
+                    this.col+=1 ;
+                }
+                break;
+            case 180:
+                if ( this.row+1 <= 19 ) {
+                    this.row+=1;
+                }
+                break;
+            case 270:
+                if ( this.col-1 >= 0 ) {
+                    this.col-=1;
+                }
+                break;
+        }
+    }
+
+    process(){
+        if ( Date.now() - this.lastFireTS > 1000 ) {
+            this.lastFireTS = Date.now() ;
+            tanks.push( new Bullet(this.row,this.col,this.red,this.green,this.blue) );
+        }
+        this.move() ;
+        this.draw() ;
+    }
+}
+
+class ShieldPeople extends Tank {
+    lastShieldTS = 0 ;
+    hasShield = true ;
+
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+
+        let part1 = new Part() ;
+        part1.add(1,-2).add(2,-1).add(2,0).add(2,1).add(1,2) ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+        this.parts.push( part1 ) ;
+    }
+
+    draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "peopleImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
     
-        if (this.shield){
-            ctx.fillStyle = `rgb(${this.red},${this.green},${this.blue})` ;
+        if ( this.parts[1].isOn ){
+            ctx.fillStyle = `rgb(100,100,0)` ;
             ctx.fillRect( (this.col-2)*CELL_SIZE+1, (this.row+1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*CELL_SIZE+1, (this.row+2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col+1)*CELL_SIZE+1, (this.row+2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
@@ -55,110 +175,26 @@ class ShieldTank{
         }   
     }
 
-
-    //傳入被攻的位置，
-    //傳出boolean  true:有打到  false:沒打到
-    attack( row, col ) {
-        if (this.shield){
-            //console.log(`${row}, ${col}, ${this.row}, ${this.col}`) ;
-            if ( row==this.row+1&&col==this.col-2 ){
-                this.shield = false ;
-                if (this.row>0){
-                    row-=1 ;
-                }
-                return true;
-            }
-            if ( row==this.row+2&&col==this.col-1 ){
-                this.shield = false ;
-                if (this.row>0){
-                    row-=1 ;
-                }
-                return true;
-            }
-            if ( row==this.row+2&&col==this.col ){
-                this.shield = false ;
-                if (this.row>0){
-                    row-=1 ;
-                }
-                return true;
-            }
-            if ( row==this.row+2&&col==this.col+1 ){
-                this.shield = false ;
-                if (this.row>0){
-                    row-=1 ;
-                }
-                return true;
-            }
-            if ( row==this.row+1&&col==this.col+2 ){
-                this.shield = false ;
-                if (this.row>0){
-                    row-=1 ;
-                }
-                return true;
-            }
+    attackedPart(partIdx) {
+        if ( partIdx == 0) {
+            this.hp = 0 ;
+        } else if ( partIdx == 1 ) {
+            this.parts[partIdx].isOn = false ;
         }
-        if ( row==this.row&&col==this.col ){
-            this.life = false ;
-            return true;
-        }
-        return false ;
     }
 
-    move(){
-        if (this.shield){
-            this.shieldGenerated = 0 ;
-        }else{
-            this.shieldGenerated+=1 ;
-        }
-        if ( Date.now() - this.lastMoveTime > 500 ) {
-            let i = Math.floor(Math.random()*2) ;
-            this.h = Math.floor(Math.random()*2) ;
-            if (this.h==0){
-                this.h=-1;
-            }else{
-                this.h=1 ;
-            }
-            if (i==0){
-                this.row+=this.h ;
-            }else{
-                this.col+=this.h ;
-            }
-            this.lastMoveTime = Date.now() ;
-        }
-        if (this.row<0){
-            this.row = 0  ;
-        }
-        if (this.shield){
-            if (this.row>19-2){
-                this.row = 19-2 ;
-            }
-        }else{
-            if (this.row>19){
-                this.row = 19 ;
+    process(){
+        if (this.parts[1].isOn){
+            this.lastShieldTS = Date.now() ;
+        } else {
+            if ( Date.now() - this.lastShieldTS > 3000 ) {
+                this.parts[1].isOn = true ;
             }
         }
-        if (this.col<0){
-            this.col = 0 ;
-        }
-        if (this.col>39){
-            this.col = 39 ;
-        }
-        if ( this.shieldGenerated>19 ) {
-            this.shield = true ;
-        }
-        this.drawCell() ;
-        //for (let i=0;i<tanks.length;i++){
-        //    if ( tanks[i].row==myTank.row&&tanks[i].col==myTank.col ){
-        //        tanks.splice(i,1) ;
-        //        if (tanks.length==0){
-        //            console.log("ture:0") ; 
-        //        }else{
-        //            console.log(`false:${tanks.length}`) ;
-        //        }
-        //        return ;
-        //    }
-        //}
+        this.move() ;
+        this.draw() ;
     }
+
 }
 
 
@@ -232,7 +268,7 @@ class BabyTank{
             tanks [tanks.length-1].col = this.col ;
         }
         if ( Math.floor(Math.random()*40)<=0 ) {
-            tanks [tanks.length] = new ShieldTank () ;
+            tanks [tanks.length] = new ShieldPeople () ;
             tanks [tanks.length-1].row = this.row+=1 ;
             tanks [tanks.length-1].col = this.col ;
         }
@@ -251,117 +287,7 @@ class BabyTank{
     }
 }
 
-class Coord {
-    row=0;
-    col=0;
-}
 
-class Part {
-    coords = [] ;
-    add(row,col) {
-        let coord = new Coord() ;
-        coord.row = row ;
-        coord.col = col ;
-        this.coords.push( coord ) ;
-        return this ;
-    }
-}
-
-class Tank{
-    static directionMap = [0, 90, 180, 270] ;
-    hp = 1 ;
-    row = Math.floor(Math.random()*19) ;  
-    col = Math.floor(Math.random()*39) ; 
-    lastFireTS = 0 ;
-    constructor() {
-        this.init() ;
-        this.rollTheDice() ;
-    }
-
-    init() {
-        let part0 = new Part() ;
-        part0.add(0,0) ;
-
-        let part1 = new Part() ;
-        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
-
-        this.parts = [] ;
-        this.parts.push( part0 ) ;
-        //this.parts.push( part1 ) ;
-    }
-
-    draw(){
-        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-        drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
-    }
-
-    attackedPart(partIdx) {
-        console.log( partIdx ) ;
-        this.hp = 0 ;
-    }
-    //傳入被攻的位置，
-    //傳出boolean  true:有打到  false:沒打到
-    attack( row, col ) {
-        console.log('attack') ;
-        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
-                let coord = this.parts[partIdx].coords[i] ;
-                if ( row == this.row+coord.row && col == this.col+coord.col ) {
-                    this.attackedPart(partIdx) ;
-                    return true ;
-                }
-            }
-        }
-        return false ;
-    }
-
-    rollTheDice() {
-        this.distance = Math.floor(Math.random()*8) ; 
-        this.direction = Tank.directionMap[Math.floor(Math.random()*4)] ;
-        this.moveDelayCount = Math.floor(Math.random()*4)*3+3 ; 
-    }
-
-    move() {
-        if ( this.distance-- < 0 && this.moveDelayCount-- <= 0 ) {
-            this.rollTheDice() ;
-        }
-        if ( this.distance < 0 ) {
-            return ;
-        }
-        switch( this.direction ) {
-            case 0:
-                if ( this.row-1 >= 0 ) {
-                    this.row-=1 ;
-                }
-                break;
-            case 90:
-                if ( this.col+1 <= TOTAL_COLS ) {
-                    this.col+=1 ;
-                }
-                break;
-            case 180:
-                if ( this.row+1 <= 19 ) {
-                    this.row+=1;
-                }
-                break;
-            case 270:
-                if ( this.col-1 >= 0 ) {
-                    this.col-=1;
-                }
-                break;
-        }
-    }
-
-    process(){
-        if ( Date.now() - this.lastFireTS > 1000 ) {
-            this.lastFireTS = Date.now() ;
-            tanks.push( new Bullet(this.row,this.col,this.red,this.green,this.blue) );
-        }
-        this.move() ;
-        this.draw() ;
-    }
-}
 
 class Bullet{
     bullet = [] ;
@@ -932,8 +858,8 @@ for (let i=0;i<2;i++){
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
-for (let i=0;i<0;i++){
-    tanks [tanks.length] = new ShieldTank () ;
+for (let i=0;i<2;i++){
+    tanks [tanks.length] = new ShieldPeople () ;
 }
 
 function run(time) {
