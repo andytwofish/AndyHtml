@@ -418,6 +418,7 @@ class Bullet{
 class Missile extends Bullet{
     run = 64 ;
     direction = 0 ;
+    target2 = target[Math.floor(Math.random()*target.length)] ;
     process(){
         this.run-- ;
         if (this.run<1){
@@ -426,51 +427,25 @@ class Missile extends Bullet{
         if ( this.hp==0 ) {
             return ;
         }
-        let i = (this.row-myTank1.row)+(this.col-myTank1.col) ;
-        let j = (this.row-myTank2.row)+(this.col-myTank2.col) ;
         if (Math.floor(Math.random()*2) == 0){
-            if (i<j){
-                if (this.row>myTank1.row){
-                    this.row-- ;
-                    this.direction = 0 ;
-                }else{
-                    if(this.row<myTank1.row){
-                        this.row++ ;
-                        this.direction = 180 ;
-                    }
-                }
+            if (this.row>this.target2.row){
+                this.row-- ;
+                this.direction = 0 ;
             }else{
-                if (this.row>myTank2.row){
-                    this.row-- ;
-                    this.direction = 0 ;
-                }else{
-                    if(this.row<myTank2.row){
-                        this.row++ ; 
-                        this.direction = 180 ;                                                                                                                                             ;
-                    }
+                if(this.row<this.target2.row){
+                    this.row++ ;
+                    this.direction = 180 ;
                 }
             }
         }else{
-            if (i<j){
-                if (this.col>myTank1.col){
-                        this.col-- ;        
-                        this.direction = 270 ;                           
-                }else{
-                    if(this.col<myTank1.col){
-                        this.col++ ;
-                        this.direction = 90 ;
-                    }                                          
-                }
+            if (this.col>this.target2.col){
+                    this.col-- ;        
+                    this.direction = 270 ;                           
             }else{
-                if (this.col>myTank2.col){
-                        this.col-- ;
-                        this.direction = 270 ;
-                }else{
-                    if(this.col<myTank2.col){
-                        this.col++ ;
-                        this.direction = 90 ;
-                    }
-                }
+                if(this.col<this.target2.col){
+                    this.col++ ;
+                    this.direction = 90 ;
+                }                                          
             }
         }
         
@@ -1071,6 +1046,7 @@ const TOTAL_COLS = 40 ;
 let isRun = true ;
 let lastTime = 0 ;
 let tanks = [] ; 
+let target = [] ;
 let superTankCount = 0 ;
 
 function drawImg(imgId, x, y, width, height, rotation) {
@@ -1101,7 +1077,7 @@ function drawBackground(){
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<1;i++){
+for (let i=0;i<8;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -1144,6 +1120,13 @@ function run(time) {
         }
         myTank1.process() ;
         myTank2.process() ;
+        myTank3.process() ;
+        myTank4.process() ;
+        myTank5.process() ;
+        myTank6.process() ;
+        myTank7.process() ;
+        myTank8.process() ;
+        myTank9.process() ;
     }else{
         ctx.fillStyle = `rgb(255,0,0)` ;
         ctx.font = "80px Arial";
@@ -1151,9 +1134,9 @@ function run(time) {
     }
     let tankNumbers = getTankNumbers() ;
     if ( tankNumbers == 0 ) {
-        if ( superTankCount++ <= 5 ) {
+        if ( superTankCount++ <= 3 ) {
             for ( let i= 0;i<superTankCount;i++ ) {
-//                tanks.push( new SuperTank() ) ;
+                tanks.push( new SuperTank() ) ;
                 tanks.push( new BigTank() ) ;
             }
         } else {
@@ -1169,8 +1152,24 @@ function run(time) {
 }
 
 window.onload=function() {
-    this.myTank1 = new AutoMyTank(30, 20, new KeyController(0) );
-    this.myTank2 = new AutoMyTank(30, 20, new KeyController(1) );
+    this.myTank1 = new AutoMyTank(20, 0, new KeyController(0) );
+    this.myTank2 = new MyTank(30, 5, new KeyController(1) );
+    this.myTank3 = new AutoMyTank(20, 10, new KeyController(0) );
+    this.myTank4 = new AutoMyTank(20, 15, new KeyController(0) );
+    this.myTank5 = new AutoMyTank(20, 20, new KeyController(1) );
+    this.myTank6 = new AutoMyTank(20, 25, new KeyController(1) );
+    this.myTank7 = new AutoMyTank(20, 30, new KeyController(1) );
+    this.myTank8 = new AutoMyTank(20, 35, new KeyController(1) );
+    this.myTank9 = new AutoMyTank(20, 40, new KeyController(1) );
+    target[target.length] = myTank1 ;
+    target[target.length] = myTank2 ;
+    target[target.length] = myTank3 ;
+    target[target.length] = myTank4 ;
+    target[target.length] = myTank5 ;
+    target[target.length] = myTank6 ;
+    target[target.length] = myTank7 ;
+    target[target.length] = myTank8 ;
+    target[target.length] = myTank9 ;
     requestAnimationFrame(run);
 }
 
