@@ -246,7 +246,6 @@ class ShieldPeople extends Tank {
 
 class SuperTank extends Tank {
     lastFireTS = 0 ;
-    lastFireTS2 = 0 ;
     hp = 1 ;
     init() {
         let part0 = new Part() ;
@@ -309,13 +308,15 @@ class SuperTank extends Tank {
 
 }
 class BigTank extends SuperTank{
-        init() {
+    lastFireTS2 = 0 ;
+    init() {
         let part0 = new Part() ;
         part0.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) ;
         part0.add(-1,-2).add(-1,2).add(-1,-3).add(-1,3).add(-1,-4).add(-1,4).add(1,-2).add(1,2).add(2,-2).add(2,2).add(3,-2).add(3,2).add(4,-1).add(4,1) ;
 
         let part1 = new Part() ;
         part1.add(2,0) ;
+        part1.fillStyle = "rgb(200,0,0)" ;
 
         let part2 = new Part() ;
         part2.add(0,-4) ;
