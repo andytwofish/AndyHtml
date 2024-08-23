@@ -17,6 +17,8 @@
     <img id="peopleImg" src="./icons8-top-view-man-48 1.png" alt="Source Image" style="display:none;">
     <img id="M.bulletImg" src="./icons8-bullet-64.png" alt="Source Image" style="display:none;">
     <img id="E.bulletImg" src="./icons8-bullet-24.png" alt="Source Image" style="display:none;">
+    <img id="firstaidkit" src="./icons8-organ-transplantation-24.png" alt="Source Image" style="display:none;">
+    <img id="diode" src="./icons8-led-diode-48.png" alt="Source Image" style="display:none;">
     <img id="lightImg" src="./—Pngtree—light effect of lightning blue_6183369.png" alt="Source Image" style="display:none;">
 </body>
 </html>
@@ -244,6 +246,7 @@ class ShieldPeople extends Tank {
 
 class SuperTank extends Tank {
     lastFireTS = 0 ;
+    lastFireTS2 = 0 ;
     hp = 1 ;
     init() {
         let part0 = new Part() ;
@@ -292,7 +295,7 @@ class SuperTank extends Tank {
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 2000 ) {
+        if ( Date.now() - this.lastFireTS > 2800 ) {
             this.lastFireTS = Date.now() ;
             for( let i=1; i<this.parts.length; i++ ) {
                 if ( this.parts[i].isOn ) {
@@ -305,8 +308,48 @@ class SuperTank extends Tank {
     }
 
 }
+class BigTank extends SuperTank{
+        init() {
+        let part0 = new Part() ;
+        part0.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) ;
+        part0.add(-1,-2).add(-1,2).add(-1,-3).add(-1,3).add(-1,-4).add(-1,4).add(1,-2).add(1,2).add(2,-2).add(2,2).add(3,-2).add(3,2).add(4,-1).add(4,1) ;
 
+        let part1 = new Part() ;
+        part1.add(2,0) ;
 
+        let part2 = new Part() ;
+        part2.add(0,-4) ;
+
+        let part3 = new Part() ;
+        part3.add(0,4) ;
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+        this.parts.push( part1 ) ;
+        this.parts.push( part2 ) ;
+        this.parts.push( part3 ) ;
+    }
+    process(){
+        if ( Date.now() - this.lastFireTS > 2000 ) {
+            this.lastFireTS = Date.now() ;
+            if ( this.parts[2].isOn ) {
+                tanks.push( new Missile(this.row+1,this.col+this.parts[2].coords[0].col,200,200,200) );
+            }
+            if ( this.parts[3].isOn ) {
+                tanks.push( new Missile(this.row+1,this.col+this.parts[3].coords[0].col,200,200,200) );
+            }
+        }
+        if ( Date.now() - this.lastFireTS2 > 800 ) {
+            this.lastFireTS2 = Date.now() ;
+                if ( this.parts[1].isOn ) {
+                    for (let i=0;i<TOTAL_ROWS;i++){
+                    tanks.push( new LaserLight(this.row+1+i,this.col+this.parts[1].coords[0].col,200,200,200) );
+                    }
+                }
+        }
+        this.move() ;
+        this.draw() ;
+    }
+}
 class BabyTank extends Tank {
     hp=2;
     draw(){
@@ -332,6 +375,7 @@ class BabyTank extends Tank {
     }
 
 }
+
 
 class Bullet{
     bullet = [] ;
@@ -370,7 +414,87 @@ class Bullet{
         drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, 180 ) ;
     }
 }
-
+class Missile extends Bullet{
+    run = 64 ;
+    direction = 0 ;
+    process(){
+        this.run-- ;
+        if (this.run<1){
+            this.hp = 0 ;
+        }
+        if ( this.hp==0 ) {
+            return ;
+        }
+        let i = (this.row-myTank1.row)+(this.col-myTank1.col) ;
+        let j = (this.row-myTank2.row)+(this.col-myTank2.col) ;
+        if (Math.floor(Math.random()*2) == 0){
+            if (i<j){
+                if (this.row>myTank1.row){
+                    this.row-- ;
+                    this.direction = 0 ;
+                }else{
+                    if(this.row<myTank1.row){
+                        this.row++ ;
+                        this.direction = 180 ;
+                    }
+                }
+            }else{
+                if (this.row>myTank2.row){
+                    this.row-- ;
+                    this.direction = 0 ;
+                }else{
+                    if(this.row<myTank2.row){
+                        this.row++ ; 
+                        this.direction = 180 ;                                                                                                                                             ;
+                    }
+                }
+            }
+        }else{
+            if (i<j){
+                if (this.col>myTank1.col){
+                        this.col-- ;        
+                        this.direction = 270 ;                           
+                }else{
+                    if(this.col<myTank1.col){
+                        this.col++ ;
+                        this.direction = 90 ;
+                    }                                          
+                }
+            }else{
+                if (this.col>myTank2.col){
+                        this.col-- ;
+                        this.direction = 270 ;
+                }else{
+                    if(this.col<myTank2.col){
+                        this.col++ ;
+                        this.direction = 90 ;
+                    }
+                }
+            }
+        }
+        
+        this.drawBulletCell() ;  
+    }
+    drawBulletCell(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "diode", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, this.direction ) ;
+    }
+}
+class LaserLight extends Bullet{
+    hp = 7 ;
+    process(){
+        this.hp-- ;
+        if ( this.hp<1 ) {
+            return ;
+        }
+        this.drawBulletCell()          
+    }
+    drawBulletCell(){
+        ctx.fillStyle = `rgb(100,0,0)` ;
+        ctx.fillRect( this.col*CELL_SIZE, this.row*CELL_SIZE, CELL_SIZE, CELL_SIZE ) ;
+    }
+}
 class MyTank {
     static totalTanks = 0 ;
     static SHIELD_HIGHEST = 20 ;
@@ -475,7 +599,7 @@ class MyTank {
         if ( this.keyController.isButtonBPressed() ) {
             if ( this.bombBeginTime == 0 ) {
                 this.bombBeginTime = Date.now() ;
-                console.log(this.bombBeginTime);
+//                console.log(this.bombBeginTime);
             }
         } else {
             if ( this.bombBeginTime != 0 ) {
@@ -492,6 +616,8 @@ class MyTank {
                 }
                 if ( this.shield > 0 ){
                     if ( (this.row-1)==tanks[i].row&&(this.col-2)==tanks[i].col ){
+                        console.log(this.row) ;
+                        console.log(tanks[i].row) ;
                         this.shield-=1 ;
                         this.life = false ;
                         this.keyDown() ;
@@ -537,23 +663,40 @@ class MyTank {
         if (this.row<20){
             this.row = 20  ;
         }
+        this.checkFirstAidKit() ;
     }
     keyDown() {
         this.row+=1 ;
         if (this.row>39){
             this.row = 39 ;
         }
+        this.checkFirstAidKit() ;
     }
     keyRight() {
         this.col+=1 ;
         if (this.col>39){
             this.col = 39 ;
         }
+        this.checkFirstAidKit() ;
     }
     keyLeft() {
         this.col-=1 ;
         if (this.col<0){
             this.col = 0 ;
+        }
+        this.checkFirstAidKit() ;
+    }
+    checkFirstAidKit(){
+        for( let i=0; i<tanks.length; i++ ) {
+            if (tanks[i] instanceof firstAidKit){
+                if (this.row==tanks[i].row&&this.col==tanks[i].col){
+                    this.HP+=3 ;
+                    if (this.HP >MyTank.HIGHEST_HP){
+                        this.HP = MyTank.HIGHEST_HP ;
+                    }
+                    tanks[i].hp = 0 ;
+                }
+            }
         }
     }
     keySpace() {
@@ -708,7 +851,7 @@ class Light extends MyBomb{
         this.height = height ;
     }
     process(){
-        if ( this.hp==0 ) {
+        if ( this.hp<0 ) {
             return ;
         }
         this.row-=1 ;
@@ -718,27 +861,41 @@ class Light extends MyBomb{
         this.drawBulletCell() ;
         for (let i=0;i<tanks.length;i++){
             if (!(tanks[i] instanceof  Bullet)  && !(tanks[i] instanceof  MyBullet) && !(tanks[i] instanceof MyBomb)&& !(tanks[i] instanceof  Light)){
-                if ( tanks[i].attack( this.row, this.col ) ) {
-                    if (!tanks[i] instanceof Light ){
-                    this.hp = 0 ;
-                    return ;
-                    }
-                } 
+                if (!tanks[i] instanceof firstAidKit){
+                    if ( tanks[i].attack( this.row, this.col ) ) {
+                        if (!tanks[i] instanceof Light ){
+                            this.hp = 0 ;
+                            return ;
+                        }
+                    } 
+                }
             }
         }
         
         
     }
     drawBulletCell(){
-        console.log(this.row);
+//        console.log(this.row);
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "lightImg", x, y, this.width*5/4, this.height*5/4, this.rotation ) ;
-        console.log(`${this.width},${this.width}`);
+//        console.log(`${this.width},${this.width}`);
         this.rotation+= 20 ;
     }
 }
-
+class firstAidKit{
+    row = (TOTAL_ROWS/2)+Math.floor(Math.random()*(TOTAL_ROWS/2)) ;
+    col = +Math.floor(Math.random()*TOTAL_COLS) ;
+    hp = 1 ;
+    draw(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "firstaidkit", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 0 ) ;
+    }
+    process(){
+        this.draw() ;
+    }
+}
 class KeyController {
     static ids = 0 ;
     id = KeyController.ids++ ;
@@ -872,7 +1029,7 @@ const TOTAL_COLS = 40 ;
 let isRun = true ;
 let lastTime = 0 ;
 let tanks = [] ; 
-let superTankCount = 1 ;
+let superTankCount = 0 ;
 
 function drawImg(imgId, x, y, width, height, rotation) {
         ctx.save();
@@ -902,7 +1059,7 @@ function drawBackground(){
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<2;i++){
+for (let i=0;i<0;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -950,17 +1107,21 @@ function run(time) {
         ctx.font = "80px Arial";
         ctx.fillText("GAME OVER",20,350);
     }
-    if ( getTankNumbers() == 0 ) {
-        if ( superTankCount++ <= 6 ) {
+    let tankNumbers = getTankNumbers() ;
+    if ( tankNumbers == 0 ) {
+        if ( superTankCount++ <= 5 ) {
             for ( let i= 0;i<superTankCount;i++ ) {
-                tanks.push( new SuperTank() ) ;
+//                tanks.push( new SuperTank() ) ;
+                tanks.push( new BigTank() ) ;
             }
+        } else {
+            ctx.fillStyle = `rgb(0,255,0)` ;
+            ctx.font = "200px Arial";
+            ctx.fillText("WIN",50,350 );
         }
     }
-    if (tanks.length==0 && superTankCount > 8 ){
-        ctx.fillStyle = `rgb(0,255,0)` ;
-        ctx.font = "200px Arial";
-        ctx.fillText("WIN",50,350 );
+    if (Math.floor(Math.random()*400) == 0){
+        tanks [tanks.length] = new firstAidKit () ;
     }
     requestAnimationFrame(run);
 }
