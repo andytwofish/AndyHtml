@@ -501,15 +501,14 @@ class MyTank {
     static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 8 ;
     HP = MyTank.HIGHEST_HP ;
-    shieldHp = 0 ;
     time = 0 ;
     row = 30 ;
     col = 20 ;
-    loaded2 = false ;
-    shield = 0 ;
-    bulletCount = 0 ;
+    isShieldON = false ;
+    shieldHP = MyTank.SHIELD_HIGHEST ;
     bombBeginTime = 0 ; 
     lastBulletTime = 0 ;
+    lastShieldSwitchTime = 0 ;
     constructor(row, col, keyController ) {
         this.tankId = MyTank.totalTanks++ ;
         this.keyController = keyController ;
@@ -588,14 +587,10 @@ class MyTank {
         if ( this.keyController.isButtonAPressed() ) {
             this.bombBeginTime = 0;
             this.keySpace();  
-        }else{
-            this.bulletCount = 0 ;//this.loaded = false ;
         }
         if ( this.keyController.isButtonXPressed() ) {
             this.bombBeginTime = 0 ;
             this.keyShield();  
-        }else{
-            this.loaded2 = false ;
         }
         if ( this.keyController.isButtonBPressed() ) {
             if ( this.bombBeginTime == 0 ) {
@@ -615,47 +610,53 @@ class MyTank {
                     this.keyDown() ;
                     tanks.splice(i,1) ;
                 }
-                if ( this.shield > 0 ){
-                    if ( (this.row-1)==tanks[i].row&&(this.col-2)==tanks[i].col ){
+                if ( this.isShieldON ){
+                    if ( this.row === undefined | tanks[i].row === undefined ) {
                         console.log(this.row) ;
                         console.log(tanks[i].row) ;
-                        this.shield-=1 ;
+                    }
+                    if ( (this.row-1)==tanks[i].row&&(this.col-2)==tanks[i].col ){
+                        this.shieldHP-=1 ;
                         this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
-                        return ;
+                        break;
 
                     }
                     if ( (this.row-2)==tanks[i].row&&(this.col-1)==tanks[i].col ){
-                        this.shield-=1 ;
+                        this.shieldHP-=1 ;
                         this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
-                        return ;
+                        break;
                     }
                     if ( (this.row-2)==tanks[i].row&&this.col==tanks[i].col ){
-                        this.shield-=1 ;
+                        this.shieldHP-=1 ;
                         this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
-                        return ;
+                        break ;
                     }
                     if ( (this.row-2)==tanks[i].row&&(this.col+1)==tanks[i].col ){
-                        this.shield-=1 ;
+                        this.shieldHP-=1 ;
                         this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
-                        return ;
+                        break ;
                     }
                     if ( (this.row-1)==tanks[i].row&&(this.col+2)==tanks[i].col ){
-                        this.shield-=1 ;
+                        this.shieldHP-=1 ;
                         this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
-                        return ;
+                        break ;
                     }
                 }
             }
+        }
+        if ( this.shieldHP <= 0  ) {
+            this.shieldHP = MyTank.SHIELD_HIGHEST ;
+            this.isShieldON = false ;
         }
         this.drawMyCell() ;
     }
@@ -701,7 +702,7 @@ class MyTank {
         }
     }
     keySpace() {
-        if ( this.shield <= 0 ) {
+        if ( !this.isShieldON ) {
             if ( Date.now() - this.lastBulletTime > 300 ) {
                 tanks [tanks.length] = new MyBullet(this.row,this.col) ;
                 this.bulletAudio.src = "y2271.mp3";
@@ -713,21 +714,13 @@ class MyTank {
         }
     }
     keyShield() {
-        if ( !this.loaded2 ){
-            this.loaded2 = true ;
-            if(this.shield <= 0){
-                if ( this.shieldHp > 0 ){
-                    this.shield = this.shieldHp ;
-                    this.shieldHp = 0 ;
-                }else{
-                    this.shield =MyTank.SHIELD_HIGHEST ;
-                }
-            }else{
-                this.shieldHp = this.shield ;
-                this.shield = 0 ;
-            }
+        if ( Date.now() - this.lastShieldSwitchTime < 200 ) {
+            return ;
         }
+        this.isShieldON = !this.isShieldON ;
+        this.lastShieldSwitchTime = Date.now() ;
     }
+
     keyMyBomb() {
        
     }
@@ -754,8 +747,8 @@ class MyTank {
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "M.tankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
-        if (this.shield > 0 ){
-            let color = 255/MyTank.SHIELD_HIGHEST*this.shield ;
+        if (this.isShieldON  ){
+            let color = 255/MyTank.SHIELD_HIGHEST*this.shieldHP ;
             ctx.fillStyle = `rgb(${color},${color},${color})` ;
             ctx.fillRect( (this.col-2)*CELL_SIZE+1, (this.row-1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*CELL_SIZE+1, (this.row-2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
