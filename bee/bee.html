@@ -756,39 +756,24 @@ class AutoMyTank extends MyTank {
             this.keyShield() ;
         }
         this.keySpace() ;
-        if ( this.isShieldON == false ) {
-            this.keyShield() ;
-        }
-        let minRight = 100 ;
-        let minCenter =100 ;
-        let minLeft =100 ;
-        for(let i=0; i<tanks.length; i++ ) {
-            if ( tanks[i] instanceof Bullet ) {
-                if ( tanks[i].col == this.col ) {
-                    if ( tanks[i].row < this.row && tanks[i].row < minCenter ) {
-                        minCenter = tanks[i].row ;
-                    }
-                }
-                if ( tanks[i].col == this.col+1 ) {
-                    if ( tanks[i].row < this.row && tanks[i].row < minRight ) {
-                        minRight = tanks[i].row ;
-                    }
-                }
-                if ( tanks[i].col == this.col-1 ) {
-                    if ( tanks[i].row < this.row && tanks[i].row < minLeft ) {
-                        minLeft = tanks[i].row ;
-                    }
-                }
-            }
-        }
-        //console.log( `${minLeft}, ${minCenter}, ${minLeft}`) ;
-        if ( minCenter < 100 ) {
-            if ( minRight >= minCenter && this.col < TOTAL_ROWS-2 ) {
+        this.keyShield() ;
+
+        let dir = Math.floor( Math.random() * 4) ;
+        switch( dir ) {
+            case 0:
+                this.keyUp() ;
+                break;
+            case 1:
                 this.keyRight() ;
-            } else if ( minLeft >= minCenter && this.col > 2 ) {
-                this.keyLeft
-            }
+                break;
+            case 2:
+                this.keyDown() ;
+                break;
+            case 3:
+                this.keyLeft() ; 
+                break;
         }
+
         this.checkIfUnderAttack() ;
         this.drawMyCell() ;
     }
