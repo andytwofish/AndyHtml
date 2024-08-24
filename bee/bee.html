@@ -475,7 +475,7 @@ class MyTank {
     static totalTanks = 0 ;
     static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 8 ;
-    HP = MyTank.HIGHEST_HP ;
+    hp = MyTank.HIGHEST_HP ;
     time = 0 ;
     row = 30 ;
     col = 20 ;
@@ -497,10 +497,9 @@ class MyTank {
         this.bombBeginTime = 0 ;
         this.audio.src = "y1491.mp3";
         this.audio.play();
-        this.HP-- ;
-        if(this.HP<=0){
+        this.hp-- ;
+        if(this.hp<=0){
             isRun = false ;
-            this.life = false ;
             //tanks.splice(i,1) ;
         }
     }
@@ -562,7 +561,6 @@ class MyTank {
                     }
                     if ( (this.row-1)==tanks[i].row&&(this.col-2)==tanks[i].col ){
                         this.shieldHP-=1 ;
-                        this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
                         break;
@@ -570,28 +568,24 @@ class MyTank {
                     }
                     if ( (this.row-2)==tanks[i].row&&(this.col-1)==tanks[i].col ){
                         this.shieldHP-=1 ;
-                        this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
                         break;
                     }
                     if ( (this.row-2)==tanks[i].row&&this.col==tanks[i].col ){
                         this.shieldHP-=1 ;
-                        this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
                         break ;
                     }
                     if ( (this.row-2)==tanks[i].row&&(this.col+1)==tanks[i].col ){
                         this.shieldHP-=1 ;
-                        this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
                         break ;
                     }
                     if ( (this.row-1)==tanks[i].row&&(this.col+2)==tanks[i].col ){
                         this.shieldHP-=1 ;
-                        this.life = false ;
                         this.keyDown() ;
                         tanks.splice(i,1) ;
                         break ;
@@ -668,9 +662,9 @@ class MyTank {
         for( let i=0; i<tanks.length; i++ ) {
             if (tanks[i] instanceof firstAidKit){
                 if (this.row==tanks[i].row&&this.col==tanks[i].col){
-                    this.HP+=3 ;
-                    if (this.HP >MyTank.HIGHEST_HP){
-                        this.HP = MyTank.HIGHEST_HP ;
+                    this.hp+=3 ;
+                    if (this.hp >MyTank.HIGHEST_HP){
+                        this.hp = MyTank.HIGHEST_HP ;
                     }
                     tanks[i].hp = 0 ;
                 }
@@ -737,7 +731,7 @@ class MyTank {
             drawImg( "M.shieldImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
         }   
         ctx.fillStyle = `rgb(255,0,0)` ;
-        for( let i=0; i<this.HP; i++ ) {
+        for( let i=0; i<this.hp; i++ ) {
             ctx.fillRect( (this.col-1)*CELL_SIZE, (this.row*CELL_SIZE)+20-i*4, 3, 3 ) ;
         }
 
@@ -1033,6 +1027,7 @@ let lastTime = 0 ;
 let tanks = [] ; 
 let target = [] ;
 let superTankCount = 0 ;
+let wave = 0 ;
 
 function drawImg(imgId, x, y, width, height, rotation) {
         ctx.save();
@@ -1078,7 +1073,6 @@ function getTankNumbers() {
     }
     return count ;
 }
-
 function run(time) {
     if (lastTime === 0) {
         lastTime = time;
@@ -1092,35 +1086,38 @@ function run(time) {
     }
     lastTime = time ;
 
-    if (isRun){
-        for (let i=0;i<tanks.length;i++){
-            if (tanks [i].hp<=0 ){
-                tanks.splice(i--,1) ;
-            }
-        }  
-        ctx.fillStyle = `rgb(0,0,0)` ;
-        ctx.fillRect( 0 , 0 , 560 , 560 ) ;
-        for (let i=0;i<tanks.length;i++){
+    ctx.fillStyle = `rgb(0,0,0)` ;
+    ctx.fillRect( 0 , 0 , 560 , 560 ) ;
+    ctx.fillStyle = `rgb(255,255,255)` ;
+    ctx.font = "20px Arial";
+    ctx.fillText(`第${wave}波`,500,560 );
+    ctx.fillText(`我方${target.length}隻`,0,560 );
+    for (let i=0;i<tanks.length;i++){
+        if (tanks [i].hp<=0 ){
+            tanks.splice(i--,1) ;
+        } else {
             tanks [i].process() ;
         }
-        myTank1.process() ;
-        myTank2.process() ;
-        myTank3.process() ;
-        myTank4.process() ;
-        myTank5.process() ;
-        myTank6.process() ;
-        myTank7.process() ;
-        myTank8.process() ;
-        myTank9.process() ;
-    }else{
+    }  
+    for (let j=0;j<target.length;j++ ){
+        if (target[j].hp<=0){
+            target.splice(j--,1) ;
+        }else{
+            target[j].process() ;
+        }
+    }
+
+    if (target.length == 0){
         ctx.fillStyle = `rgb(255,0,0)` ;
         ctx.font = "80px Arial";
         ctx.fillText("GAME OVER",20,350);
     }
+
     let tankNumbers = getTankNumbers() ;
     if ( tankNumbers == 0 ) {
         if ( superTankCount++ <= 3 ) {
             for ( let i= 0;i<superTankCount;i++ ) {
+                wave = i ;
                 tanks.push( new SuperTank() ) ;
                 tanks.push( new BigTank() ) ;
             }
@@ -1137,24 +1134,10 @@ function run(time) {
 }
 
 window.onload=function() {
-    this.myTank1 = new AutoMyTank(20, 0, new KeyController(0) );
-    this.myTank2 = new MyTank(30, 5, new KeyController(1) );
-    this.myTank3 = new AutoMyTank(20, 10, new KeyController(0) );
-    this.myTank4 = new AutoMyTank(20, 15, new KeyController(0) );
-    this.myTank5 = new AutoMyTank(20, 20, new KeyController(1) );
-    this.myTank6 = new AutoMyTank(20, 25, new KeyController(1) );
-    this.myTank7 = new AutoMyTank(20, 30, new KeyController(1) );
-    this.myTank8 = new AutoMyTank(20, 35, new KeyController(1) );
-    this.myTank9 = new AutoMyTank(20, 40, new KeyController(1) );
-    target[target.length] = myTank1 ;
-    target[target.length] = myTank2 ;
-    target[target.length] = myTank3 ;
-    target[target.length] = myTank4 ;
-    target[target.length] = myTank5 ;
-    target[target.length] = myTank6 ;
-    target[target.length] = myTank7 ;
-    target[target.length] = myTank8 ;
-    target[target.length] = myTank9 ;
+    target[target.length] = new MyTank(30, 20, new KeyController(1) );
+    for (let i=0;i<1;i++){
+        target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
+    }
     requestAnimationFrame(run);
 }
 
