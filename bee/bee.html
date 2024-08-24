@@ -1095,7 +1095,7 @@ function drawBackground(){
 for (let i=0;i<0;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<8;i++){
+for (let i=0;i<4;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -1156,11 +1156,11 @@ function run(time) {
         if ( superTankCount++ <9 ) {
             if (superTankCount++ == 9 ){
                 tanks.push( new BigTank() ) ;
-            }
-            for ( let i= 0;i<superTankCount;i++ ) {
-                wave = i ;
-                tanks.push( new SuperTank() ) ;
-
+            }else{
+                for ( let i= 0;i<superTankCount;i++ ) {
+                    wave = i ;
+                    tanks.push( new SuperTank() ) ;
+                }
             }
         } else {
             ctx.fillStyle = `rgb(0,255,0)` ;
@@ -1175,10 +1175,10 @@ function run(time) {
 }
 
 window.onload=function() {
-    for (let i=0;i<2;i++){
+    for (let i=0;i<1;i++){
         target[target.length] = new MyTank(30, 20, new KeyController(i) );
     }
-    for (let i=0;i<2;i++){
+    for (let i=0;i<7;i++){
         target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     }
     requestAnimationFrame(run);
