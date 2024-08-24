@@ -308,42 +308,80 @@ class SuperTank extends Tank {
 
 }
 class BigTank extends SuperTank{
+    HIGHEST_HP = 4 ;
+    hp = this.HIGHEST_HP ;
     lastFireTS2 = 0 ;
     init() {
         let part0 = new Part() ;
-        part0.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) ;
-        part0.add(-1,-2).add(-1,2).add(-1,-3).add(-1,3).add(-1,-4).add(-1,4).add(1,-2).add(1,2).add(2,-2).add(2,2).add(3,-2).add(3,2).add(4,-1).add(4,1) ;
-
+        part0.add(-2,0)
         let part1 = new Part() ;
-        part1.add(2,0) ;
-        part1.fillStyle = "rgb(200,0,0)" ;
+        part1.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) ;
+        part1.add(-1,-2).add(-1,2).add(-1,-3).add(-1,3).add(-1,-4).add(-1,4).add(1,-2).add(1,2).add(2,-2).add(2,2).add(3,-2).add(3,2).add(4,-1).add(4,1) ;
 
         let part2 = new Part() ;
-        part2.add(0,-4) ;
+        part2.add(2,0) ;
+        part2.fillStyle = "rgb(200,0,0)" ;
 
         let part3 = new Part() ;
-        part3.add(0,4) ;
+        part3.add(0,-4) ;
+
+        let part4 = new Part() ;
+        part4.add(0,4) ;
         this.parts = [] ;
         this.parts.push( part0 ) ;
         this.parts.push( part1 ) ;
         this.parts.push( part2 ) ;
         this.parts.push( part3 ) ;
+        this.parts.push( part4 ) ;
+    }
+    attackedPart(partIdx) {
+        if ( partIdx == 0) {
+            this.hp-- ;
+            for( let i=1; i<this.parts.length; i++) {
+                if ( this.parts[i].isOn ) {
+                    this.hp = this.HIGHEST_HP ;
+                }
+            }
+        } else {
+            if ( partIdx == 1) {
+                if (!this.parts[2].isOn&&!this.parts[3].isOn&&!this.parts[4].isOn){
+                    this.parts[partIdx].isOn = false ;
+                }else{
+                    return ;
+                }
+            }
+            this.parts[partIdx].isOn = false ;
+        }
     }
     process(){
         if ( Date.now() - this.lastFireTS > 2000 ) {
             this.lastFireTS = Date.now() ;
-            if ( this.parts[2].isOn ) {
-                tanks.push( new Missile(this.row+1,this.col+this.parts[2].coords[0].col,200,200,200) );
-            }
             if ( this.parts[3].isOn ) {
                 tanks.push( new Missile(this.row+1,this.col+this.parts[3].coords[0].col,200,200,200) );
+            }
+            if ( this.parts[4].isOn ) {
+                tanks.push( new Missile(this.row+1,this.col+this.parts[4].coords[0].col,200,200,200) );
+            }
+            if (this.parts[0].isOn ){
+                if (!this.parts[1].isOn){
+                    tanks.push( new Missile(this.row+1,this.col+this.parts[0].coords[0].col,200,200,200) );
+                    let random = target.length*(4+Math.floor(Math.random()*4)) ;
+                    for (let i=0;i<random;i++){
+                        let k = Math.floor(Math.random()*target.length) ;
+                        let tankCol = target[k].col ;
+                        let col = Math.floor(Math.random()*8)-4+tankCol ;
+                        for (let j=0;j<TOTAL_ROWS;j++){
+                            tanks.push( new LaserLight(0+j,col,200,200,200) );
+                        }
+                    }
+                }
             }
         }
         if ( Date.now() - this.lastFireTS2 > 800 ) {
             this.lastFireTS2 = Date.now() ;
-                if ( this.parts[1].isOn ) {
+                if ( this.parts[2].isOn ) {
                     for (let i=0;i<TOTAL_ROWS;i++){
-                    tanks.push( new LaserLight(this.row+1+i,this.col+this.parts[1].coords[0].col,200,200,200) );
+                        tanks.push( new LaserLight(this.row+1+i,this.col+this.parts[1].coords[0].col,200,200,200) );
                     }
                 }
         }
@@ -458,7 +496,7 @@ class Missile extends Bullet{
     }
 }
 class LaserLight extends Bullet{
-    hp = 7 ;
+    hp = 4 ;
     process(){
         this.hp-- ;
         if ( this.hp<1 ) {
@@ -1115,11 +1153,14 @@ function run(time) {
 
     let tankNumbers = getTankNumbers() ;
     if ( tankNumbers == 0 ) {
-        if ( superTankCount++ <= 20 ) {
+        if ( superTankCount++ <9 ) {
+            if (superTankCount++ == 9 ){
+                tanks.push( new BigTank() ) ;
+            }
             for ( let i= 0;i<superTankCount;i++ ) {
                 wave = i ;
-//                tanks.push( new SuperTank() ) ;
-                tanks.push( new BigTank() ) ;
+                tanks.push( new SuperTank() ) ;
+
             }
         } else {
             ctx.fillStyle = `rgb(0,255,0)` ;
@@ -1134,8 +1175,10 @@ function run(time) {
 }
 
 window.onload=function() {
-    target[target.length] = new MyTank(30, 20, new KeyController(1) );
-    for (let i=0;i<80;i++){
+    for (let i=0;i<2;i++){
+        target[target.length] = new MyTank(30, 20, new KeyController(i) );
+    }
+    for (let i=0;i<2;i++){
         target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     }
     requestAnimationFrame(run);
