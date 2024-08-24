@@ -1115,10 +1115,10 @@ function run(time) {
 
     let tankNumbers = getTankNumbers() ;
     if ( tankNumbers == 0 ) {
-        if ( superTankCount++ <= 3 ) {
+        if ( superTankCount++ <= 20 ) {
             for ( let i= 0;i<superTankCount;i++ ) {
                 wave = i ;
-                tanks.push( new SuperTank() ) ;
+//                tanks.push( new SuperTank() ) ;
                 tanks.push( new BigTank() ) ;
             }
         } else {
@@ -1135,7 +1135,7 @@ function run(time) {
 
 window.onload=function() {
     target[target.length] = new MyTank(30, 20, new KeyController(1) );
-    for (let i=0;i<1;i++){
+    for (let i=0;i<80;i++){
         target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     }
     requestAnimationFrame(run);
