@@ -1371,7 +1371,13 @@ function run(time) {
             target[j].process() ;
         }
     }
-    entity.process() ;
+    for ( let j=0; j<Entity.objs.length; j++ ) {
+        if ( Entity.objs[j].hp <= 0 ) {
+            Entity.objs.splice(j--,1) ;
+        } else {
+            Entity.objs[j].process() ;
+        }
+    }
     if (target.length == 0){
         ctx.fillStyle = `rgb(255,0,0)` ;
         ctx.font = "80px Arial";
