@@ -1093,10 +1093,10 @@ function drawBackground(){
 
 
 
-for (let i=0;i<0;i++){
+for (let i=0;i<200;i++){
     tanks [tanks.length] = new Tank () ;
 }
-for (let i=0;i<4;i++){
+for (let i=0;i<0;i++){
     tanks [tanks.length] = new BabyTank () ;
 }
 for (let i=0;i<0;i++){
@@ -1141,6 +1141,9 @@ function run(time) {
     ctx.fillStyle = `rgb(255,255,255)` ;
     ctx.font = "20px Arial";
     ctx.fillText(`我方${target.length}隻`,0,560 );
+    let tankNumbers = getTankNumbers() ;
+    ctx.font = "20px Arial";
+    ctx.fillText(`敵方${tankNumbers}隻`,250,20 );
     for (let i=0;i<tanks.length;i++){
         if (tanks [i].hp<=0 ){
             tanks.splice(i--,1) ;
@@ -1162,7 +1165,6 @@ function run(time) {
         ctx.fillText("GAME OVER",20,350);
     }
 
-    let tankNumbers = getTankNumbers() ;
     if ( tankNumbers == 0 ) {
         wave++ ;
         if (wave < 8 ) {
