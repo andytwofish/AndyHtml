@@ -778,6 +778,7 @@ class MyTank extends Entity {
 
         let part1 = new Part() ;
         part1.add(-2,0).add(-2,-1).add(-2,1).add(-1,-2).add(-1,2) ;
+        part1.hp=0 ;
 
         this.parts = [] ;
         this.parts.push( part0 ) ;
@@ -905,8 +906,15 @@ class MyTank extends Entity {
             return ;
         }
         this.isShieldON = !this.isShieldON ;
-        if ( this.isShieldON && this.parts[1].hp <= 0 ) {
-            this.parts[1].hp = 8 ;
+        if ( this.isShieldON ) {
+            if ( this.shieldHP <=0 ) {
+                this.parts[1].hp = 8 ;
+            } else {
+                this.parts[1].hp = this.isShieldON ;
+            }
+        } else {
+            this.shieldHP = this.parts[1].hp ;
+            this.parts[1].hp = 0 ;
         }
         this.lastShieldSwitchTime = Date.now() ;
     }
