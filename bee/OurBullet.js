@@ -1,7 +1,7 @@
 class OurBullet extends Entity {
     createFrom = 0 ;
     hp=1;
-    moveDistance = 100 ;
+    moveDistance = TOTAL_ROWS ;
     constructor( row, col, rotation ) {
         super( row, col, rotation ) ;
         this.moveDirection = rotation ;
@@ -18,6 +18,16 @@ class OurBullet extends Entity {
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, this.rotation ) ;
+    }
+    checkAfterMoved() {
+        for( let i=0; i<Entity.objs.length; i++ ) {
+            let entity = Entity.objs[i]  ;
+            if ( entity instanceof EnemyTank ) {
+                if ( entity.attackCheck( this ) ) {
+                    this.hp-- ;
+                }
+            }
+        }
     }
     move() {
         if ( this.moveDistance-- > 0 )  {
@@ -39,14 +49,7 @@ class OurBullet extends Entity {
             if ( !isMove ) {
                 this.hp = 0 ;
             } else {
-                for( let i=0; i<Entity.objs.length; i++ ) {
-                    let entity = Entity.objs[i]  ;
-                    if ( entity instanceof EnemyTank ) {
-                        if ( entity.attackCheck( this ) ) {
-                            this.hp-- ;
-                        }
-                    }
-                }
+                this.checkAfterMoved() ;
             }
         } else {
             this.hp = 0 ;
