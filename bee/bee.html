@@ -173,46 +173,54 @@ class Entity {
         this.hp--;
     }
 
-    attackCheck( fromEntity ) {
-        for( let fromPartIdx=0; fromPartIdx<fromEntity.parts.length; fromPartIdx++ ) {
-            let fromPart = fromEntity.parts[fromEntity] ;
-            if ( fromPart.hp <= 0 ) {
-                continue ;
-            }
-            //初步比較
-            if ( this.boundary.right < fromEntity.boundary.left ) {
-                return false ;
-            }
-            if ( this.boundary.top > fromEntity.boundary.bottom ) {
-                return false ;
-            }
-            if ( this.boundary.left > fromEntity.boundary.right ) {
-                return false ;
-            }
-            if ( this.boundary.bottom < fromEntity.boundary.top ) {
-                return false ;
-            }
+    _attackPartCheck( fromEntity, fromPart, toEntity, toPart ) {
+        //初步比較
+        if ( toPart.boundary.right < fromPart.boundary.left ) {
+            return false ;
+        }
+        if ( toPart.boundary.top > fromPart.boundary.bottom ) {
+            return false ;
+        }
+        if ( toPart.boundary.left > fromPart.boundary.right ) {
+            return false ;
+        }
+        if ( toPart.boundary.bottom < fromPart.boundary.top ) {
+            return false ;
+        }
 
-            //細部每個cell比較
-            for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-                let toPart = this.parts[partIdx] ;
-                if ( toPart.hp <= 0 ) {
-                    continue ;
-                }
-                for ( let i=0; i<fromPart.coords.length; i++ ) {
-                    let fromCoord = fromPart.coords[i] ;
-                    for ( let j=0; j<toPart.coords.length; j++ ) {
-                        let toCoord = toPart.coords[j] ;
-                        if ( fromEntity.row+fromCoord.row == this.row+toCoord.row 
-                            && fromEntity.col+fromCoord.col == this.col+toCoord.col ) {
-                            this.attackedPart( fromEntity, partIdx ) ;
-                            return true ;
-                        }
-                    }
+        //細部每個cell比較
+        for ( let i=0; i<fromPart.coords.length; i++ ) {
+            let fromCoord = fromPart.coords[i] ;
+            for ( let j=0; j<toPart.coords.length; j++ ) {
+                let toCoord = toPart.coords[j] ;
+                if ( fromEntity.row+fromCoord.row == this.row+toCoord.row 
+                    && fromEntity.col+fromCoord.col == this.col+toCoord.col ) {
+                    return true ;
                 }
             }
         }
         return false ;
+    }
+
+    attackCheck( fromEntity ) {
+        let toEntity = this ;
+        let fromEntityBoundary = fromEntity.findEntityBoundary() ;
+        let toEntityBoundary = toEntity.findEntityBoundary() ;
+
+        for( let i=0; i<toEntity.parts.length; i++ ) {
+            if ( toEntity.parts[i].hp <= 0 ) {
+                continue ;
+            }
+            for( let j=0; j<fromEntity.parts.length; j++) {
+                if ( fromEntity.parts[j].hp <= 0 ) {
+                    continue ;
+                }
+                if ( this._attackPartCheck(fromEntity, fromEntity.parts[j], toEntity, toEntity.parts[i] ) ) {
+                    this.attackedPart( fromEntity, i ) ;
+                }
+            }
+        }
+
     }
 
     process(){
@@ -261,8 +269,11 @@ class EnemyBullet extends Entity {
             if ( !isMove ) {
                 this.hp = 0 ;
             } else {
-                for( i=0; i< Entity.objs.length ; i++ ) {
-                    //if ( ) 
+                for( let i=0; i< Entity.objs.length ; i++ ) {
+                    let entity = Entity.objs[i] ;
+                    if ( entity instanceof MyTank ) {
+                        entity.attackCheck( this ) ;
+                    }
                 }
             }
         } else {
@@ -281,7 +292,6 @@ class EnemyTank extends Entity {
     constructor() {
         super( 0, 0, 180 ) ;
         let coord = this.getRandomLocation();
-        console.log( coord ) ;
         this.row = coord.row ;
         this.col = coord.col ;
     }
@@ -386,7 +396,7 @@ class ShieldPeople extends EnemyTank {
         }   
     }
 
-    attackedPart(partIdx) {
+    attackedPart( fromEntity, partIdx) {
         if ( partIdx == 0) {
             this.hp = 0 ;
         } else if ( partIdx == 1 ) {
@@ -447,7 +457,7 @@ class SuperTank extends EnemyTank {
         this.autoDraw() ;
     }
 
-    attackedPart(partIdx) {
+    attackedPart( fromEntity, partIdx) {
         if ( partIdx == 0) {
             this.hp = 0 ;
             for( let i=1; i<this.parts.length; i++) {
@@ -502,7 +512,7 @@ class BigTank extends SuperTank{
         this.parts.push( part3 ) ;
         this.parts.push( part4 ) ;
     }
-    attackedPart(partIdx) {
+    attackedPart( fromEntity, partIdx) {
         if ( partIdx == 0) {
             this.hp-- ;
             for( let i=1; i<this.parts.length; i++) {
@@ -677,7 +687,63 @@ class LaserLight extends Bullet{
         ctx.fillRect( this.col*CELL_SIZE, this.row*CELL_SIZE, CELL_SIZE, CELL_SIZE ) ;
     }
 }
-class MyTank {
+
+class OurBullet extends Entity {
+    createFrom = 0 ;
+    moveDistance = 100 ;
+    constructor( row, col, rotation ) {
+        super( row, col, rotation ) ;
+        this.moveDirection = rotation ;
+    }
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+        part0.fillStyle = "rgb(200,0,0)" ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+    }
+    draw(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, this.rotation ) ;
+    }
+    move() {
+        if ( this.moveDistance-- > 0 )  {
+            let isMove = false ;
+            switch( this.moveDirection ) {
+                case 0:
+                    isMove = this.moveIfPermitted( this.row-1, this.col ) ;
+                    break;
+                case 90:
+                    isMove = this.moveIfPermitted( this.row, this.col+1 ) ;
+                    break;
+                case 180:
+                    isMove = this.moveIfPermitted( this.row+1, this.col ) ;
+                    break;
+                case 270:
+                    isMove = this.moveIfPermitted( this.row, this.col-1 ) ;
+                    break;
+            }
+            if ( !isMove ) {
+                this.hp = 0 ;
+            } else {
+                for( let i=0; i<Entity.objs.length; i++ ) {
+                    let entity = Entity.objs[i]  ;
+                    if ( entity instanceof EnemyTank ) {
+                        entity.attackCheck( this ) ;
+                    }
+                }
+            }
+        } else {
+            this.hp = 0 ;
+        }
+
+    }
+
+}
+
+class MyTank extends Entity {
     static totalTanks = 0 ;
     static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 8 ;
@@ -690,7 +756,9 @@ class MyTank {
     bombBeginTime = 0 ; 
     lastBulletTime = 0 ;
     lastShieldSwitchTime = 0 ;
+    lastProcessTS = Date.now();
     constructor(row, col, keyController ) {
+        super( row, col, 0 ) ;
         this.tankId = MyTank.totalTanks++ ;
         this.keyController = keyController ;
         this.row = row ;
@@ -699,14 +767,32 @@ class MyTank {
         this.bombAudio = document.createElement("audio");
         this.bulletAudio = document.createElement("audio");
     }
-    attacked() {
-        this.bombBeginTime = 0 ;
-        this.audio.src = "y1491.mp3";
-        this.audio.play();
-        this.hp-- ;
-        if(this.hp<=0){
-            isRun = false ;
-            //tanks.splice(i,1) ;
+    init() {
+        this.spaceBoundary.top = 20;
+        this.spaceBoundary.bottom = TOTAL_ROWS-1;
+        this.spaceBoundary.left = 0;
+        this.spaceBoundary.right = TOTAL_COLS-1;
+
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+
+        let part1 = new Part() ;
+        part1.add(-2,0).add(-2,-1).add(-2,1).add(-1,-2).add(-1,2) ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+        this.parts.push( part1 ) ;
+    }
+
+    attackedPart( fromEntity, partIdx) {
+        if ( partIdx == 1) {
+            this.parts[partIdx].hp--;
+        }
+        if ( partIdx == 0 ) {
+            this.bombBeginTime = 0 ;
+            this.audio.src = "y1491.mp3";
+            this.audio.play();
+            this.hp-- ;
         }
     }
 
@@ -751,78 +837,30 @@ class MyTank {
         }
         this.bombBeginTime = 0 ;
     }
-    checkIfUnderAttack() {
-        for(let i=0;i<tanks.length;i++){
-            if (tanks[i] instanceof Bullet ){
-                if ( this.row==tanks[i].row&&this.col==tanks[i].col ){
-                    this.attacked() ;
-                    this.time = 0
-                    this.keyDown() ;
-                    tanks.splice(i,1) ;
-                }
-                if ( this.isShieldON ){
-                    if ( typeof this.row === 'undefined' || typeof tanks[i].row === 'undefined' ) {
-                        console.log(this.row) ;
-                        console.log(tanks[i].row) ;
-                    }
-                    if ( (this.row-1)==tanks[i].row&&(this.col-2)==tanks[i].col ){
-                        this.shieldHP-=1 ;
-                        this.keyDown() ;
-                        tanks.splice(i,1) ;
-                        break;
 
-                    }
-                    if ( (this.row-2)==tanks[i].row&&(this.col-1)==tanks[i].col ){
-                        this.shieldHP-=1 ;
-                        this.keyDown() ;
-                        tanks.splice(i,1) ;
-                        break;
-                    }
-                    if ( (this.row-2)==tanks[i].row&&this.col==tanks[i].col ){
-                        this.shieldHP-=1 ;
-                        this.keyDown() ;
-                        tanks.splice(i,1) ;
-                        break ;
-                    }
-                    if ( (this.row-2)==tanks[i].row&&(this.col+1)==tanks[i].col ){
-                        this.shieldHP-=1 ;
-                        this.keyDown() ;
-                        tanks.splice(i,1) ;
-                        break ;
-                    }
-                    if ( (this.row-1)==tanks[i].row&&(this.col+2)==tanks[i].col ){
-                        this.shieldHP-=1 ;
-                        this.keyDown() ;
-                        tanks.splice(i,1) ;
-                        break ;
-                    }
-                }
-            }
-        }
-        if ( this.shieldHP <= 0  ) {
-            this.shieldHP = MyTank.SHIELD_HIGHEST ;
-            this.isShieldON = false ;
-        }
-
-    }
     process() {
+        if ( Date.now() - this.lastProcessTS < 60 ) {
+            this.draw() ;
+            return ;
+        }
+        this.lastProcessTS = Date.now() ;
         if ( this.keyController.isArrowRightPressed() ) {
-            this.keyRight();
+            this.moveIfPermitted( this.row, this.col+1 ) ;
         }
         if ( this.keyController.isArrowLeftPressed() ) {
-            this.keyLeft();
+            this.moveIfPermitted( this.row, this.col-1 ) ;
         }
         if ( this.keyController.isArrowDownPressed() ) {
-            this.keyDown();
+            this.moveIfPermitted( this.row+1, this.col ) ;
         }
         if ( this.keyController.isArrowUpPressed()) {
-            this.keyUp() ;
+            this.moveIfPermitted( this.row-1, this.col ) ;
         }
         if ( this.keyController.isButtonAPressed() ) {
-            this.keySpace();  
+            this.fireBullet();  
         }
         if ( this.keyController.isButtonXPressed() ) {
-            this.keyShield();  
+            this.switchShield();  
         }
         if ( this.keyController.isButtonBPressed() ) {
             if ( this.bombBeginTime == 0 ) {
@@ -833,36 +871,7 @@ class MyTank {
                 this.fireBomb() ;
             }
         }
-        this.checkIfUnderAttack() ;
-        this.drawMyCell() ;
-    }
-    keyUp() {
-        this.row-=1 ;
-        if (this.row<20){
-            this.row = 20  ;
-        }
-        this.checkFirstAidKit() ;
-    }
-    keyDown() {
-        this.row+=1 ;
-        if (this.row>39){
-            this.row = 39 ;
-        }
-        this.checkFirstAidKit() ;
-    }
-    keyRight() {
-        this.col+=1 ;
-        if (this.col>39){
-            this.col = 39 ;
-        }
-        this.checkFirstAidKit() ;
-    }
-    keyLeft() {
-        this.col-=1 ;
-        if (this.col<0){
-            this.col = 0 ;
-        }
-        this.checkFirstAidKit() ;
+        this.draw() ;
     }
     checkFirstAidKit(){
         for( let i=0; i<tanks.length; i++ ) {
@@ -877,11 +886,11 @@ class MyTank {
             }
         }
     }
-    keySpace() {
+    fireBullet() {
         this.bombBeginTime = 0;
-        if ( !this.isShieldON ) {
+        if ( this.parts[1].hp <= 0 ) {
             if ( Date.now() - this.lastBulletTime > 300 ) {
-                tanks [tanks.length] = new MyBullet(this.row,this.col) ;
+                tanks [tanks.length] = new OurBullet(this.row,this.col,0) ;
                 this.bulletAudio.src = "y2271.mp3";
                 this.bulletAudio.pause(); 
                 this.bulletAudio.currentTime = 0;
@@ -890,36 +899,17 @@ class MyTank {
             }
         }
     }
-    keyShield() {
+    switchShield() {
         this.bombBeginTime = 0;
         if ( Date.now() - this.lastShieldSwitchTime < 200 ) {
             return ;
         }
         this.isShieldON = !this.isShieldON ;
+        if ( this.isShieldON && this.parts[1].hp <= 0 ) {
+            this.parts[1].hp = 8 ;
+        }
         this.lastShieldSwitchTime = Date.now() ;
     }
-
-    keyMyBomb() {
-       
-    }
-    keyEvent(event ) {
-        if (event.code==`ArrowUp`){
-            this.keyUp();
-        }
-        if (event.code==`ArrowDown`){
-            this.keyDown();
-        }
-        if (event.code==`ArrowRight`){
-            this.keyRight();
-        }
-        if (event.code==`ArrowLeft`){
-            this.keyLeft() ;
-        }
-        if (event.code==`Space`){
-            this.keySpace();
-        }
-    }
-
 
     drawMyCell(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
@@ -953,10 +943,10 @@ class AutoMyTank extends MyTank {
 
     process() {
         if ( this.isShieldON == true ) {
-            this.keyShield() ;
+            this.switchShield() ;
         }
-        this.keySpace() ;
-        this.keyShield() ;
+        this.fireBullet() ;
+        this.switchShield() ;
 
         let dir = Math.floor( Math.random() * 4) ;
         switch( dir ) {
@@ -1366,7 +1356,6 @@ window.onload=function() {
     //for (let i=0;i<49;i++){
     //    target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     //}
-    new EnemyTank() ;
     requestAnimationFrame(run);
 }
 
