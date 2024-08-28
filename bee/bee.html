@@ -139,7 +139,7 @@ class Entity {
     findBoundary() {
         let boundary = new Boundary() ;
         for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( !this.parts[partIdx].isOn ) {
+            if ( this.parts[partIdx].hp <= 0 ) {
                 continue ;
             }
             let partBoundary = this.parts[partIdx].boundary ;
@@ -161,7 +161,7 @@ class Entity {
 
     draw(){
         for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( !this.parts[partIdx].isOn ) {
+            if ( this.parts[partIdx].hp <= 0 ) {
                 continue ;
             }
             ctx.fillStyle = this.parts[partIdx].fillStyle ;
@@ -179,7 +179,7 @@ class Entity {
     attackCheck( fromEntity ) {
         for( let fromPartIdx=0; fromPartIdx<fromEntity.parts.length; fromPartIdx++ ) {
             let fromPart = fromEntity.parts[fromEntity] ;
-            if ( !fromPart.isOn ) {
+            if ( fromPart.hp <= 0 ) {
                 continue ;
             }
             //初步比較
@@ -199,7 +199,7 @@ class Entity {
             //細部每個cell比較
             for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
                 let toPart = this.parts[partIdx] ;
-                if ( !toPart.isOn ) {
+                if ( toPart.hp <= 0 ) {
                     continue ;
                 }
                 for ( let i=0; i<fromPart.coords.length; i++ ) {
@@ -283,7 +283,7 @@ class Tank{
     getBoundary() {
         let boundary = new Boundary() ;
         for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( !this.parts[partIdx].isOn ) {
+            if ( this.parts[partIdx].hp <= 0 ) {
                 continue ;
             }
             for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
@@ -308,7 +308,7 @@ class Tank{
 
     autoDraw() {
         for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( !this.parts[partIdx].isOn ) {
+            if ( this.parts[partIdx].hp <= 0 ) {
                 continue ;
             }
             ctx.fillStyle = this.parts[partIdx].fillStyle ;
@@ -332,7 +332,7 @@ class Tank{
     //傳出boolean  true:有打到  false:沒打到
     attack( row, col ) {
         for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( !this.parts[partIdx].isOn ) {
+            if ( this.parts[partIdx].hp <= 0 ) {
                 continue ;
             }
             for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
@@ -414,7 +414,7 @@ class ShieldPeople extends Tank {
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "peopleImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
     
-        if ( this.parts[1].isOn ){
+        if ( this.parts[1].hp > 0 ){
             ctx.fillStyle = `rgb(100,100,0)` ;
             ctx.fillRect( (this.col-2)*CELL_SIZE+1, (this.row+1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*CELL_SIZE+1, (this.row+2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
@@ -430,16 +430,16 @@ class ShieldPeople extends Tank {
         if ( partIdx == 0) {
             this.hp = 0 ;
         } else if ( partIdx == 1 ) {
-            this.parts[partIdx].isOn = false ;
+            this.parts[partIdx].hp-- ;
         }
     }
 
     process(){
-        if (this.parts[1].isOn){
+        if (this.parts[1].hp > 0 ){
             this.lastShieldTS = Date.now() ;
         } else {
             if ( Date.now() - this.lastShieldTS > 3000 ) {
-                this.parts[1].isOn = true ;
+                this.parts[1].hp = 1 ;
             }
         }
         this.move() ;
@@ -489,12 +489,12 @@ class SuperTank extends Tank {
         if ( partIdx == 0) {
             this.hp = 0 ;
             for( let i=1; i<this.parts.length; i++) {
-                if ( this.parts[i].isOn ) {
+                if ( this.parts[i].hp > 0 ) {
                     this.hp = 1 ;
                 }
             }
         } else {
-            this.parts[partIdx].isOn = false ;
+            this.parts[partIdx].hp = 0 ;
         }
     }
 
@@ -502,7 +502,7 @@ class SuperTank extends Tank {
         if ( Date.now() - this.lastFireTS > 2800 ) {
             this.lastFireTS = Date.now() ;
             for( let i=1; i<this.parts.length; i++ ) {
-                if ( this.parts[i].isOn ) {
+                if ( this.parts[i].hp > 0 ) {
                     tanks.push( new Bullet(this.row+1,this.col+this.parts[i].coords[0].col,200,200,200) );
                 }
             }
@@ -544,32 +544,32 @@ class BigTank extends SuperTank{
         if ( partIdx == 0) {
             this.hp-- ;
             for( let i=1; i<this.parts.length; i++) {
-                if ( this.parts[i].isOn ) {
+                if ( this.parts[i].hp > 0 ) {
                     this.hp = this.HIGHEST_HP ;
                 }
             }
         } else {
             if ( partIdx == 1) {
-                if (!this.parts[2].isOn&&!this.parts[3].isOn&&!this.parts[4].isOn){
-                    this.parts[partIdx].isOn = false ;
+                if (this.parts[2].hp<=0&&this.parts[3].hp<=0&&this.parts[4].hp<=0){
+                    this.parts[partIdx].hp = 0 ;
                 }else{
                     return ;
                 }
             }
-            this.parts[partIdx].isOn = false ;
+            this.parts[partIdx].hp = 0 ;
         }
     }
     process(){
         if ( Date.now() - this.lastFireTS > 2000 ) {
             this.lastFireTS = Date.now() ;
-            if ( this.parts[3].isOn ) {
+            if ( this.parts[3].hp > 0 ) {
                 tanks.push( new Missile(this.row+1,this.col+this.parts[3].coords[0].col,200,200,200) );
             }
-            if ( this.parts[4].isOn ) {
+            if ( this.parts[4].hp > 0 ) {
                 tanks.push( new Missile(this.row+1,this.col+this.parts[4].coords[0].col,200,200,200) );
             }
-            if (this.parts[0].isOn ){
-                if (!this.parts[1].isOn){
+            if (this.parts[0].hp > 0 ){
+                if (this.parts[1].hp <= 0){
                     tanks.push( new Missile(this.row+1,this.col+this.parts[0].coords[0].col,200,200,200) );
                     let random = target.length*(4+Math.floor(Math.random()*4)) ;
                     for (let i=0;i<random;i++){
@@ -585,7 +585,7 @@ class BigTank extends SuperTank{
         }
         if ( Date.now() - this.lastFireTS2 > 800 ) {
             this.lastFireTS2 = Date.now() ;
-                if ( this.parts[2].isOn ) {
+                if ( this.parts[2].hp > 0 ) {
                     for (let i=0;i<TOTAL_ROWS;i++){
                         tanks.push( new LaserLight(this.row+1+i,this.col+this.parts[1].coords[0].col,200,200,200) );
                     }
@@ -1362,7 +1362,7 @@ function run(time) {
             target[j].process() ;
         }
     }
-
+    entity.process() ;
     if (target.length == 0){
         ctx.fillStyle = `rgb(255,0,0)` ;
         ctx.font = "80px Arial";
@@ -1392,12 +1392,13 @@ function run(time) {
 }
 
 window.onload=function() {
-    for (let i=0;i<1;i++){
-        target[target.length] = new MyTank(30, 20, new KeyController(i) );
-    }
-    for (let i=0;i<49;i++){
-        target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
-    }
+    //for (let i=0;i<1;i++){
+    //    target[target.length] = new MyTank(30, 20, new KeyController(i) );
+    //}
+    //for (let i=0;i<49;i++){
+    //    target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
+    //}
+    let entity = new Entity() ;
     requestAnimationFrame(run);
 }
 
