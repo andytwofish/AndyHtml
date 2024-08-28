@@ -496,7 +496,7 @@ class Missile extends Bullet{
     }
 }
 class LaserLight extends Bullet{
-    hp = 4 ;
+    hp = 7 ;
     process(){
         this.hp-- ;
         if ( this.hp<1 ) {
@@ -1064,7 +1064,6 @@ let isRun = true ;
 let lastTime = 0 ;
 let tanks = [] ; 
 let target = [] ;
-let superTankCount = 0 ;
 let wave = 0 ;
 
 function drawImg(imgId, x, y, width, height, rotation) {
@@ -1123,12 +1122,22 @@ function run(time) {
         return ;
     }
     lastTime = time ;
-
     ctx.fillStyle = `rgb(0,0,0)` ;
     ctx.fillRect( 0 , 0 , 560 , 560 ) ;
+
+    if (wave < 9 ){
+        if (wave == 8){
+            ctx.fillStyle = `rgb(255,0,0)` ;
+            ctx.font = "20px Arial";
+            ctx.fillText(" 前方高能 ",460,560);
+        }else{
+            ctx.fillStyle = `rgb(255,255,255)` ;
+            ctx.font = "20px Arial";
+            ctx.fillText(`第${wave}波`,500,560 );
+        }
+    }
     ctx.fillStyle = `rgb(255,255,255)` ;
     ctx.font = "20px Arial";
-    ctx.fillText(`第${wave}波`,500,560 );
     ctx.fillText(`我方${target.length}隻`,0,560 );
     for (let i=0;i<tanks.length;i++){
         if (tanks [i].hp<=0 ){
@@ -1153,16 +1162,16 @@ function run(time) {
 
     let tankNumbers = getTankNumbers() ;
     if ( tankNumbers == 0 ) {
-        if ( superTankCount++ <9 ) {
-            if (superTankCount++ == 9 ){
-                tanks.push( new BigTank() ) ;
-            }else{
-                for ( let i= 0;i<superTankCount;i++ ) {
-                    wave = i ;
-                    tanks.push( new SuperTank() ) ;
-                }
+        wave++ ;
+        if (wave < 8 ) {
+            for ( let i= 0;i<wave;i++ ) {
+                tanks.push( new SuperTank() ) ;
             }
-        } else {
+        } 
+        if ( wave == 8 ) {
+            tanks.push( new BigTank() ) ;
+        }
+        if ( wave > 8 ) {
             ctx.fillStyle = `rgb(0,255,0)` ;
             ctx.font = "200px Arial";
             ctx.fillText("WIN",50,350 );
@@ -1178,7 +1187,7 @@ window.onload=function() {
     for (let i=0;i<1;i++){
         target[target.length] = new MyTank(30, 20, new KeyController(i) );
     }
-    for (let i=0;i<7;i++){
+    for (let i=0;i<19;i++){
         target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     }
     requestAnimationFrame(run);
