@@ -97,8 +97,6 @@ class Entity {
         Entity.objs.push( this ) ;
     }
 
-
-
     moveCheck( row, col ) {
         let entityBoundary = this.findEntityBoundary() ;
         if ( row+entityBoundary.top < this.spaceBoundary.top || row+entityBoundary.bottom > this.spaceBoundary.bottom ) {
@@ -123,7 +121,7 @@ class Entity {
         let coord = new Coord() ;
         while( true ) {
             coord.row = Math.floor(Math.random()* (this.spaceBoundary.bottom-this.spaceBoundary.top) )+this.spaceBoundary.top ;  
-            coord.col = Math.floor(Math.random()* (this.spaceBoundary.rightm-this.spaceBoundary.left) )+this.spaceBoundary.left ; 
+            coord.col = Math.floor(Math.random()* (this.spaceBoundary.right-this.spaceBoundary.left) )+this.spaceBoundary.left ; 
             if ( this.moveCheck( coord.row, coord.col ) ) {
                 break;
             }
@@ -263,14 +261,23 @@ class SuperBullet extends Entity {
 
 }
 
-class OurTank extends Entity {
+class EnemyTank extends Entity {
     lastFireTS = Date.now() ;
     lastMoveTS = Date.now() ;
     stopTime = 1000 ; //移動完停多久
-    constructor( row, col, rotation ) {
-        super( row, col, rotation ) ;
+    constructor() {
+        super( 0, 0, 180 ) ;
+        let coord = this.getRandomLocation();
+        console.log( coord ) ;
+        this.row = coord.row ;
+        this.col = coord.col ;
     }
     init() {
+        this.spaceBoundary.top = 0;
+        this.spaceBoundary.bottom = 19;
+        this.spaceBoundary.left = 0;
+        this.spaceBoundary.right = TOTAL_COLS-1;
+
         let part0 = new Part() ;
         part0.add(0,0) ;
         part0.fillStyle = "rgb(100,0,0)" ;
@@ -282,10 +289,6 @@ class OurTank extends Entity {
         this.parts.push( part0 ) ;
         this.parts.push( part1 ) ;
 
-        this.spaceBoundary.top = 20;
-        this.spaceBoundary.bottom = TOTAL_ROWS-1;
-        this.spaceBoundary.left = 0;
-        this.spaceBoundary.right = TOTAL_COLS-1;
     }
     move() {
         if ( this.moveDistance-- <= 0 ) {
@@ -322,7 +325,7 @@ class OurTank extends Entity {
         super.process() ;
         if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
-            new SuperBullet(this.row, this.col, 0, this) ;
+            new SuperBullet(this.row, this.col, 180, this) ;
         }
 
     }
@@ -1475,7 +1478,7 @@ window.onload=function() {
     //for (let i=0;i<49;i++){
     //    target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     //}
-    new OurTank( 30, 30, 0 ) ;
+    new EnemyTank() ;
     requestAnimationFrame(run);
 }
 
