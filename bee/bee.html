@@ -85,9 +85,10 @@ class Entity {
     moveDirection = 0 ;
 
 
-    constructor( coord, rotation ) {
+    constructor( row, col, rotation ) {
         this.rotation = rotation ;
-        this.coord = coord ;
+        this.row = row ;
+        this.col = col ;
         this.spaceBoundary.top = 0;
         this.spaceBoundary.bottom = TOTAL_ROWS-1;
         this.spaceBoundary.left = 0;
@@ -96,18 +97,7 @@ class Entity {
         Entity.objs.push( this ) ;
     }
 
-    init() {
-        let part0 = new Part() ;
-        part0.add(0,0) ;
-        part0.fillStyle = "rgb(100,0,0)" ;
 
-        let part1 = new Part() ;
-        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
-
-        this.parts = [] ;
-        this.parts.push( part0 ) ;
-        this.parts.push( part1 ) ;
-    }
 
     moveCheck( row, col ) {
         let entityBoundary = this.findEntityBoundary() ;
@@ -122,8 +112,8 @@ class Entity {
 
     moveIfPermitted( row, col ) {
         if ( this.moveCheck(row, col ) ) {
-            this.coord.row = row ;
-            this.coord.col = col ;
+            this.row = row ;
+            this.col = col ;
             return true ;
         }
         return false ;
@@ -172,7 +162,7 @@ class Entity {
             ctx.fillStyle = this.parts[partIdx].fillStyle ;
             for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
                 let coord = this.parts[partIdx].coords[i] ;
-                ctx.fillRect( (this.coord.col+coord.col)*CELL_SIZE+1, (this.coord.row+coord.row)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+                ctx.fillRect( (this.col+coord.col)*CELL_SIZE+1, (this.row+coord.row)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
             }
         }
     }
@@ -211,8 +201,8 @@ class Entity {
                     let fromCoord = fromPart.coords[i] ;
                     for ( let j=0; j<toPart.coords.length; j++ ) {
                         let toCoord = toPart.coords[j] ;
-                        if ( fromEntity.coord.row+fromCoord.row == this.coord.row+toCoord.row 
-                            && fromEntity.coord.col+fromCoord.col == this.coord.col+toCoord.col ) {
+                        if ( fromEntity.row+fromCoord.row == this.row+toCoord.row 
+                            && fromEntity.col+fromCoord.col == this.col+toCoord.col ) {
                             this.attackedPart( fromEntity, partIdx ) ;
                             return true ;
                         }
@@ -232,8 +222,8 @@ class Entity {
 class SuperBullet extends Entity {
     createFrom = 0 ;
     moveDistance = 100 ;
-    constructor( coord, rotation, createFrom ) {
-        super( coord, rotation ) ;
+    constructor( row, col, rotation, createFrom ) {
+        super( row, col, rotation ) ;
         this.createFrom = createFrom ;
         this.moveDirection = rotation ;
     }
@@ -250,16 +240,16 @@ class SuperBullet extends Entity {
             let isMove = false ;
             switch( this.moveDirection ) {
                 case 0:
-                    isMove = this.moveIfPermitted( this.coord.row-1, this.coord.col ) ;
+                    isMove = this.moveIfPermitted( this.row-1, this.col ) ;
                     break;
                 case 90:
-                    isMove = this.moveIfPermitted( this.coord.row, this.coord.col+1 ) ;
+                    isMove = this.moveIfPermitted( this.row, this.col+1 ) ;
                     break;
                 case 180:
-                    isMove = this.moveIfPermitted( this.coord.row+1, this.coord.col ) ;
+                    isMove = this.moveIfPermitted( this.row+1, this.col ) ;
                     break;
                 case 270:
-                    isMove = this.moveIfPermitted( this.coord.row, this.coord.col-1 ) ;
+                    isMove = this.moveIfPermitted( this.row, this.col-1 ) ;
                     break;
             }
             if ( !isMove ) {
@@ -276,9 +266,26 @@ class SuperBullet extends Entity {
 class OurTank extends Entity {
     lastFireTS = Date.now() ;
     lastMoveTS = Date.now() ;
-    stopTime = 10000 ; //移動完停多久
-    constructor( coord, rotation ) {
-        super( coord, rotation ) ;
+    stopTime = 1000 ; //移動完停多久
+    constructor( row, col, rotation ) {
+        super( row, col, rotation ) ;
+    }
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+        part0.fillStyle = "rgb(100,0,0)" ;
+
+        let part1 = new Part() ;
+        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+        this.parts.push( part1 ) ;
+
+        this.spaceBoundary.top = 20;
+        this.spaceBoundary.bottom = TOTAL_ROWS-1;
+        this.spaceBoundary.left = 0;
+        this.spaceBoundary.right = TOTAL_COLS-1;
     }
     move() {
         if ( this.moveDistance-- <= 0 ) {
@@ -292,16 +299,16 @@ class OurTank extends Entity {
         let isMove = false ;
         switch( this.moveDirection ) {
             case 0:
-                isMove = this.moveIfPermitted( this.coord.row-1, this.coord.col ) ;
+                isMove = this.moveIfPermitted( this.row-1, this.col ) ;
                 break;
             case 90:
-                isMove = this.moveIfPermitted( this.coord.row, this.coord.col+1 ) ;
+                isMove = this.moveIfPermitted( this.row, this.col+1 ) ;
                 break;
             case 180:
-                isMove = this.moveIfPermitted( this.coord.row+1, this.coord.col ) ;
+                isMove = this.moveIfPermitted( this.row+1, this.col ) ;
                 break;
             case 270:
-                isMove = this.moveIfPermitted( this.coord.row, this.coord.col-1 ) ;
+                isMove = this.moveIfPermitted( this.row, this.col-1 ) ;
                 break;
         }
         if ( isMove ) {
@@ -315,8 +322,7 @@ class OurTank extends Entity {
         super.process() ;
         if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
-            console.log("產生子彈");
-            new SuperBullet(this.coord, 0, this) ;
+            new SuperBullet(this.row, this.col, 0, this) ;
         }
 
     }
@@ -1469,7 +1475,7 @@ window.onload=function() {
     //for (let i=0;i<49;i++){
     //    target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     //}
-    new OurTank( new Coord(30, 30), 0 ) ;
+    new OurTank( 30, 30, 0 ) ;
     requestAnimationFrame(run);
 }
 
