@@ -152,7 +152,11 @@ class Entity {
         return boundary ;
     }
 
-    draw(){
+    draw() {
+        this.autoDraw() ;
+    }
+
+    autoDraw(){
         for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
             if ( this.parts[partIdx].hp <= 0 ) {
                 continue ;
@@ -217,12 +221,11 @@ class Entity {
     }
 }
 
-class SuperBullet extends Entity {
+class EnemyBullet extends Entity {
     createFrom = 0 ;
     moveDistance = 100 ;
-    constructor( row, col, rotation, createFrom ) {
+    constructor( row, col, rotation ) {
         super( row, col, rotation ) ;
-        this.createFrom = createFrom ;
         this.moveDirection = rotation ;
     }
     init() {
@@ -233,7 +236,12 @@ class SuperBullet extends Entity {
         this.parts = [] ;
         this.parts.push( part0 ) ;
     }
-   move() {
+    draw(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, this.rotation ) ;
+    }
+    move() {
         if ( this.moveDistance-- > 0 )  {
             let isMove = false ;
             switch( this.moveDirection ) {
@@ -252,6 +260,10 @@ class SuperBullet extends Entity {
             }
             if ( !isMove ) {
                 this.hp = 0 ;
+            } else {
+                for( i=0; i< Entity.objs.length ; i++ ) {
+                    //if ( ) 
+                }
             }
         } else {
             this.hp = 0 ;
@@ -264,6 +276,7 @@ class SuperBullet extends Entity {
 class EnemyTank extends Entity {
     lastFireTS = Date.now() ;
     lastMoveTS = Date.now() ;
+    moveDelayTime = 100 ;
     stopTime = 1000 ; //移動完停多久
     constructor() {
         super( 0, 0, 180 ) ;
@@ -290,6 +303,13 @@ class EnemyTank extends Entity {
         this.parts.push( part1 ) ;
 
     }
+
+    draw(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
+    }
+
     move() {
         if ( this.moveDistance-- <= 0 ) {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
@@ -297,6 +317,9 @@ class EnemyTank extends Entity {
                 this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
                 //console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
             }
+            return ;
+        }
+        if ( Date.now() - this.lastMoveTS < this.moveDelayTime ) {
             return ;
         }
         let isMove = false ;
@@ -325,150 +348,13 @@ class EnemyTank extends Entity {
         super.process() ;
         if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
-            new SuperBullet(this.row, this.col, 180, this) ;
+            new EnemyBullet(this.row, this.col, 180, this) ;
         }
 
     }
 }
 
-class Tank{
-    static directionMap = [0, 90, 180, 270] ;
-    hp = 3 ;
-    row = Math.floor(Math.random()*19) ;  
-    col = Math.floor(Math.random()*39) ; 
-    lastFireTS = 0 ;
-    constructor() {
-        this.init() ;
-        this.rollTheDice() ;
-    }
-
-    init() {
-        let part0 = new Part() ;
-        part0.add(0,0) ;
-
-        let part1 = new Part() ;
-        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
-
-        this.parts = [] ;
-        this.parts.push( part0 ) ;
-        //this.parts.push( part1 ) ;
-    }
-
-    getBoundary() {
-        let boundary = new Boundary() ;
-        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( this.parts[partIdx].hp <= 0 ) {
-                continue ;
-            }
-            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
-                let coord = this.parts[partIdx].coords[i] ;
-                if ( coord.col > 0 && coord.col > boundary.right ) {
-                    boundary.right = coord.col ;
-                }
-                if ( coord.col < 0 && coord.col < boundary.left ) {
-                    boundary.left = coord.col ;
-                }
-                if ( coord.row > 0 && coord.row > boundary.bottom ) {
-                    boundary.bottom = coord.row ;
-                }
-                if ( coord.row < 0 && coord.row < boundary.top ) {
-                    boundary.top = coord.row ;
-                }
-
-            }
-        }
-        return boundary ;
-    }
-
-    autoDraw() {
-        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( this.parts[partIdx].hp <= 0 ) {
-                continue ;
-            }
-            ctx.fillStyle = this.parts[partIdx].fillStyle ;
-            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
-                let coord = this.parts[partIdx].coords[i] ;
-                ctx.fillRect( (this.col+coord.col)*CELL_SIZE+1, (this.row+coord.row)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
-            }
-        }
-    }
-
-    draw(){
-        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-        drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
-    }
-
-    attackedPart(partIdx) {
-        this.hp--;
-    }
-    //傳入被攻的位置，
-    //傳出boolean  true:有打到  false:沒打到
-    attack( row, col ) {
-        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
-            if ( this.parts[partIdx].hp <= 0 ) {
-                continue ;
-            }
-            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
-                let coord = this.parts[partIdx].coords[i] ;
-                if ( row == this.row+coord.row && col == this.col+coord.col ) {
-                    this.attackedPart(partIdx) ;
-                    return true ;
-                }
-            }
-        }
-        return false ;
-    }
-
-    rollTheDice() {
-        this.distance = Math.floor(Math.random()*8) ; 
-        this.direction = Tank.directionMap[Math.floor(Math.random()*4)] ;
-        this.moveDelayCount = Math.floor(Math.random()*4)*3+3 ; 
-    }
-
-    move() {
-        if ( this.distance-- < 0 && this.moveDelayCount-- <= 0 ) {
-            this.rollTheDice() ;
-        }
-        if ( this.distance < 0 ) {
-            return ;
-        }
-        let boundary = this.getBoundary() ;
-        switch( this.direction ) {
-            case 0:
-                if ( this.row+boundary.top-1 >= 0 ) {
-                    this.row-=1 ;
-                }
-                break;
-            case 90:
-                if ( this.col+boundary.right+1 <= TOTAL_COLS-1 ) {
-                    this.col+=1 ;
-                }
-                break;
-            case 180:
-                if ( this.row+boundary.bottom+1 <= 19 ) {
-                    this.row+=1;
-                }
-                break;
-            case 270:
-                if ( this.col+boundary.left-1 >= 0 ) {
-                    this.col-=1;
-                }
-                break;
-        }
-    }
-
-    process(){
-        if ( Date.now() - this.lastFireTS > 1000 ) {
-            this.lastFireTS = Date.now() ;
-            tanks.push( new Bullet(this.row,this.col,this.red,this.green,this.blue) );
-        }
-        this.move() ;
-        this.draw() ;
-    }
-}
-
-class ShieldPeople extends Tank {
+class ShieldPeople extends EnemyTank {
     lastShieldTS = 0 ;
 
     init() {
@@ -522,11 +408,13 @@ class ShieldPeople extends Tank {
 
 }
 
-class SuperTank extends Tank { 
-    col = 5+Math.floor(Math.random()*29) ; 
-    lastFireTS = 0 ;
-    hp = 1 ;
+class SuperTank extends EnemyTank { 
     init() {
+        this.spaceBoundary.top = 0;
+        this.spaceBoundary.bottom = 19;
+        this.spaceBoundary.left = 0;
+        this.spaceBoundary.right = TOTAL_COLS-1;
+
         let part0 = new Part() ;
         part0.add(0,0).add(0,-1).add(0,-2).add(0,-3).add(0,-4).add(0,1).add(0,2).add(0,3).add(0,4) ;
         part0.add(-1,0).add(-1,-1).add(-1,1) ;
@@ -577,7 +465,7 @@ class SuperTank extends Tank {
             this.lastFireTS = Date.now() ;
             for( let i=1; i<this.parts.length; i++ ) {
                 if ( this.parts[i].hp > 0 ) {
-                    tanks.push( new Bullet(this.row+1,this.col+this.parts[i].coords[0].col,200,200,200) );
+                    tanks.push( new EnemyBullet(this.row+1,this.col+this.parts[i].coords[0].col, 180 ) );
                 }
             }
         }
@@ -669,7 +557,7 @@ class BigTank extends SuperTank{
         this.draw() ;
     }
 }
-class BabyTank extends Tank {
+class BabyTank extends EnemyTank {
     hp=2;
     draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
@@ -679,14 +567,14 @@ class BabyTank extends Tank {
 
     process(){
         if ( Math.floor(Math.random()*100)<=0 ) {
-            tanks [tanks.length] = new Tank () ;
-            tanks [tanks.length-1].row = this.row+=1 ;
-            tanks [tanks.length-1].col = this.col ;
+            let enemyTank = new EnemyTank () ;
+            enemyTank.row = this.row+=1 ;
+            enemyTank.col = this.col ;
         }
         if ( Math.floor(Math.random()*100)<=0 ) {
-            tanks [tanks.length] = new ShieldPeople () ;
-            tanks [tanks.length-1].row = this.row+=1 ;
-            tanks [tanks.length-1].col = this.col ;
+            let people = new ShieldPeople () ;
+            people.row = this.row+=1 ;
+            people.col = this.col ;
         }
 
         this.move() ;
@@ -1372,19 +1260,19 @@ function drawBackground(){
 
 
 for (let i=0;i<1;i++){
-    tanks [tanks.length] = new Tank () ;
+    new EnemyTank() ;
 }
 for (let i=0;i<0;i++){
-    tanks [tanks.length] = new BabyTank () ;
+    new BabyTank () ;
 }
 for (let i=0;i<0;i++){
-    tanks [tanks.length] = new ShieldPeople () ;
+    new ShieldPeople () ;
 }
 
 function getTankNumbers() {
     let count = 0 ;
     for( let i=0; i<tanks.length; i++ ) {
-        if ( tanks[i] instanceof Tank ) {
+        if ( tanks[i] instanceof EnemyTank ) {
             count++ ;
         }
     }
