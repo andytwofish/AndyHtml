@@ -47,17 +47,17 @@ class Part {
     boundary = new Boundary() ;
 
     updateBoundary( coord ) {
-        if ( coord.col > 0 && coord.col > boundary.right ) {
-            boundary.right = coord.col ;
+        if ( coord.col > 0 && coord.col > this.boundary.right ) {
+            this.boundary.right = coord.col ;
         }
-        if ( coord.col < 0 && coord.col < boundary.left ) {
-            boundary.left = coord.col ;
+        if ( coord.col < 0 && coord.col < this.boundary.left ) {
+            this.boundary.left = coord.col ;
         }
-        if ( coord.row > 0 && coord.row > boundary.bottom ) {
-            boundary.bottom = coord.row ;
+        if ( coord.row > 0 && coord.row > this.boundary.bottom ) {
+            this.boundary.bottom = coord.row ;
         }
-        if ( coord.row < 0 && coord.row < boundary.top ) {
-            boundary.top = coord.row ;
+        if ( coord.row < 0 && coord.row < this.boundary.top ) {
+            this.boundary.top = coord.row ;
         }
     }
 
@@ -66,7 +66,7 @@ class Part {
         coord.row = row ;
         coord.col = col ;
         this.coords.push( coord ) ;
-        updateBoundary( coord ) ;
+        this.updateBoundary( coord ) ;
         return this ;
     }
 }
