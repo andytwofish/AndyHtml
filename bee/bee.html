@@ -244,7 +244,8 @@ class ShieldPeople extends Tank {
 
 }
 
-class SuperTank extends Tank {
+class SuperTank extends Tank { 
+    col = 5+Math.floor(Math.random()*29) ; 
     lastFireTS = 0 ;
     hp = 1 ;
     init() {
@@ -1187,7 +1188,7 @@ window.onload=function() {
     for (let i=0;i<1;i++){
         target[target.length] = new MyTank(30, 20, new KeyController(i) );
     }
-    for (let i=0;i<19;i++){
+    for (let i=0;i<49;i++){
         target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     }
     requestAnimationFrame(run);
