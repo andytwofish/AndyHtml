@@ -42,14 +42,218 @@ class Boundary {
 
 class Part {
     coords = [] ;
-    isOn = true ;
+    hp = 1 ;
     fillStyle = `rgb(100,100,100)` ;
+    boundary = new Boundary() ;
+
+    updateBoundary( coord ) {
+        if ( coord.col > 0 && coord.col > boundary.right ) {
+            boundary.right = coord.col ;
+        }
+        if ( coord.col < 0 && coord.col < boundary.left ) {
+            boundary.left = coord.col ;
+        }
+        if ( coord.row > 0 && coord.row > boundary.bottom ) {
+            boundary.bottom = coord.row ;
+        }
+        if ( coord.row < 0 && coord.row < boundary.top ) {
+            boundary.top = coord.row ;
+        }
+    }
+
     add(row,col) {
         let coord = new Coord() ;
         coord.row = row ;
         coord.col = col ;
         this.coords.push( coord ) ;
+        updateBoundary( coord ) ;
         return this ;
+    }
+}
+
+class Entity {
+    static objs = [] ;
+    static DirectionMap = [0, 90, 180, 270] ;
+    hp = 1 ;
+    spaceBoundary = new Boundary() ;
+    moveDistance = 0 ;
+    moveDelayTime = 100 ;
+    moveDirection = 0 ;
+    stopTime = 500 ; //移動完停多久
+    lastMoveTS = Date.now() ;
+    constructor( coord ) {
+        this.coord = coord ;
+        this.spaceBoundary.top = 0;
+        this.spaceBoundary.bottom = TOTAL_ROWS-1;;
+        this.spaceBoundary.left = 0;
+        this.spaceBoundary.right = TOTAL_COLS-1;
+        this.init() ;
+        Entity.objs.push( this ) ;
+    }
+
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+        part0.fillStyle = "rgb(100,0,0)" ;
+
+        let part1 = new Part() ;
+        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+
+        //this.parts.push( part1 ) ;
+    }
+
+    moveCheck( row, col ) {
+        if ( row < this.spaceBoundary.top || row > this.spaceBoundary.bottom ) {
+            return false ;
+        }
+        if ( col < this.spaceBoundary.left || col > this.spaceBoundary.right ) {
+            return false ;
+        }
+        return true ;
+    }
+
+    moveIfPermitted( row, col ) {
+        if ( moveCheck(row, col ) ) {
+            this.row = row ;
+            this.col = col ;
+            return true ;
+        }
+        return false ;
+    }
+
+    getRandomLocation() {
+        let coord = new Coord() ;
+        while( true ) {
+            coord.row = Math.floor(Math.random()* (this.spaceBoundary.bottom-this.spaceBoundary.top) )+this.spaceBoundary.top ;  
+            coord.col = Math.floor(Math.random()* (this.spaceBoundary.rightm-this.spaceBoundary.left) )+this.spaceBoundary.left ; 
+            if ( moveCheck( coord.row, coord.col ) ) {
+                break;
+            }
+        }
+        return coord ;
+    }
+
+    findBoundary() {
+        let boundary = new Boundary() ;
+        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
+            if ( !this.parts[partIdx].isOn ) {
+                continue ;
+            }
+            let partBoundary = this.parts[partIdx].boundary ;
+            if ( partBoundary.rigth > boundary.right ) {
+                boundary.right = partBoundary.rigth ;
+            }
+            if ( partBoundary.left < boundary.left ) {
+                boundary.left = partBoundary.left ;
+            }
+            if ( partBoundary.top < boundary.top ) {
+                boundary.top = partBoundary.top ;
+            }
+            if ( partBoundary.bottom > boundary.bottom ) {
+                boundary.bottom = partBoundary.bottom ;
+            }
+        }
+        return boundary ;
+    }
+
+    draw(){
+        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
+            if ( !this.parts[partIdx].isOn ) {
+                continue ;
+            }
+            ctx.fillStyle = this.parts[partIdx].fillStyle ;
+            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
+                let coord = this.parts[partIdx].coords[i] ;
+                ctx.fillRect( (this.coord.col+coord.col)*CELL_SIZE+1, (this.coord.row+coord.row)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
+            }
+        }
+    }
+
+    attackedPart( fromEntity, partIdx) {
+        this.hp--;
+    }
+
+    attackCheck( fromEntity ) {
+        for( let fromPartIdx=0; fromPartIdx<fromEntity.parts.length; fromPartIdx++ ) {
+            let fromPart = fromEntity.parts[fromEntity] ;
+            if ( !fromPart.isOn ) {
+                continue ;
+            }
+            //初步比較
+            if ( this.boundary.right < fromEntity.boundary.left ) {
+                return false ;
+            }
+            if ( this.boundary.top > fromEntity.boundary.bottom ) {
+                return false ;
+            }
+            if ( this.boundary.left > fromEntity.boundary.right ) {
+                return false ;
+            }
+            if ( this.boundary.bottom < fromEntity.boundary.top ) {
+                return false ;
+            }
+
+            //細部每個cell比較
+            for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
+                let toPart = this.parts[partIdx] ;
+                if ( !toPart.isOn ) {
+                    continue ;
+                }
+                for ( let i=0; i<fromPart.coords.length; i++ ) {
+                    let fromCoord = fromPart.coords[i] ;
+                    for ( let j=0; j<toPart.coords.length; j++ ) {
+                        let toCoord = toPart.coords[j] ;
+                        if ( fromEntity.coord.row+fromCoord.row == this.coord.row+toCoord.row 
+                            && fromEntity.coord.col+fromCoord.col == this.coord.col+toCoord.col ) {
+                            this.attackedPart( fromEntity, partIdx ) ;
+                            return true ;
+                        }
+                    }
+                }
+            }
+        }
+        return false ;
+    }
+
+    move() {
+        if ( this.moveDistance-- < 0 && (Date.now() - this.lastMoveTS) > this.stopTime ){
+            this.moveDistance = Math.floor( Math.random() * 10 ) ;
+            this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
+        } else {
+            let isMove = false ;
+            switch( this.direction ) {
+                case 0:
+                    isMove = this.moveIfPermitted( this.row-1, this.col ) ;
+                    break;
+                case 90:
+                    isMove = this.moveIfPermitted( this.row, this.col+1 ) ;
+                    break;
+                case 180:
+                    isMove = this.moveIfPermitted( this.row+1, this.col ) ;
+                    break;
+                case 270:
+                    isMove = this.moveIfPermitted( this.row, this.col-1 ) ;
+                    break;
+            }
+            if ( !isMove ) {
+                this.moveDistance = 0 ;
+            }
+            this.lastMoveTS = Date.now() ;
+        }
+
+
+    }
+
+    process(){
+        if ( Date.now() - this.lastFireTS > 1000 ) {
+            this.lastFireTS = Date.now() ;
+            tanks.push( new Bullet(this.row,this.col,this.red,this.green,this.blue) );
+        }
+        this.move() ;
+        this.draw() ;
     }
 }
 
