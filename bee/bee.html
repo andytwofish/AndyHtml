@@ -206,6 +206,7 @@ class Entity {
         let toEntity = this ;
         let fromEntityBoundary = fromEntity.findEntityBoundary() ;
         let toEntityBoundary = toEntity.findEntityBoundary() ;
+        let ret = false ;
 
         for( let i=0; i<toEntity.parts.length; i++ ) {
             if ( toEntity.parts[i].hp <= 0 ) {
@@ -217,10 +218,11 @@ class Entity {
                 }
                 if ( this._attackPartCheck(fromEntity, fromEntity.parts[j], toEntity, toEntity.parts[i] ) ) {
                     this.attackedPart( fromEntity, i ) ;
+                    ret = true ;
                 }
             }
         }
-
+        return ret ;
     }
 
     process(){
@@ -475,7 +477,7 @@ class SuperTank extends EnemyTank {
             this.lastFireTS = Date.now() ;
             for( let i=1; i<this.parts.length; i++ ) {
                 if ( this.parts[i].hp > 0 ) {
-                    tanks.push( new EnemyBullet(this.row+1,this.col+this.parts[i].coords[0].col, 180 ) );
+                    new EnemyBullet(this.row+1,this.col+this.parts[i].coords[0].col, 180 ) ;
                 }
             }
         }
@@ -593,45 +595,7 @@ class BabyTank extends EnemyTank {
 
 }
 
-
-class Bullet{
-    bullet = [] ;
-    row = 0 ;
-    col = 0 ;
-    red = 0 ;
-    green = 0 ;
-    blue = 0 ;
-    hp = 1 ;
-    constructor(row,col,red,green,blue) {
-        this.row = row ;
-        this.col = col ;
-        this.red = red ;
-        this.green = green ;
-        this.blue = blue ;
-        //this.move();
-    }
-    
-    process(){
-        if ( this.hp==0 ) {
-            return ;
-        }
-//        this.cleanBulletCell() ;
-        this.row+=1 ;    
-        if (this.row>39){
-            this.hp=0 ; 
-        } 
-        
-        this.drawBulletCell() ;
-//        setTimeout( this.move.bind(this), 30 ) ;
-        
-    }
-    drawBulletCell(){
-        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-        drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, 180 ) ;
-    }
-}
-class Missile extends Bullet{
+class Missile extends EnemyBullet{
     run = 64 ;
     direction = 0 ;
     target2 = target[Math.floor(Math.random()*target.length)] ;
@@ -673,7 +637,7 @@ class Missile extends Bullet{
         drawImg( "diode", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, this.direction ) ;
     }
 }
-class LaserLight extends Bullet{
+class LaserLight extends EnemyBullet{
     hp = 7 ;
     process(){
         this.hp-- ;
@@ -690,6 +654,7 @@ class LaserLight extends Bullet{
 
 class OurBullet extends Entity {
     createFrom = 0 ;
+    hp=1;
     moveDistance = 100 ;
     constructor( row, col, rotation ) {
         super( row, col, rotation ) ;
@@ -731,7 +696,9 @@ class OurBullet extends Entity {
                 for( let i=0; i<Entity.objs.length; i++ ) {
                     let entity = Entity.objs[i]  ;
                     if ( entity instanceof EnemyTank ) {
-                        entity.attackCheck( this ) ;
+                        if ( entity.attackCheck( this ) ) {
+                            this.hp-- ;
+                        }
                     }
                 }
             }
@@ -840,7 +807,7 @@ class MyTank extends Entity {
     }
 
     process() {
-        if ( Date.now() - this.lastProcessTS < 60 ) {
+        if ( Date.now() - this.lastProcessTS < 50 ) {
             this.draw() ;
             return ;
         }
@@ -891,7 +858,7 @@ class MyTank extends Entity {
         this.bombBeginTime = 0;
         if ( this.parts[1].hp <= 0 ) {
             if ( Date.now() - this.lastBulletTime > 300 ) {
-                tanks [tanks.length] = new OurBullet(this.row,this.col,0) ;
+                new OurBullet(this.row,this.col,0) ;
                 this.bulletAudio.src = "y2271.mp3";
                 this.bulletAudio.pause(); 
                 this.bulletAudio.currentTime = 0;
@@ -901,10 +868,13 @@ class MyTank extends Entity {
         }
     }
     switchShield() {
-        this.bombBeginTime = 0;
-        if ( Date.now() - this.lastShieldSwitchTime < 200 ) {
+        if ( Date.now() - this.lastShieldSwitchTime < 100 ) {
             return ;
         }
+        console.log("switchShield()");
+        this.bombBeginTime = 0;
+        this.lastShieldSwitchTime = Date.now() ;
+
         this.isShieldON = !this.isShieldON ;
         if ( this.isShieldON ) {
             if ( this.shieldHP <=0 ) {
@@ -916,10 +886,9 @@ class MyTank extends Entity {
             this.shieldHP = this.parts[1].hp ;
             this.parts[1].hp = 0 ;
         }
-        this.lastShieldSwitchTime = Date.now() ;
     }
 
-    drawMyCell(){
+    draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "M.tankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
@@ -977,40 +946,7 @@ class AutoMyTank extends MyTank {
     }
 }
 
-class MyBullet{
-    row = 0 ;
-    col = 0 ;
-    hp = 1 ;
-    constructor(row,col) {
-        this.row = row ;
-        this.col = col ;
-    }
-    
-    process(){
-        if ( this.hp == 0) {
-            return ;
-        }
-        this.row-=1 ;    
-        if (this.row<0){
-            this.hp=0 ; 
-        } 
 
-        this.drawBulletCell() ;
-        for (let i=0;i<tanks.length;i++){
-            if ( tanks[i] instanceof Tank ) {        
-                if ( tanks[i].attack( this.row, this.col ) ) {
-                    this.hp = 0 ;
-                    return ;
-                } 
-            }
-        }
-    }
-    drawBulletCell(){
-        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-        drawImg( "lightImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 0 ) ;
-    }
-}
 class MyBomb{
     row = 0 ;
     col = 0 ;
