@@ -80,13 +80,13 @@ class Entity {
     static DirectionMap = [0, 90, 180, 270] ;
     hp = 1 ;
     spaceBoundary = new Boundary() ;
-    lastFireTS = Date.now() ;
     moveDistance = 0 ;
     moveDelayTime = 100 ;
     moveDirection = 0 ;
-    stopTime = 1000 ; //移動完停多久
-    lastMoveTS = Date.now() ;
-    constructor( coord ) {
+
+
+    constructor( coord, rotation ) {
+        this.rotation = rotation ;
         this.coord = coord ;
         this.spaceBoundary.top = 0;
         this.spaceBoundary.bottom = TOTAL_ROWS-1;
@@ -223,16 +223,72 @@ class Entity {
         return false ;
     }
 
+    process(){
+        this.move() ;
+        this.draw() ;
+    }
+}
+
+class SuperBullet extends Entity {
+    createFrom = 0 ;
+    moveDistance = 100 ;
+    constructor( coord, rotation, createFrom ) {
+        super( coord, rotation ) ;
+        this.createFrom = createFrom ;
+        this.moveDirection = rotation ;
+    }
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+        part0.fillStyle = "rgb(200,0,0)" ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+    }
+   move() {
+        if ( this.moveDistance-- > 0 )  {
+            let isMove = false ;
+            switch( this.moveDirection ) {
+                case 0:
+                    isMove = this.moveIfPermitted( this.coord.row-1, this.coord.col ) ;
+                    break;
+                case 90:
+                    isMove = this.moveIfPermitted( this.coord.row, this.coord.col+1 ) ;
+                    break;
+                case 180:
+                    isMove = this.moveIfPermitted( this.coord.row+1, this.coord.col ) ;
+                    break;
+                case 270:
+                    isMove = this.moveIfPermitted( this.coord.row, this.coord.col-1 ) ;
+                    break;
+            }
+            if ( !isMove ) {
+                this.hp = 0 ;
+            }
+        } else {
+            this.hp = 0 ;
+        }
+
+    }
+
+}
+
+class OurTank extends Entity {
+    lastFireTS = Date.now() ;
+    lastMoveTS = Date.now() ;
+    stopTime = 10000 ; //移動完停多久
+    constructor( coord, rotation ) {
+        super( coord, rotation ) ;
+    }
     move() {
         if ( this.moveDistance-- <= 0 ) {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
-                this.moveDistance = Math.floor( Math.random() * 10 ) ;
+                this.moveDistance = Math.floor( Math.random() * 20 ) ;
                 this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
-                console.log(`新方向 ${this.moveDirection}`);
+                console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
             }
             return ;
         }
-        console.log(this.moveDistance);
         let isMove = false ;
         switch( this.moveDirection ) {
             case 0:
@@ -255,14 +311,14 @@ class Entity {
         }
 
     }
-
-    process(){
+    process() {
+        super.process() ;
         if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
-            tanks.push( new Bullet(this.coord.row,this.coord.col,this.red,this.green,this.blue) );
+            console.log("產生子彈");
+            new SuperBullet(this.coord, 0, this) ;
         }
-        this.move() ;
-        this.draw() ;
+
     }
 }
 
@@ -1413,7 +1469,7 @@ window.onload=function() {
     //for (let i=0;i<49;i++){
     //    target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     //}
-    this.entity = new Entity( new Coord(30, 30) ) ;
+    new OurTank( new Coord(30, 30), 0 ) ;
     requestAnimationFrame(run);
 }
 
