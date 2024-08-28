@@ -31,6 +31,10 @@ const ctx = canvas.getContext('2d');
 class Coord {
     row=0;
     col=0;
+    constructor( row, col ) {
+        this.row = row ;
+        this.col = col ;
+    }
 }
 
 class Boundary {
@@ -76,15 +80,16 @@ class Entity {
     static DirectionMap = [0, 90, 180, 270] ;
     hp = 1 ;
     spaceBoundary = new Boundary() ;
+    lastFireTS = Date.now() ;
     moveDistance = 0 ;
     moveDelayTime = 100 ;
     moveDirection = 0 ;
-    stopTime = 500 ; //移動完停多久
+    stopTime = 1000 ; //移動完停多久
     lastMoveTS = Date.now() ;
     constructor( coord ) {
         this.coord = coord ;
         this.spaceBoundary.top = 0;
-        this.spaceBoundary.bottom = TOTAL_ROWS-1;;
+        this.spaceBoundary.bottom = TOTAL_ROWS-1;
         this.spaceBoundary.left = 0;
         this.spaceBoundary.right = TOTAL_COLS-1;
         this.init() ;
@@ -101,24 +106,24 @@ class Entity {
 
         this.parts = [] ;
         this.parts.push( part0 ) ;
-
-        //this.parts.push( part1 ) ;
+        this.parts.push( part1 ) ;
     }
 
     moveCheck( row, col ) {
-        if ( row < this.spaceBoundary.top || row > this.spaceBoundary.bottom ) {
+        let entityBoundary = this.findEntityBoundary() ;
+        if ( row+entityBoundary.top < this.spaceBoundary.top || row+entityBoundary.bottom > this.spaceBoundary.bottom ) {
             return false ;
         }
-        if ( col < this.spaceBoundary.left || col > this.spaceBoundary.right ) {
+        if ( col+entityBoundary.left < this.spaceBoundary.left || col+entityBoundary.right > this.spaceBoundary.right ) {
             return false ;
         }
         return true ;
     }
 
     moveIfPermitted( row, col ) {
-        if ( moveCheck(row, col ) ) {
-            this.row = row ;
-            this.col = col ;
+        if ( this.moveCheck(row, col ) ) {
+            this.coord.row = row ;
+            this.coord.col = col ;
             return true ;
         }
         return false ;
@@ -129,22 +134,22 @@ class Entity {
         while( true ) {
             coord.row = Math.floor(Math.random()* (this.spaceBoundary.bottom-this.spaceBoundary.top) )+this.spaceBoundary.top ;  
             coord.col = Math.floor(Math.random()* (this.spaceBoundary.rightm-this.spaceBoundary.left) )+this.spaceBoundary.left ; 
-            if ( moveCheck( coord.row, coord.col ) ) {
+            if ( this.moveCheck( coord.row, coord.col ) ) {
                 break;
             }
         }
         return coord ;
     }
 
-    findBoundary() {
+    findEntityBoundary() {
         let boundary = new Boundary() ;
         for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
             if ( this.parts[partIdx].hp <= 0 ) {
                 continue ;
             }
             let partBoundary = this.parts[partIdx].boundary ;
-            if ( partBoundary.rigth > boundary.right ) {
-                boundary.right = partBoundary.rigth ;
+            if ( partBoundary.right > boundary.right ) {
+                boundary.right = partBoundary.right ;
             }
             if ( partBoundary.left < boundary.left ) {
                 boundary.left = partBoundary.left ;
@@ -219,38 +224,42 @@ class Entity {
     }
 
     move() {
-        if ( this.moveDistance-- < 0 && (Date.now() - this.lastMoveTS) > this.stopTime ){
-            this.moveDistance = Math.floor( Math.random() * 10 ) ;
-            this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
-        } else {
-            let isMove = false ;
-            switch( this.direction ) {
-                case 0:
-                    isMove = this.moveIfPermitted( this.row-1, this.col ) ;
-                    break;
-                case 90:
-                    isMove = this.moveIfPermitted( this.row, this.col+1 ) ;
-                    break;
-                case 180:
-                    isMove = this.moveIfPermitted( this.row+1, this.col ) ;
-                    break;
-                case 270:
-                    isMove = this.moveIfPermitted( this.row, this.col-1 ) ;
-                    break;
+        if ( this.moveDistance-- <= 0 ) {
+            if (Date.now() - this.lastMoveTS > this.stopTime ) {
+                this.moveDistance = Math.floor( Math.random() * 10 ) ;
+                this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
+                console.log(`新方向 ${this.moveDirection}`);
             }
-            if ( !isMove ) {
-                this.moveDistance = 0 ;
-            }
-            this.lastMoveTS = Date.now() ;
+            return ;
         }
-
+        console.log(this.moveDistance);
+        let isMove = false ;
+        switch( this.moveDirection ) {
+            case 0:
+                isMove = this.moveIfPermitted( this.coord.row-1, this.coord.col ) ;
+                break;
+            case 90:
+                isMove = this.moveIfPermitted( this.coord.row, this.coord.col+1 ) ;
+                break;
+            case 180:
+                isMove = this.moveIfPermitted( this.coord.row+1, this.coord.col ) ;
+                break;
+            case 270:
+                isMove = this.moveIfPermitted( this.coord.row, this.coord.col-1 ) ;
+                break;
+        }
+        if ( isMove ) {
+            this.lastMoveTS = Date.now() ;
+        } else {
+            this.moveDistance = 0 ;
+        }
 
     }
 
     process(){
         if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
-            tanks.push( new Bullet(this.row,this.col,this.red,this.green,this.blue) );
+            tanks.push( new Bullet(this.coord.row,this.coord.col,this.red,this.green,this.blue) );
         }
         this.move() ;
         this.draw() ;
@@ -1297,7 +1306,7 @@ function drawBackground(){
 
 
 
-for (let i=0;i<200;i++){
+for (let i=0;i<1;i++){
     tanks [tanks.length] = new Tank () ;
 }
 for (let i=0;i<0;i++){
@@ -1392,13 +1401,13 @@ function run(time) {
 }
 
 window.onload=function() {
-    //for (let i=0;i<1;i++){
-    //    target[target.length] = new MyTank(30, 20, new KeyController(i) );
-    //}
+    for (let i=0;i<1;i++){
+        target[target.length] = new MyTank(30, 20, new KeyController(i) );
+    }
     //for (let i=0;i<49;i++){
     //    target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
     //}
-    let entity = new Entity() ;
+    this.entity = new Entity( new Coord(30, 30) ) ;
     requestAnimationFrame(run);
 }
 
