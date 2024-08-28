@@ -311,7 +311,8 @@ class SuperTank extends Tank {
 class BigTank extends SuperTank{
     HIGHEST_HP = 4 ;
     hp = this.HIGHEST_HP ;
-    lastFireTS2 = 0 ;
+    lastFireTS = 2000 ;
+    lastFireTS2 = 2000 ;
     init() {
         let part0 = new Part() ;
         part0.add(-2,0)
