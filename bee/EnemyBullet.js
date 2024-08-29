@@ -1,10 +1,23 @@
 class EnemyBullet extends Entity {
+    static objs = [] ;
     createFrom = 0 ;
     moveDistance = 100 ;
     constructor( row, col, rotation ) {
         super( row, col, rotation ) ;
         this.moveDirection = rotation ;
+        EnemyBullet.objs.push(this) ;
     }
+
+    static process() {
+        for( let i=0; i<EnemyBullet.objs.length; i++ ) {
+            if ( EnemyBullet.objs[i].hp <= 0 ) {
+                EnemyBullet.objs.splice( i--, 1 ) ;
+            } else {
+                EnemyBullet.objs[i].process() ;
+            }
+        }
+    }
+
     init() {
         let part0 = new Part() ;
         part0.add(0,0) ;
@@ -20,12 +33,10 @@ class EnemyBullet extends Entity {
     }
 
     checkAfterMoved() {
-        for( let i=0; i< Entity.objs.length ; i++ ) {
-            let entity = Entity.objs[i] ;
-            if ( entity instanceof MyTank ) {
-                if ( entity.attackCheck( this ) ) {
-                    this.hp-- ;
-                }
+        for( let i=0; i< MyTank.objs.length ; i++ ) {
+            let entity = MyTank.objs[i] ;
+            if ( entity.attackCheck( this ) ) {
+                this.hp-- ;
             }
         }
     }
@@ -64,31 +75,28 @@ class EnemyBullet extends Entity {
 class Missile extends EnemyBullet{
     run = 64 ;
     direction = 0 ;
-    target2 = target[Math.floor(Math.random()*target.length)] ;
+    target = target[Math.floor(Math.random()*MyTank.objs.length)] ;
     process(){
-        this.run-- ;
-        if (this.run<1){
+        if (this.run-- < 0 ){
             this.hp = 0 ;
-        }
-        if ( this.hp==0 ) {
             return ;
         }
         if (Math.floor(Math.random()*2) == 0){
-            if (this.row>this.target2.row){
+            if (this.row>this.target.row){
                 this.row-- ;
                 this.direction = 0 ;
             }else{
-                if(this.row<this.target2.row){
+                if(this.row<this.target.row){
                     this.row++ ;
                     this.direction = 180 ;
                 }
             }
         }else{
-            if (this.col>this.target2.col){
+            if (this.col>this.target.col){
                     this.col-- ;        
                     this.direction = 270 ;                           
             }else{
-                if(this.col<this.target2.col){
+                if(this.col<this.target.col){
                     this.col++ ;
                     this.direction = 90 ;
                 }                                          

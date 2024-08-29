@@ -1,6 +1,6 @@
 
 class MyTank extends Entity {
-    static totalTanks = 0 ;
+    static objs = [];
     static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 8 ;
     hp = MyTank.HIGHEST_HP ;
@@ -15,14 +15,26 @@ class MyTank extends Entity {
     lastProcessTS = Date.now();
     constructor(row, col, keyController ) {
         super( row, col, 0 ) ;
-        this.tankId = MyTank.totalTanks++ ;
+        this.tankId = MyTank.objs.length ;
         this.keyController = keyController ;
         this.row = row ;
         this.col = col ;
         this.audio = document.createElement("audio");
         this.bombAudio = document.createElement("audio");
         this.bulletAudio = document.createElement("audio");
+        MyTank.objs.push(this) ;
     }
+
+    static process() {
+        for( let i=0; i<MyTank.objs.length; i++ ) {
+            if ( MyTank.objs[i].hp <= 0 ) {
+                MyTank.objs.splice( i--, 1 ) ;
+            } else {
+                MyTank.objs[i].process() ;
+            }
+        }
+    }
+
     init() {
         this.spaceBoundary.top = 20;
         this.spaceBoundary.bottom = TOTAL_ROWS-1;
@@ -81,6 +93,7 @@ class MyTank extends Entity {
             return ;
         }
         this.lastProcessTS = Date.now() ;
+
         if ( this.keyController.isArrowRightPressed() ) {
             this.moveInBoundary( this.row, this.col+1 ) ;
         }
@@ -140,7 +153,6 @@ class MyTank extends Entity {
         if ( Date.now() - this.lastShieldSwitchTime < 100 ) {
             return ;
         }
-        console.log("switchShield()");
         this.bombBeginTime = 0;
         this.lastShieldSwitchTime = Date.now() ;
 
@@ -197,21 +209,20 @@ class AutoMyTank extends MyTank {
         let dir = Math.floor( Math.random() * 4) ;
         switch( dir ) {
             case 0:
-                this.keyUp() ;
+                this.moveInBoundary( this.row-1, this.col ) ;
                 break;
             case 1:
-                this.keyRight() ;
+                this.moveInBoundary( this.row, this.col+1 ) ;
                 break;
             case 2:
-                this.keyDown() ;
+                this.moveInBoundary( this.row+1, this.col ) ;
                 break;
             case 3:
-                this.keyLeft() ; 
+                this.moveInBoundary( this.row, this.col-1 ) ;
                 break;
         }
 
-        this.checkIfUnderAttack() ;
-        this.drawMyCell() ;
+        this.draw() ;
     }
 }
 

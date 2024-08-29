@@ -1,11 +1,23 @@
 class OurBullet extends Entity {
+    static objs = [] ; 
     createFrom = 0 ;
     hp=1;
     moveDistance = TOTAL_ROWS ;
     constructor( row, col, rotation ) {
         super( row, col, rotation ) ;
         this.moveDirection = rotation ;
+        OurBullet.objs.push(this) ;
     }
+    static process() {
+        for( let i=0; i<OurBullet.objs.length; i++ ) {
+            if ( OurBullet.objs[i].hp <= 0 ) {
+                OurBullet.objs.splice( i--, 1 ) ;
+            } else {
+                OurBullet.objs[i].process() ;
+            }
+        }
+    }
+
     init() {
         this.spaceBoundary.top = 0;
         this.spaceBoundary.bottom = TOTAL_ROWS-1;
@@ -25,12 +37,10 @@ class OurBullet extends Entity {
         drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, this.rotation ) ;
     }
     checkAfterMoved() {
-        for( let i=0; i<Entity.objs.length; i++ ) {
-            let entity = Entity.objs[i]  ;
-            if ( entity instanceof EnemyTank ) {
-                if ( entity.attackCheck( this ) ) {
-                    this.hp-- ;
-                }
+        for( let i=0; i<EnemyTank.objs.length; i++ ) {
+            let entity = EnemyTank.objs[i]  ;
+            if ( entity.attackCheck( this ) ) {
+                this.hp-- ;
             }
         }
     }

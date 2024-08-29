@@ -1,6 +1,7 @@
 
 
 class EnemyTank extends Entity {
+    static objs = [] ;
     lastFireTS = Date.now() ;
     lastMoveTS = Date.now() ;
     moveDelayTime = 100 ;
@@ -10,12 +11,22 @@ class EnemyTank extends Entity {
         let coord = this.getRandomLocation();
         this.row = coord.row ;
         this.col = coord.col ;
-    }
-    init() {
         this.spaceBoundary.top = 0;
         this.spaceBoundary.bottom = 19;
         this.spaceBoundary.left = 0;
         this.spaceBoundary.right = TOTAL_COLS-1;
+        EnemyTank.objs.push(this) ;
+    }
+    static process() {
+        for( let i=0; i<EnemyTank.objs.length; i++ ) {
+            if ( EnemyTank.objs[i].hp <= 0 ) {
+                EnemyTank.objs.splice( i--, 1 ) ;
+            } else {
+                EnemyTank.objs[i].process() ;
+            }
+        }
+    }
+    init() {
 
         let part0 = new Part() ;
         part0.add(0,0) ;

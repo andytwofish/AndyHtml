@@ -47,7 +47,6 @@ class Part {
 }
 
 class Entity {
-    static objs = [] ;
     static DirectionMap = [0, 90, 180, 270] ;
     hp = 1 ;
     spaceBoundary = new Boundary() ;
@@ -65,7 +64,6 @@ class Entity {
         this.spaceBoundary.left = 0;
         this.spaceBoundary.right = TOTAL_COLS-1;
         this.init() ;
-        Entity.objs.push( this ) ;
     }
 
     moveCheck( row, col ) {

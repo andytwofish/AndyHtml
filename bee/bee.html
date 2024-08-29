@@ -69,27 +69,6 @@ function drawBackground(){
     ctx.stroke();
 }
 
-
-
-for (let i=0;i<1;i++){
-    new EnemyTank() ;
-}
-for (let i=0;i<0;i++){
-    new BabyTank () ;
-}
-for (let i=0;i<0;i++){
-    new ShieldPeople () ;
-}
-
-function getTankNumbers() {
-    let count = 0 ;
-    for( let i=0; i<tanks.length; i++ ) {
-        if ( tanks[i] instanceof EnemyTank ) {
-            count++ ;
-        }
-    }
-    return count ;
-}
 function run(time) {
     if (lastTime === 0) {
         lastTime = time;
@@ -102,8 +81,14 @@ function run(time) {
         return ;
     }
     lastTime = time ;
+
+
     ctx.fillStyle = `rgb(0,0,0)` ;
     ctx.fillRect( 0 , 0 , 560 , 560 ) ;
+    MyTank.process() ;
+    OurBullet.process() ;
+    EnemyTank.process() ;
+    EnemyBullet.process() ;
 
     if (wave < 9 ){
         if (wave == 8){
@@ -119,45 +104,24 @@ function run(time) {
     ctx.fillStyle = `rgb(255,255,255)` ;
     ctx.font = "20px Arial";
     ctx.fillText(`我方${target.length}隻`,0,560 );
-    let tankNumbers = getTankNumbers() ;
     ctx.font = "20px Arial";
-    ctx.fillText(`敵方${tankNumbers}隻`,250,20 );
-    //for (let i=0;i<tanks.length;i++){
-    //    if (tanks [i].hp<=0 ){
-    //        tanks.splice(i--,1) ;
-    //    } else {
-    //        tanks [i].process() ;
-    //    }
-    //}  
-    //for (let j=0;j<target.length;j++ ){
-    //    if (target[j].hp<=0){
-    //        target.splice(j--,1) ;
-    //    }else{
-    //        target[j].process() ;
-    //    }
-    //}
-    for ( let j=0; j<Entity.objs.length; j++ ) {
-        if ( Entity.objs[j].hp <= 0 ) {
-            Entity.objs.splice(j--,1) ;
-        } else {
-            Entity.objs[j].process() ;
-        }
-    }
-    if (target.length == 0){
+    ctx.fillText(`敵方${EnemyTank.objs.length}隻`,250,20 );
+
+    if (MyTank.objs.length == 0){
         ctx.fillStyle = `rgb(255,0,0)` ;
         ctx.font = "80px Arial";
         ctx.fillText("GAME OVER",20,350);
     }
 
-    if ( tankNumbers == 0 ) {
+    if ( EnemyTank.objs.length == 0 ) {
         wave++ ;
         if (wave < 8 ) {
             for ( let i= 0;i<wave;i++ ) {
-                tanks.push( new SuperTank() ) ;
+                new SuperTank() ;
             }
         } 
         if ( wave == 8 ) {
-            tanks.push( new BigTank() ) ;
+            new BigTank()  ;
         }
         if ( wave > 8 ) {
             ctx.fillStyle = `rgb(0,255,0)` ;
@@ -165,20 +129,30 @@ function run(time) {
             ctx.fillText("WIN",50,350 );
         }
     }
-    if (Math.floor(Math.random()*400) == 0){
-        tanks [tanks.length] = new firstAidKit () ;
-    }
+    //if (Math.floor(Math.random()*400) == 0){
+    //    tanks [tanks.length] = new firstAidKit () ;
+    //}
     requestAnimationFrame(run);
 }
 
 window.onload=function() {
 
-    for (let i=0;i<1;i++){
-        target[target.length] = new MyTank(30, 20, new KeyController(i) );
+    for (let i=0;i<0;i++){
+        new EnemyTank() ;
     }
-    //for (let i=0;i<49;i++){
-    //    target[target.length] = new AutoMyTank(30, 20, new KeyController(i) );
-    //}
+    for (let i=0;i<1;i++){
+        new BabyTank () ;
+    }
+    for (let i=0;i<0;i++){
+        new ShieldPeople () ;
+    }
+
+    for (let i=0;i<1;i++){
+        new MyTank(30, 20, new KeyController(i) );
+    }
+    for (let i=0;i<1;i++){
+        new AutoMyTank(30, 20, new KeyController(i) );
+    }
     requestAnimationFrame(run);
 }
 
