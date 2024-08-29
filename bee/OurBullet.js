@@ -150,7 +150,11 @@ class OurBomb extends Entity {
                     isMove = this.moveOutBoundary( this.row, this.col-1 ) ;
                     break;
             }
-            this.checkAfterMoved() ;
+            if ( isMove ) {
+                this.checkAfterMoved() ;
+            } else {
+                this.hp = 0 ;
+            }
         } else {
             this.hp = 0 ;
         }

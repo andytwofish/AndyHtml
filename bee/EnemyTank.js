@@ -74,7 +74,7 @@ class EnemyTank extends Entity {
         super.process() ;
         if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
-            new EnemyBullet(this.row, this.col, 180, this) ;
+            new EnemyBullet(this.row, this.col, 180) ;
         }
 
     }

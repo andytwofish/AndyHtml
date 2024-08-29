@@ -18,33 +18,41 @@ class EnemyBullet extends Entity {
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, this.rotation ) ;
     }
+
+    checkAfterMoved() {
+        for( let i=0; i< Entity.objs.length ; i++ ) {
+            let entity = Entity.objs[i] ;
+            if ( entity instanceof MyTank ) {
+                if ( entity.attackCheck( this ) ) {
+                    this.hp-- ;
+                }
+            }
+        }
+    }
+
     move() {
         if ( this.moveDistance-- > 0 )  {
             let isMove = false ;
             switch( this.moveDirection ) {
                 case 0:
-                    isMove = this.moveInBoundary( this.row-1, this.col ) ;
+                    isMove = this.moveOutBoundary( this.row-1, this.col ) ;
                     break;
                 case 90:
-                    isMove = this.moveInBoundary( this.row, this.col+1 ) ;
+                    isMove = this.moveOutBoundary( this.row, this.col+1 ) ;
                     break;
                 case 180:
-                    isMove = this.moveInBoundary( this.row+1, this.col ) ;
+                    isMove = this.moveOutBoundary( this.row+1, this.col ) ;
                     break;
                 case 270:
-                    isMove = this.moveInBoundary( this.row, this.col-1 ) ;
+                    isMove = this.moveOutBoundary( this.row, this.col-1 ) ;
                     break;
             }
-            if ( !isMove ) {
-                this.hp = 0 ;
+            if ( isMove ) {
+                this.checkAfterMoved() ;
             } else {
-                for( let i=0; i< Entity.objs.length ; i++ ) {
-                    let entity = Entity.objs[i] ;
-                    if ( entity instanceof MyTank ) {
-                        entity.attackCheck( this ) ;
-                    }
-                }
+                this.hp = 0 ;
             }
+
         } else {
             this.hp = 0 ;
         }
