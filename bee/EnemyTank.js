@@ -301,12 +301,12 @@ class BabyTank extends EnemyTank {
     process(){
         if ( Math.floor(Math.random()*100)<=0 ) {
             let enemyTank = new EnemyTank () ;
-            enemyTank.row = this.row+=1 ;
+            enemyTank.row = this.row ;
             enemyTank.col = this.col ;
         }
         if ( Math.floor(Math.random()*100)<=0 ) {
             let people = new ShieldPeople () ;
-            people.row = this.row+=1 ;
+            people.row = this.row ;
             people.col = this.col ;
         }
 
