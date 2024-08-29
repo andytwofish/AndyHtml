@@ -15,6 +15,11 @@ class MyTank extends Entity {
     lastProcessTS = Date.now();
     constructor(row, col, keyController ) {
         super( row, col, 0 ) ;
+        this.spaceBoundary.top = 20;
+        this.spaceBoundary.bottom = TOTAL_ROWS-1;
+        this.spaceBoundary.left = 0;
+        this.spaceBoundary.right = TOTAL_COLS-1;
+
         this.tankId = MyTank.objs.length ;
         this.keyController = keyController ;
         this.row = row ;
@@ -36,10 +41,6 @@ class MyTank extends Entity {
     }
 
     init() {
-        this.spaceBoundary.top = 20;
-        this.spaceBoundary.bottom = TOTAL_ROWS-1;
-        this.spaceBoundary.left = 0;
-        this.spaceBoundary.right = TOTAL_COLS-1;
 
         let part0 = new Part() ;
         part0.add(0,0) ;
@@ -198,29 +199,52 @@ class MyTank extends Entity {
 }
 
 class AutoMyTank extends MyTank {
+    lastFireTS = Date.now() ;
+    lastMoveTS = Date.now() ;
+    moveDelayTime = 100 ;
+    stopTime = 1000 ; //移動完停多久
 
+    move() {
+         if ( this.moveDistance-- <= 0 ) {
+            if (Date.now() - this.lastMoveTS > this.stopTime ) {
+                this.moveDistance = Math.floor( Math.random() * 20 ) ;
+                this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
+                //console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
+            }
+            return ;
+        }
+        if ( Date.now() - this.lastMoveTS < this.moveDelayTime ) {
+            return ;
+        }
+        let isMove = false ;
+        switch( this.moveDirection ) {
+            case 0:
+                isMove = this.moveInBoundary( this.row-1, this.col ) ;
+                break;
+            case 90:
+                isMove = this.moveInBoundary( this.row, this.col+1 ) ;
+                break;
+            case 180:
+                isMove = this.moveInBoundary( this.row+1, this.col ) ;
+                break;
+            case 270:
+                isMove = this.moveInBoundary( this.row, this.col-1 ) ;
+                break;
+        }
+        if ( isMove ) {
+            this.lastMoveTS = Date.now() ;
+        } else {
+            this.moveDistance = 0 ;
+        }
+
+    }
     process() {
         if ( this.isShieldON == true ) {
             this.switchShield() ;
         }
+        this.move() ;
         this.fireBullet() ;
         this.switchShield() ;
-
-        let dir = Math.floor( Math.random() * 4) ;
-        switch( dir ) {
-            case 0:
-                this.moveInBoundary( this.row-1, this.col ) ;
-                break;
-            case 1:
-                this.moveInBoundary( this.row, this.col+1 ) ;
-                break;
-            case 2:
-                this.moveInBoundary( this.row+1, this.col ) ;
-                break;
-            case 3:
-                this.moveInBoundary( this.row, this.col-1 ) ;
-                break;
-        }
 
         this.draw() ;
     }
