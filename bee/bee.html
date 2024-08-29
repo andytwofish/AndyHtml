@@ -98,14 +98,14 @@ function run(time) {
         }else{
             ctx.fillStyle = `rgb(255,255,255)` ;
             ctx.font = "20px Arial";
-            ctx.fillText(`第${wave}波`,500,560 );
+            ctx.fillText(`第${wave}波`,250,20 );
         }
     }
     ctx.fillStyle = `rgb(255,255,255)` ;
     ctx.font = "20px Arial";
-    ctx.fillText(`我方${target.length}隻`,0,560 );
+    ctx.fillText(`我方${MyTank.objs.length}隻`,0,550 );
     ctx.font = "20px Arial";
-    ctx.fillText(`敵方${EnemyTank.objs.length}隻`,250,20 );
+    ctx.fillText(`敵方${EnemyTank.objs.length}隻`, 470, 550 );
 
     if (MyTank.objs.length == 0){
         ctx.fillStyle = `rgb(255,0,0)` ;

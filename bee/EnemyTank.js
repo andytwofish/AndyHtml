@@ -8,13 +8,13 @@ class EnemyTank extends Entity {
     stopTime = 1000 ; //移動完停多久
     constructor() {
         super( 0, 0, 180 ) ;
-        let coord = this.getRandomLocation();
-        this.row = coord.row ;
-        this.col = coord.col ;
         this.spaceBoundary.top = 0;
         this.spaceBoundary.bottom = 19;
         this.spaceBoundary.left = 0;
         this.spaceBoundary.right = TOTAL_COLS-1;
+        let coord = this.getRandomLocation(); //spaceBoundary setting first
+        this.row = coord.row ;
+        this.col = coord.col ;
         EnemyTank.objs.push(this) ;
     }
     static process() {
@@ -147,10 +147,6 @@ class ShieldPeople extends EnemyTank {
 
 class SuperTank extends EnemyTank { 
     init() {
-        this.spaceBoundary.top = 0;
-        this.spaceBoundary.bottom = 19;
-        this.spaceBoundary.left = 0;
-        this.spaceBoundary.right = TOTAL_COLS-1;
 
         let part0 = new Part() ;
         part0.add(0,0).add(0,-1).add(0,-2).add(0,-3).add(0,-4).add(0,1).add(0,2).add(0,3).add(0,4) ;
