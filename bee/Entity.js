@@ -79,7 +79,28 @@ class Entity {
         return true ;
     }
 
-    moveIfPermitted( row, col ) {
+    moveOutCheck( row, col ) {
+        let entityBoundary = this.findEntityBoundary() ;
+        if ( row+entityBoundary.top > this.spaceBoundary.bottom+1 || row+entityBoundary.bottom < this.spaceBoundary.top-1 ) {
+            return false ;
+        }
+        if ( col+entityBoundary.left > this.spaceBoundary.right+1 || col+entityBoundary.right < this.spaceBoundary.left-1 ) {
+            return false ;
+        }
+        return true ;
+    }
+
+
+    moveOutBoundary( row, col ) {
+        if ( this.moveOutCheck(row, col ) ) {
+            this.row = row ;
+            this.col = col ;
+            return true ;
+        }
+        return false ;
+    }
+
+    moveInBoundary( row, col ) {
         if ( this.moveCheck(row, col ) ) {
             this.row = row ;
             this.col = col ;

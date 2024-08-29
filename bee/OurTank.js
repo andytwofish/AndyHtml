@@ -67,32 +67,12 @@ class MyTank extends Entity {
 
     fireBomb() {
         let bombLevel = this.getBombLevel() ;
+        this.bombBeginTime = 0 ;
         if ( bombLevel == 0 ) {
             return ;
         }
 
-        let rowCount = bombLevel+(bombLevel-1) ;
-        let deltaCol = 0 ;
-
-        for( let row=0; row<rowCount; row++ ) {
-            let colCount = Math.abs(deltaCol)*2+1  ;
-            //console.log( `${deltaCol}, ${colCount}` ) ;
-            for( let col=0; col<colCount; col++ ) {
-                tanks.push( new MyBomb( this.row-rowCount+row, this.col+deltaCol+col )) ;
-            }
-            if ( row >= bombLevel-1 ) {
-                deltaCol++ ;
-            } else {
-                deltaCol-- ;
-            }
-        }
-        if (bombLevel>1){
-            tanks.push( new Light( this.row , this.col , rowCount*CELL_SIZE , rowCount*CELL_SIZE )) ;
-        } else {
-            this.bombAudio.src = "audioFiles/y2271.mp3";
-            this.bombAudio.play();
-        }
-        this.bombBeginTime = 0 ;
+        new OurBomb( this.row, this.col, bombLevel ) ;
     }
 
     process() {
@@ -102,16 +82,16 @@ class MyTank extends Entity {
         }
         this.lastProcessTS = Date.now() ;
         if ( this.keyController.isArrowRightPressed() ) {
-            this.moveIfPermitted( this.row, this.col+1 ) ;
+            this.moveInBoundary( this.row, this.col+1 ) ;
         }
         if ( this.keyController.isArrowLeftPressed() ) {
-            this.moveIfPermitted( this.row, this.col-1 ) ;
+            this.moveInBoundary( this.row, this.col-1 ) ;
         }
         if ( this.keyController.isArrowDownPressed() ) {
-            this.moveIfPermitted( this.row+1, this.col ) ;
+            this.moveInBoundary( this.row+1, this.col ) ;
         }
         if ( this.keyController.isArrowUpPressed()) {
-            this.moveIfPermitted( this.row-1, this.col ) ;
+            this.moveInBoundary( this.row-1, this.col ) ;
         }
         if ( this.keyController.isButtonAPressed() ) {
             this.fireBullet();  

@@ -51,16 +51,16 @@ class EnemyTank extends Entity {
         let isMove = false ;
         switch( this.moveDirection ) {
             case 0:
-                isMove = this.moveIfPermitted( this.row-1, this.col ) ;
+                isMove = this.moveInBoundary( this.row-1, this.col ) ;
                 break;
             case 90:
-                isMove = this.moveIfPermitted( this.row, this.col+1 ) ;
+                isMove = this.moveInBoundary( this.row, this.col+1 ) ;
                 break;
             case 180:
-                isMove = this.moveIfPermitted( this.row+1, this.col ) ;
+                isMove = this.moveInBoundary( this.row+1, this.col ) ;
                 break;
             case 270:
-                isMove = this.moveIfPermitted( this.row, this.col-1 ) ;
+                isMove = this.moveInBoundary( this.row, this.col-1 ) ;
                 break;
         }
         if ( isMove ) {
