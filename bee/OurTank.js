@@ -162,7 +162,7 @@ class MyTank extends Entity {
             if ( this.shieldHP <=0 ) {
                 this.parts[1].hp = 8 ;
             } else {
-                this.parts[1].hp = this.isShieldON ;
+                this.parts[1].hp = this.shieldHP ;
             }
         } else {
             this.shieldHP = this.parts[1].hp ;
@@ -239,6 +239,12 @@ class AutoMyTank extends MyTank {
 
     }
     process() {
+        if ( Date.now() - this.lastProcessTS < 50 ) {
+            this.draw() ;
+            return ;
+        }
+        this.lastProcessTS = Date.now() ;
+
         if ( this.isShieldON == true ) {
             this.switchShield() ;
         }
