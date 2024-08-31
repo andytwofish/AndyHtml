@@ -56,7 +56,8 @@ class MyTank extends Entity {
 
     attackedPart( fromEntity, partIdx) {
         if ( partIdx == 1) {
-            if ( --this.parts[partIdx].hp <= 0 ) {
+            this.parts[partIdx].hp-- ;
+            if ( this.parts[partIdx].hp <= 0 ) {
                 this.shieldHP = 0 ;
                 this.isShieldON = false ;
             }
