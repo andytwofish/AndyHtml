@@ -266,17 +266,18 @@ class BigTank extends SuperTank{
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
                     new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
-                    for (let i=0;i<MyTank.objs.length*2;i++){
-                        new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
-                    }
+                     for (let i=0;i<MyTank.objs.length*2;i++){
+                        //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
+                        new Light(this.row-2,this.col,0);
+                     }
                 }
             }
         }
         if ( Date.now() - this.lastFireTS2 > 800 ) {
             this.lastFireTS2 = Date.now() ;
-                if ( this.parts[2].hp > 0 ) {
-                    new Light(this.row+1,this.col,0);
-                }
+            if ( this.parts[2].hp > 0 ) {
+                new LaserLight(this.row+1,this.col,0);
+            }
         }
         this.move() ;
         this.draw() ;
