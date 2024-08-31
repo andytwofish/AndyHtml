@@ -74,7 +74,7 @@ class EnemyBullet extends Entity {
 
 class Missile extends EnemyBullet{
     direction = 0 ;
-
+    lastMovedTS = 0 ;
     init() {
         let part0 = new Part() ;
         part0.add(0,0) ;
@@ -92,7 +92,18 @@ class Missile extends EnemyBullet{
         return MyTank.objs[Math.floor(Math.random()*MyTank.objs.length)] ;
     }
 
+    attackedPart( fromEntity, partIdx) {
+        if ( fromEntity instanceof OurBullet ) {
+            this.hp = 0 ;
+        }
+    }
+
     process(){
+        if ( Date.now() - this.lastMovedTS < 100 ) {
+            this.draw() ;
+            return ;
+        }
+        this.lastMovedTS = Date.now() ;
         if ( this.target.hp != null && this.target.hp <= 0 ) {
             this.target = this.findTarget() ;
             if ( this.target == null ) {

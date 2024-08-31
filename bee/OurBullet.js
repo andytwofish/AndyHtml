@@ -43,6 +43,14 @@ class OurBullet extends Entity {
                 this.hp-- ;
             }
         }
+        for( let i=0; i<EnemyBullet.objs.length; i++ ) {
+            let entity = EnemyBullet.objs[i]  ;
+            if ( entity instanceof Missile ) {
+                if ( entity.attackCheck( this ) ) {
+                    this.hp-- ;
+                }
+            }
+        }
     }
     move() {
         if ( this.moveDistance-- > 0 )  {

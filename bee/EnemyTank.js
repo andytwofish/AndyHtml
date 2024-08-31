@@ -266,7 +266,7 @@ class BigTank extends SuperTank{
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
                     new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
-                    new LaserLight(this.row+1,col,0) ;
+                    new LaserLight(this.row+1,this.col,0) ;
                 }
             }
         }
