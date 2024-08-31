@@ -151,7 +151,7 @@ class MyTank extends Entity {
         }
     }
     switchShield() {
-        if ( Date.now() - this.lastShieldSwitchTime < 100 ) {
+        if ( Date.now() - this.lastShieldSwitchTime < 300 ) {
             return ;
         }
         this.bombBeginTime = 0;

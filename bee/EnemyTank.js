@@ -37,7 +37,7 @@ class EnemyTank extends Entity {
 
         this.parts = [] ;
         this.parts.push( part0 ) ;
-        this.parts.push( part1 ) ;
+        //this.parts.push( part1 ) ;
 
     }
 
