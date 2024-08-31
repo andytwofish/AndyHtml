@@ -76,7 +76,7 @@ class MyTank extends Entity {
             return 0 ;
         }
         let deltaTime = Date.now() - this.bombBeginTime ;  
-        let bombLevel = Math.round( deltaTime / 2000 ) ;
+        let bombLevel = Math.round( deltaTime / 1000 ) ;
         if ( bombLevel > 8 ) {
             bombLevel = 8 ;
         }

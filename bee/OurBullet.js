@@ -57,16 +57,16 @@ class OurBullet extends Entity {
             let isMove = false ;
             switch( this.moveDirection ) {
                 case 0:
-                    isMove = this.moveInBoundary( this.row-1, this.col ) ;
+                    isMove = this.moveOutBoundary( this.row-1, this.col ) ;
                     break;
                 case 90:
-                    isMove = this.moveInBoundary( this.row, this.col+1 ) ;
+                    isMove = this.moveOutBoundary( this.row, this.col+1 ) ;
                     break;
                 case 180:
-                    isMove = this.moveInBoundary( this.row+1, this.col ) ;
+                    isMove = this.moveOutBoundary( this.row+1, this.col ) ;
                     break;
                 case 270:
-                    isMove = this.moveInBoundary( this.row, this.col-1 ) ;
+                    isMove = this.moveOutBoundary( this.row, this.col-1 ) ;
                     break;
             }
             if ( !isMove ) {
@@ -81,13 +81,15 @@ class OurBullet extends Entity {
     }
 
 }
-class OurBomb extends Entity {
+class OurBomb extends OurBullet {
     createFrom = 0 ;
-    hp=1;
+    hp=999;
     bombLevel = 0 ;
     moveDistance = TOTAL_ROWS ;
+    moveDirection=0;
     constructor( row, col, bombLevel ) {
         super( row, col, 0 ) ;
+        console.log(`OurBomb(${row}, ${col}, ${bombLevel} )`);
         this.bombLevel = bombLevel ;
         this.init2();
     }
@@ -100,83 +102,25 @@ class OurBomb extends Entity {
 
         this.parts = [] ;
 
-        let part = null ;
+        let part = new Part() ;
+        part.fillStyle = "rgb(200,0,0)" ;
+        part.hp=999;
 
-        switch ( this.bombLevel ) {
-            case 8:
-            case 7:
-            case 6:            
-            case 5:
-            case 4:
-            case 3:
-                part = new Part() ;
-                part.add(0,-3).add(0,3).add(1,-2).add(1,2).add(-1,-2).add(-1,2).add(-2,-1).add(-2,1).add(2,-1).add(2,1).add(3,0).add(-3,0) ;
-                part.fillStyle = "rgb(200,0,0)" ;
-                part.hp = 999 ;
-                this.parts.push( part ) ;
-            case 2:
-                part = new Part() ;
-                part.add(0,-2).add(0,2).add(1,-1).add(1,1).add(-1,-1).add(-1,1).add(-2,0).add(2,0) ;
-                part.fillStyle = "rgb(200,0,0)" ;
-                part.hp = 999 ;
-                this.parts.push( part ) ;
-            case 1:
-                part = new Part() ;
-                part.add(0,-1).add(0,1).add(1,0).add(-1,0) ;
-                part.fillStyle = "rgb(200,0,0)" ;
-                part.hp = 999 ;
-                this.parts.push( part ) ;
-            case 0:
-                part = new Part() ;
-                part.add(0,0) ;
-                part.fillStyle = "rgb(200,0,0)" ;
-                part.hp = 999;
-                this.parts.push( part ) ;
+        for( let i=0; i<this.bombLevel; i++ ) {
+            for( let j=-i; j<=i; j++) {
+                part.add( i-this.bombLevel, j ) ;
+            }
         }
-        console.log( this.bombLevel ) ;
-        console.log( this.parts.length ) ;
-
+        for( let i=0; i<this.bombLevel-1; i++ ) {
+            for( let j=-i; j<=i; j++) {
+                part.add( this.bombLevel-2-i, j ) ;
+            }
+        }
+        this.parts.push(part) ;
     }
     draw(){
         this.autoDraw() ;
     }
 
-    checkAfterMoved() {
-        for( let i=0; i<Entity.objs.length; i++ ) {
-            let entity = Entity.objs[i]  ;
-            if ( entity instanceof EnemyTank ) {
-                if ( entity.attackCheck( this ) ) {
-                    this.hp-- ;
-                }
-            }
-        }
-    }
-    move() {
-        if ( this.moveDistance-- > 0 )  {
-            let isMove = false ;
-            switch( this.moveDirection ) {
-                case 0:
-                    isMove = this.moveOutBoundary( this.row-1, this.col ) ;
-                    break;
-                case 90:
-                    isMove = this.moveOutBoundary( this.row, this.col+1 ) ;
-                    break;
-                case 180:
-                    isMove = this.moveOutBoundary( this.row+1, this.col ) ;
-                    break;
-                case 270:
-                    isMove = this.moveOutBoundary( this.row, this.col-1 ) ;
-                    break;
-            }
-            if ( isMove ) {
-                this.checkAfterMoved() ;
-            } else {
-                this.hp = 0 ;
-            }
-        } else {
-            this.hp = 0 ;
-        }
-
-    }
 
 }
