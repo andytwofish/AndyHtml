@@ -275,7 +275,7 @@ class BigTank extends SuperTank{
         if ( Date.now() - this.lastFireTS2 > 800 ) {
             this.lastFireTS2 = Date.now() ;
                 if ( this.parts[2].hp > 0 ) {
-                    new LaserLight(this.row+1,this.col,0);
+                    new Light(this.row+1,this.col,0);
                 }
         }
         this.move() ;
