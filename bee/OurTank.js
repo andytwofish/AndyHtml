@@ -56,7 +56,10 @@ class MyTank extends Entity {
 
     attackedPart( fromEntity, partIdx) {
         if ( partIdx == 1) {
-            this.parts[partIdx].hp--;
+            if ( --this.parts[partIdx].hp <= 0 ) {
+                this.shieldHP = 0 ;
+                this.isShieldON = false ;
+            }
         }
         if ( partIdx == 0 ) {
             this.bombBeginTime = 0 ;
@@ -64,6 +67,7 @@ class MyTank extends Entity {
             this.audio.play();
             this.hp-- ;
         }
+        this.moveInBoundary( this.row+1, this.col ) ;
     }
 
     getBombLevel() {
@@ -160,7 +164,7 @@ class MyTank extends Entity {
         this.isShieldON = !this.isShieldON ;
         if ( this.isShieldON ) {
             if ( this.shieldHP <=0 ) {
-                this.parts[1].hp = 8 ;
+                this.parts[1].hp = MyTank.SHIELD_HIGHEST ;
             } else {
                 this.parts[1].hp = this.shieldHP ;
             }
@@ -175,7 +179,7 @@ class MyTank extends Entity {
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "M.tankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
         if (this.isShieldON  ){
-            let color = 255/MyTank.SHIELD_HIGHEST*this.shieldHP ;
+            let color = 50+10*this.parts[1].hp ;
             ctx.fillStyle = `rgb(${color},${color},${color})` ;
             ctx.fillRect( (this.col-2)*CELL_SIZE+1, (this.row-1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
             ctx.fillRect( (this.col-1)*CELL_SIZE+1, (this.row-2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
