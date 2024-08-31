@@ -258,22 +258,20 @@ class BigTank extends SuperTank{
         if ( Date.now() - this.lastFireTS > 2000 ) {
             this.lastFireTS = Date.now() ;
             if ( this.parts[3].hp > 0 ) {
-                tanks.push( new Missile(this.row+1,this.col+this.parts[3].coords[0].col,200,200,200) );
+                new Missile(this.row+1,this.col+this.parts[3].coords[0].col,200,200,200) ;
             }
             if ( this.parts[4].hp > 0 ) {
-                tanks.push( new Missile(this.row+1,this.col+this.parts[4].coords[0].col,200,200,200) );
+                new Missile(this.row+1,this.col+this.parts[4].coords[0].col,200,200,200) ;
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    tanks.push( new Missile(this.row+1,this.col+this.parts[0].coords[0].col,200,200,200) );
+                    new Missile(this.row+1,this.col+this.parts[0].coords[0].col,200,200,200) ;
                     let random = target.length*(4+Math.floor(Math.random()*4)) ;
                     for (let i=0;i<random;i++){
                         let k = Math.floor(Math.random()*target.length) ;
                         let tankCol = target[k].col ;
                         let col = Math.floor(Math.random()*8)-4+tankCol ;
-                        for (let j=0;j<TOTAL_ROWS;j++){
-                            tanks.push( new LaserLight(0+j,col,200,200,200) );
-                        }
+                        //new LaserLight(0+j,col,200,200,200) ;
                     }
                 }
             }
@@ -281,9 +279,7 @@ class BigTank extends SuperTank{
         if ( Date.now() - this.lastFireTS2 > 800 ) {
             this.lastFireTS2 = Date.now() ;
                 if ( this.parts[2].hp > 0 ) {
-                    for (let i=0;i<TOTAL_ROWS;i++){
-                        tanks.push( new LaserLight(this.row+1+i,this.col+this.parts[1].coords[0].col,200,200,200) );
-                    }
+                    //new LaserLight(this.row+1+i,this.col+this.parts[1].coords[0].col,200,200,200);
                 }
         }
         this.move() ;

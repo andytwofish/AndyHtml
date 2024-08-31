@@ -103,9 +103,9 @@ class Missile extends EnemyBullet{
             }
         }
         
-        this.drawBulletCell() ;  
+        this.draw() ;  
     }
-    drawBulletCell(){
+    draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "diode", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, this.direction ) ;
@@ -118,9 +118,9 @@ class LaserLight extends EnemyBullet{
         if ( this.hp<1 ) {
             return ;
         }
-        this.drawBulletCell()          
+        this.draw()          
     }
-    drawBulletCell(){
+    draw(){
         ctx.fillStyle = `rgb(100,0,0)` ;
         ctx.fillRect( this.col*CELL_SIZE, this.row*CELL_SIZE, CELL_SIZE, CELL_SIZE ) ;
     }
