@@ -220,8 +220,22 @@ class Light extends EnemyBullet {
             let part = new Part() ;
 
             part.add( this.coord.row, this.coord.col ) ;
-            part.fillStyle = "rgb(255,255,0)" ;
-
+            let j=Math.floor(Math.random()*5) ;
+            if (j==0){
+                part.fillStyle = "rgb(0,191,255)" ;
+            }
+            if (j==1){
+                part.fillStyle = "rgb(255,255,0)" ;
+            }
+            if (j==2){
+                part.fillStyle = "rgb(255,255,0)" ;
+            }
+            if (j==3){
+                part.fillStyle = "rgb(255,255,0)" ;
+            }
+            if (j==4){
+                part.fillStyle = "rgb(0,0,128)" ;
+            }
             this.coord.col+=this.lightdirection ;
             part.add( this.coord.row, this.coord.col ) ;
 

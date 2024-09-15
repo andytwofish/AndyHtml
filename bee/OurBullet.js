@@ -82,6 +82,7 @@ class OurBullet extends Entity {
 
 }
 class OurBomb extends OurBullet {
+    rotation = 0 ;
     createFrom = 0 ;
     hp=999;
     bombLevel = 0 ;
@@ -119,7 +120,10 @@ class OurBomb extends OurBullet {
         this.parts.push(part) ;
     }
     draw(){
-        this.autoDraw() ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        this.rotation+=20 ;
+        drawImg( "lightImg", x, y, CELL_SIZE*this.bombLevel*2, CELL_SIZE*this.bombLevel*2, this.rotation )
     }
 
 

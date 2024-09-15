@@ -16,7 +16,6 @@
 <body>
     <canvas id="_Canvas" width="560" height="560"></canvas>
     <img id="babyTankImg" src="./images/icons8-alien-monster-94.png" alt="Source Image" style="display:none;">
-    <img id="M.shieldImg" src="./images/icons8-shield-48 2.png" alt="Source Image" style="display:none;">
     <img id="E.shieldImg" src="./images/icons8-shield-48.png" alt="Source Image" style="display:none;">
     <img id="tankImg" src="./images/icons8-tank-16.png" alt="Source Image" style="display:none;">
     <img id="M.tankImg" src="./images/icons8-tank-top-view-50 1.png" alt="Source Image" style="display:none;">
@@ -26,9 +25,9 @@
     <img id="firstaidkit" src="./images/icons8-organ-transplantation-24.png" alt="Source Image" style="display:none;">
     <img id="diode" src="./images/icons8-led-diode-48.png" alt="Source Image" style="display:none;">
     <img id="lightImg" src="./images/—Pngtree—light effect of lightning blue_6183369.png" alt="Source Image" style="display:none;">
+    <img id="shieldImg" src="./images/Lovepik_com-380121912-glowing-sphere-abstract-light-effect-decoration-effects-iridescent-color.png" alt="Source Image" style="display:none;">
 </body>
 </html>
-
 <script>
 
 console.log("run()");
@@ -76,7 +75,7 @@ function run(time) {
 
     // 計算自上次更新以來經過的時間
     const deltaTime = time - lastTime
-    if ( deltaTime < 50 ) {
+    if ( deltaTime < 40 ) {
         requestAnimationFrame(run);
         return ;
     }
@@ -137,7 +136,7 @@ function run(time) {
 
 window.onload=function() {
 
-    for (let i=0;i<0;i++){
+    for (let i=0;i<40;i++){
         new BigTank () ;
     }
     for (let i=0;i<0;i++){
@@ -150,10 +149,10 @@ window.onload=function() {
         new ShieldPeople () ;
     }
 
-    for (let i=0;i<2;i++){
+    for (let i=0;i<1;i++){
         new MyTank(30, 20, new KeyController(i) );
     }
-    for (let i=0;i<2;i++){
+    for (let i=0;i<300;i++){
         new AutoMyTank(30, 20, new KeyController(i) );
     }
     requestAnimationFrame(run);

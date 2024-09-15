@@ -4,6 +4,7 @@ class MyTank extends Entity {
     static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 8 ;
     hp = MyTank.HIGHEST_HP ;
+    rotattion = 0 ;
     time = 0 ;
     row = 30 ;
     col = 20 ;
@@ -46,7 +47,7 @@ class MyTank extends Entity {
         part0.add(0,0) ;
 
         let part1 = new Part() ;
-        part1.add(-2,0).add(-2,-1).add(-2,1).add(-1,-2).add(-1,2) ;
+        part1.add(-2,0).add(-2,-1).add(-2,1).add(-1,-2).add(-1,2).add(0,-2).add(0,2).add(2,0).add(2,-1).add(2,1).add(1,-2).add(1,2) ;
         part1.hp=0 ;
 
         this.parts = [] ;
@@ -181,14 +182,10 @@ class MyTank extends Entity {
         drawImg( "M.tankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
         if (this.isShieldON  ){
             let color = 50+10*this.parts[1].hp ;
-            ctx.fillStyle = `rgb(${color},${color},${color})` ;
-            ctx.fillRect( (this.col-2)*CELL_SIZE+1, (this.row-1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col-1)*CELL_SIZE+1, (this.row-2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+1)*CELL_SIZE+1, (this.row-2)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
-            ctx.fillRect( (this.col+2)*CELL_SIZE+1, (this.row-1)*CELL_SIZE+1, CELL_SIZE-2, CELL_SIZE-2 ) ;
             x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-            y = ((this.row-2)*CELL_SIZE+1) + CELL_SIZE/2 ;
-            drawImg( "M.shieldImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
+            y = ((this.row)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            this.rotation+= this.parts[1].hp ;
+            drawImg( "shieldImg", x, y, CELL_SIZE*8, CELL_SIZE*8, this.rotation ) ;
         }   
         ctx.fillStyle = `rgb(255,0,0)` ;
         for( let i=0; i<this.hp; i++ ) {

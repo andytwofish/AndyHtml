@@ -265,11 +265,12 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
-                     for (let i=0;i<MyTank.objs.length*2;i++){
-                        //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
-                        new Light(this.row-2,this.col,0);
-                     }
+                    //new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
+                    for (let i=0;i<8;i++){
+                    //for (let i=0;i<MyTank.objs.length*2;i++){
+                        new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
+                        //new Light(this.row-2,this.col,0);
+                    }
                 }
             }
         }
