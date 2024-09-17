@@ -14,7 +14,7 @@
     <script src="./OurBullet.js"></script>
 </head>
 <body>
-    <canvas id="_Canvas" width="560" height="560"></canvas>
+    <canvas id="_Canvas" width="800" height="400"></canvas>
     <img id="babyTankImg" src="./images/icons8-alien-monster-94.png" alt="Source Image" style="display:none;">
     <img id="E.shieldImg" src="./images/icons8-shield-48.png" alt="Source Image" style="display:none;">
     <img id="tankImg" src="./images/icons8-tank-16.png" alt="Source Image" style="display:none;">
@@ -35,9 +35,9 @@ const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');     
 
 let countDown = 3000 ;
-const CELL_SIZE = 14 ;
+const CELL_SIZE = 10 ;
 const TOTAL_ROWS = 40 ;
-const TOTAL_COLS = 40 ;
+const TOTAL_COLS = 80 ;
 let isRun = true ;
 let lastTime = 0 ;
 let tanks = [] ; 
@@ -83,7 +83,7 @@ function run(time) {
 
 
     ctx.fillStyle = `rgb(0,0,0)` ;
-    ctx.fillRect( 0 , 0 , 560 , 560 ) ;
+    ctx.fillRect( 0 , 0 , CELL_SIZE*TOTAL_COLS , CELL_SIZE*TOTAL_ROWS ) ;
     MyTank.process() ;
     OurBullet.process() ;
     EnemyTank.process() ;
@@ -97,7 +97,7 @@ function run(time) {
         }else{
             ctx.fillStyle = `rgb(255,255,255)` ;
             ctx.font = "20px Arial";
-            ctx.fillText(`第${wave}波`,250,20 );
+            ctx.fillText(`第${wave}波`,250,TOTAL_COLS/2 );
         }
     }
     ctx.fillStyle = `rgb(255,255,255)` ;
@@ -150,10 +150,10 @@ window.onload=function() {
     }
 
     for (let i=0;i<1;i++){
-        new MyTank(30, 20, new KeyController(i) );
+        new MyTank(30, TOTAL_COLS/2, new KeyController(i) );
     }
     for (let i=0;i<0;i++){
-        new AutoMyTank(20, 20, new KeyController(i) );
+        new AutoMyTank(20, TOTAL_COLS/2, new KeyController(i) );
     }
     requestAnimationFrame(run);
 }
