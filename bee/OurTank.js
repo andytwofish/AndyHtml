@@ -47,9 +47,8 @@ class MyTank extends Entity {
         part0.add(0,0) ;
 
         let part1 = new Part() ;
-        part1.add(-2,0).add(-2,-1).add(-2,1).add(-1,-2).add(-1,2).add(0,-2).add(0,2).add(2,0).add(2,-1).add(2,1).add(1,-2).add(1,2) ;
+        part1.add(-2,0).add(-2,-1).add(-2,1).add(-1,-2).add(-1,2).add(0,-2).add(0,2).add(2,0).add(2,-1).add(2,1).add(1,-2).add(1,2).add(-1,-1).add(-1,).add(-1,1).add(0,2).add(0,1).add(1,-1).add(1,0).add(1,1) ;
         part1.hp=0 ;
-
         this.parts = [] ;
         this.parts.push( part0 ) ;
         this.parts.push( part1 ) ;
@@ -184,7 +183,7 @@ class MyTank extends Entity {
             let color = 50+10*this.parts[1].hp ;
             x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
             y = ((this.row)*CELL_SIZE+1) + CELL_SIZE/2 ;
-            this.rotation+= this.parts[1].hp ;
+            this.rotation+= (this.parts[1].hp)*2 ;
             drawImg( "shieldImg", x, y, CELL_SIZE*8, CELL_SIZE*8, this.rotation ) ;
         }   
         ctx.fillStyle = `rgb(255,0,0)` ;

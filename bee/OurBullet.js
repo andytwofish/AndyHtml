@@ -105,8 +105,7 @@ class OurBomb extends OurBullet {
 
         let part = new Part() ;
         part.fillStyle = "rgb(200,0,0)" ;
-        part.hp=999;
-
+        part.hp=1000;
         for( let i=0; i<this.bombLevel; i++ ) {
             for( let j=-i; j<=i; j++) {
                 part.add( i-this.bombLevel, j ) ;

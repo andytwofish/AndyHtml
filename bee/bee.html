@@ -136,13 +136,13 @@ function run(time) {
 
 window.onload=function() {
 
-    for (let i=0;i<40;i++){
+    for (let i=0;i<0;i++){
         new BigTank () ;
     }
     for (let i=0;i<0;i++){
         new EnemyTank() ;
     }
-    for (let i=0;i<0;i++){
+    for (let i=0;i<4;i++){
         new BabyTank () ;
     }
     for (let i=0;i<0;i++){
@@ -152,8 +152,8 @@ window.onload=function() {
     for (let i=0;i<1;i++){
         new MyTank(30, 20, new KeyController(i) );
     }
-    for (let i=0;i<300;i++){
-        new AutoMyTank(30, 20, new KeyController(i) );
+    for (let i=0;i<0;i++){
+        new AutoMyTank(20, 20, new KeyController(i) );
     }
     requestAnimationFrame(run);
 }
