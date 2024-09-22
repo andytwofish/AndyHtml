@@ -40,6 +40,7 @@ const TOTAL_COLS = 80 ;
 let CELL_SIZE = 10 ;
 let isRun = true ;
 let lastTime = 0 ;
+let bigTankCount = -1 ;
 let tanks = [] ; 
 let target = [] ;
 let wave = 0 ;
@@ -136,20 +137,25 @@ function run(time) {
         ctx.textAlign = "center" ;
         ctx.fillText("GAME OVER",TOTAL_COLS/2*CELL_SIZE,TOTAL_ROWS/2*CELL_SIZE);
     }
-
+    
     if ( EnemyTank.objs.length == 0 ) {
         wave++ ;
-        if (wave < 8 ) {
-            for ( let i= 0;i<wave;i++ ) {
+        if (wave < 2 ) {
+            for ( let i= 0;i<8;i++ ) {
                 new SuperTank() ;
             }
         } 
         if ( wave == 8 ) {
-            new BigTank()  ;
+            for ( let i= 0;i<2;i++ ) {
+                new BigTank() ;
+            }
+            for ( let i= 0;i<0;i++ ) {
+                new BabyTank() ;
+            }
         }
         if ( wave > 8 ) {
             ctx.fillStyle = `rgb(0,255,0)` ;
-            ctx.font = "200px Arial";
+            ctx.font = `${CELL_SIZE*TOTAL_COLS/8}px Arial`;
             ctx.textAlign = "center" ;
             ctx.fillText("WIN",TOTAL_COLS/2*CELL_SIZE,TOTAL_ROWS/2*CELL_SIZE );
         }
@@ -178,8 +184,8 @@ window.onload=function() {
     for (let i=0;i<1;i++){
         new MyTank(30, TOTAL_COLS/2, new KeyController(i) );
     }
-    for (let i=0;i<80;i++){
-        new AutoMyTank(Math.floor(Math.random()*TOTAL_ROWS)+TOTAL_ROWS/2,Math.floor(Math.random()*TOTAL_COLS), new KeyController(i) );
+    for (let i=0;i<8;i++){
+        new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyController(i) );
     }
     requestAnimationFrame(run);
 }

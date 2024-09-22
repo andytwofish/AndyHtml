@@ -208,7 +208,7 @@ class SuperTank extends EnemyTank {
 
 }
 class BigTank extends SuperTank{
-    HIGHEST_HP = 40 ;
+    HIGHEST_HP = 80 ;
     hp = this.HIGHEST_HP ;
     lastFireTS = 2000 ;
     lastFireTS2 = 2000 ;
@@ -265,9 +265,12 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    //new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
-                    for (let i=0;i<8;i++){
+                    for (let i=0;i<0;i++){
+                        new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
+                    }
+                    for (let i=0;i<4;i++){
                     //for (let i=0;i<MyTank.objs.length*2;i++){
+                        
                         //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
                         new Light(this.row-2,this.col,0);
                     }
@@ -280,6 +283,22 @@ class BigTank extends SuperTank{
                 new LaserLight(this.row+1,this.col,0);
             }
         }
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        ctx.font = `${CELL_SIZE}px Arial`;
+        ctx.textAlign = "center" ;
+        ctx.fillText("魔王血量:",CELL_SIZE/2*4,CELL_SIZE/2*2);
+        bigTankCount = 0 ;
+        for ( let i=0;i<EnemyTank.objs.length;i++){
+            console.log(i) ;
+            if ( EnemyTank.objs[i] instanceof BigTank ){
+                ctx.fillStyle = `rgb(128,0,128)` ;
+                ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                ctx.fillStyle = `rgb(255,0,255)` ;
+                ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                bigTankCount++ ;
+            }
+        }
+        
         this.move() ;
         this.draw() ;
     }
