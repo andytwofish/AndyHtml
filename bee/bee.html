@@ -92,24 +92,29 @@ function run(time) {
     if (wave < 9 ){
         if (wave == 8){
             ctx.fillStyle = `rgb(255,0,0)` ;
-            ctx.font = "20px Arial";
-            ctx.fillText(" 前方高能 ",460,560);
+            ctx.font =  `${CELL_SIZE*2}px Arial`;
+            ctx.textAlign = "center" ;
+            ctx.fillText(" 前方高能 ",TOTAL_COLS/2*CELL_SIZE,CELL_SIZE*2);
         }else{
             ctx.fillStyle = `rgb(255,255,255)` ;
-            ctx.font = "20px Arial";
-            ctx.fillText(`第${wave}波`,250,TOTAL_COLS/2 );
+            ctx.font = `${CELL_SIZE*2}px Arial`;
+            ctx.textAlign = "center" ;
+            ctx.fillText(`第${wave}波`,TOTAL_COLS/2*CELL_SIZE,CELL_SIZE*2);
         }
     }
     ctx.fillStyle = `rgb(255,255,255)` ;
-    ctx.font = "20px Arial";
-    ctx.fillText(`我方${MyTank.objs.length}隻`,0,550 );
-    ctx.font = "20px Arial";
-    ctx.fillText(`敵方${EnemyTank.objs.length}隻`, 470, 550 );
+    ctx.font =  `${CELL_SIZE*2}px Arial`;
+    ctx.textAlign = "center" ;
+    ctx.fillText(`我方${MyTank.objs.length}隻`,CELL_SIZE*5,(TOTAL_ROWS-1)*CELL_SIZE );
+    ctx.font =  `${CELL_SIZE*2}px Arial`;
+    ctx.textAlign = "center" ;
+    ctx.fillText(`敵方${EnemyTank.objs.length}隻`, (TOTAL_COLS-5)*CELL_SIZE, (TOTAL_ROWS-1)*CELL_SIZE );
 
     if (MyTank.objs.length == 0){
         ctx.fillStyle = `rgb(255,0,0)` ;
-        ctx.font = "80px Arial";
-        ctx.fillText("GAME OVER",20,350);
+        ctx.font =  `${CELL_SIZE*TOTAL_COLS/8}px Arial`;
+        ctx.textAlign = "center" ;
+        ctx.fillText("GAME OVER",TOTAL_COLS/2*CELL_SIZE,TOTAL_ROWS/2*CELL_SIZE);
     }
 
     if ( EnemyTank.objs.length == 0 ) {
@@ -125,7 +130,8 @@ function run(time) {
         if ( wave > 8 ) {
             ctx.fillStyle = `rgb(0,255,0)` ;
             ctx.font = "200px Arial";
-            ctx.fillText("WIN",50,350 );
+            ctx.textAlign = "center" ;
+            ctx.fillText("WIN",TOTAL_COLS/2*CELL_SIZE,TOTAL_ROWS/2*CELL_SIZE );
         }
     }
     //if (Math.floor(Math.random()*400) == 0){
