@@ -188,13 +188,13 @@ class MyTank extends Entity {
         }   
         ctx.fillStyle = `rgb(255,0,0)` ;
         for( let i=0; i<this.hp; i++ ) {
-            ctx.fillRect( (this.col-1)*CELL_SIZE, (this.row*CELL_SIZE)+(CELL_SIZE*5/6)*(CELL_SIZE/30*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+            ctx.fillRect( (this.col-1)*CELL_SIZE, ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
         }
 
         let bombLevel = this.getBombLevel() ;
         ctx.fillStyle = `rgb(0,255,255)` ;
         for( let i=0; i<bombLevel; i++ ) {
-            ctx.fillRect( (this.col-1)*CELL_SIZE+CELL_SIZE/4, (this.row*CELL_SIZE)+(CELL_SIZE*5/6)*(CELL_SIZE/30*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+            ctx.fillRect( (this.col-1)*CELL_SIZE+CELL_SIZE/4, ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
         }
     }
 }

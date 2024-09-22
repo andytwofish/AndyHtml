@@ -208,7 +208,7 @@ class SuperTank extends EnemyTank {
 
 }
 class BigTank extends SuperTank{
-    HIGHEST_HP = 4 ;
+    HIGHEST_HP = 40 ;
     hp = this.HIGHEST_HP ;
     lastFireTS = 2000 ;
     lastFireTS2 = 2000 ;
