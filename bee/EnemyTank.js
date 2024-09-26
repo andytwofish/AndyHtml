@@ -216,9 +216,7 @@ class BigTank extends SuperTank{
         let part0 = new Part() ;
         part0.add(-2,0)
         let part1 = new Part() ;
-        part1.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) ;
-        part1.add(-1,-2).add(-1,2).add(-1,-3).add(-1,3).add(-1,-4).add(-1,4).add(1,-2).add(1,2).add(2,-2).add(2,2).add(3,-2).add(3,2).add(4,-1).add(4,1) ;
-
+        part1.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) .add(1,-2).add(1,2).add(2,-2).add(2,2).add(3,-2).add(3,2).add(4,-1).add(4,1) ;
         let part2 = new Part() ;
         part2.add(2,0) ;
         part2.fillStyle = "rgb(200,0,0)" ;
@@ -252,6 +250,33 @@ class BigTank extends SuperTank{
                 }
             }
             this.parts[partIdx].hp = 0 ;
+        }
+    }
+    draw(){
+        if (this.parts[1].hp != 0){
+            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "bigTank", x, y, CELL_SIZE*6, CELL_SIZE*6, 180 ) ;
+        }
+        if (this.parts[2].hp != 0){
+            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "light2", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
+        }
+        if (this.parts[3].hp != 0){
+            let x = ((this.col-4)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "Missile2", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
+        }
+        if (this.parts[4].hp != 0){
+            let x = ((this.col+4)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "Missile2", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
+        }
+        if (this.parts[1].hp < 1){
+            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = ((this.row-4)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "bigTank3", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
         }
     }
     process(){
@@ -294,10 +319,10 @@ class BigTank extends SuperTank{
                 ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
                 ctx.fillStyle = `rgb(124,252,0)` ;
                 ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
-                ctx.fillStyle = `rgb(0,100,0)` ;
-                for (let j=1;j<EnemyTank.objs[i].HIGHEST_HP;j++){
-                    ctx.fillRect( j*(CELL_SIZE*5) , CELL_SIZE*bigTankCount/2 , CELL_SIZE/2 , CELL_SIZE/5*3 ) ;
-                }
+                // ctx.fillStyle = `rgb(0,100,0)` ;
+                // for (let j=1;j<EnemyTank.objs[i].HIGHEST_HP;j++){
+                //     ctx.fillRect( j*(CELL_SIZE*5) , CELL_SIZE*bigTankCount/2 , CELL_SIZE/2 , CELL_SIZE/5*3 ) ;
+                // }
                 bigTankCount++ ;
             }
         }
