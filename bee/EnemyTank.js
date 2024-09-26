@@ -284,17 +284,20 @@ class BigTank extends SuperTank{
             }
         }
         ctx.fillStyle = `rgb(255,0,0)` ;
-        ctx.font = `${CELL_SIZE}px Arial`;
+        ctx.font = `${CELL_SIZE/4*3}px Arial`;
         ctx.textAlign = "center" ;
-        ctx.fillText("魔王血量:",CELL_SIZE/2*4,CELL_SIZE/2*2);
+        ctx.fillText("魔王血量:",CELL_SIZE/2*4,CELL_SIZE*2/3);
         bigTankCount = 0 ;
         for ( let i=0;i<EnemyTank.objs.length;i++){
-            console.log(i) ;
             if ( EnemyTank.objs[i] instanceof BigTank ){
-                ctx.fillStyle = `rgb(128,0,128)` ;
+                ctx.fillStyle = `rgb(30,85,30)` ;
                 ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
-                ctx.fillStyle = `rgb(255,0,255)` ;
+                ctx.fillStyle = `rgb(124,252,0)` ;
                 ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                ctx.fillStyle = `rgb(0,100,0)` ;
+                for (let j=1;j<EnemyTank.objs[i].HIGHEST_HP;j++){
+                    ctx.fillRect( j*(CELL_SIZE*5) , CELL_SIZE*bigTankCount/2 , CELL_SIZE/2 , CELL_SIZE/5*3 ) ;
+                }
                 bigTankCount++ ;
             }
         }

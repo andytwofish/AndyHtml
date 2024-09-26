@@ -184,7 +184,7 @@ window.onload=function() {
     for (let i=0;i<1;i++){
         new MyTank(30, TOTAL_COLS/2, new KeyController(i) );
     }
-    for (let i=0;i<8;i++){
+    for (let i=0;i<0;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyController(i) );
     }
     requestAnimationFrame(run);
