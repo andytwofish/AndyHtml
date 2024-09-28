@@ -178,10 +178,12 @@ class Light extends EnemyBullet {
     lightdirection = 0 ;
     moveCount = 0 ;
     moveDistance = 100 ;
+    color = 0 ;
     coord = new Coord(0,0) ;
-    constructor( row, col, rotation ) {
-        super( row, col, rotation ) ;
+    constructor( row, col, rotation, color ) {
+        super( row, col, rotation) ;
         this.moveDirection = rotation ;
+        this.color = color ;
     }
 
     init() {
@@ -221,20 +223,24 @@ class Light extends EnemyBullet {
 
             part.add( this.coord.row, this.coord.col ) ;
             let j=Math.floor(Math.random()*5) ;
-            if (j==0){
-                part.fillStyle = "rgb(0,191,255)" ;
-            }
-            if (j==1){
-                part.fillStyle = "rgb(255,255,0)" ;
-            }
-            if (j==2){
-                part.fillStyle = "rgb(255,255,0)" ;
-            }
-            if (j==3){
-                part.fillStyle = "rgb(255,255,0)" ;
-            }
-            if (j==4){
-                part.fillStyle = "rgb(0,0,128)" ;
+            if ( this.color == 0 ){
+                part.fillStyle = "rgb(255,255,0)"
+            }else{
+                if (j==0){
+                    part.fillStyle = "rgb(0,191,255)" ;
+                }
+                if (j==1){
+                    part.fillStyle = "rgb(255,255,0)" ;
+                }
+                if (j==2){
+                    part.fillStyle = "rgb(255,255,0)" ;
+                }
+                if (j==3){
+                    part.fillStyle = "rgb(255,255,0)" ;
+                }
+                if (j==4){
+                    part.fillStyle = "rgb(0,0,128)" ;
+                }
             }
             this.coord.col+=this.lightdirection ;
             part.add( this.coord.row, this.coord.col ) ;

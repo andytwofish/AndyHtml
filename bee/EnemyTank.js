@@ -208,8 +208,9 @@ class SuperTank extends EnemyTank {
 
 }
 class BigTank extends SuperTank{
-    HIGHEST_HP = 80 ;
-    hp = this.HIGHEST_HP ;
+    static HIGHEST_HP = 80 ;
+    static ONETHIRD_HP = BigTank.HIGHEST_HP/3
+    hp = BigTank.HIGHEST_HP ;
     lastFireTS = 2000 ;
     lastFireTS2 = 2000 ;
     init() {
@@ -238,7 +239,7 @@ class BigTank extends SuperTank{
             this.hp-- ;
             for( let i=1; i<this.parts.length; i++) {
                 if ( this.parts[i].hp > 0 ) {
-                    this.hp = this.HIGHEST_HP ;
+                    this.hp = BigTank.HIGHEST_HP ;
                 }
             }
         } else {
@@ -275,12 +276,18 @@ class BigTank extends SuperTank{
         }
         if (this.parts[1].hp < 1){
             let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-            let y = ((this.row-4)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
             drawImg( "bigTank3", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
         }
     }
     process(){
-        if ( Date.now() - this.lastFireTS > 2000 ) {
+        let wait = 0 ;
+        if (this.hp>BigTank.ONETHIRD_HP){
+            wait = 2000 ;
+        }else{
+            wait = 800 ;
+        }
+        if ( Date.now() - this.lastFireTS > wait ) {
             this.lastFireTS = Date.now() ;
             if ( this.parts[3].hp > 0 ) {
                 new Missile(this.row+1,this.col+this.parts[3].coords[0].col,0) ;
@@ -290,14 +297,24 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    for (let i=0;i<0;i++){
-                        new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
-                    }
-                    for (let i=0;i<4;i++){
-                    //for (let i=0;i<MyTank.objs.length*2;i++){
-                        
-                        //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
-                        new Light(this.row-2,this.col,0);
+                    
+                    if ( this.hp>BigTank.ONETHIRD_HP ){
+                        for (let i=0;i<4;i++){
+                        //for (let i=0;i<MyTank.objs.length*2;i++){
+                            
+                            //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
+                            new Light(this.row-2,this.col,0,0);
+                        }
+                    }else{
+                        for (let i=0;i<1;i++){
+                            new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
+                        }
+                        for (let i=0;i<4;i++){
+                        //for (let i=0;i<MyTank.objs.length*2;i++){
+                            
+                            //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
+                            new Light(this.row-2,this.col,0,1);
+                        }
                     }
                 }
             }
@@ -315,14 +332,17 @@ class BigTank extends SuperTank{
         bigTankCount = 0 ;
         for ( let i=0;i<EnemyTank.objs.length;i++){
             if ( EnemyTank.objs[i] instanceof BigTank ){
-                ctx.fillStyle = `rgb(30,85,30)` ;
-                ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
-                ctx.fillStyle = `rgb(124,252,0)` ;
-                ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
-                // ctx.fillStyle = `rgb(0,100,0)` ;
-                // for (let j=1;j<EnemyTank.objs[i].HIGHEST_HP;j++){
-                //     ctx.fillRect( j*(CELL_SIZE*5) , CELL_SIZE*bigTankCount/2 , CELL_SIZE/2 , CELL_SIZE/5*3 ) ;
-                // }
+                if (EnemyTank.objs[i].hp>BigTank.ONETHIRD_HP){
+                    ctx.fillStyle = `rgb(30,85,30)` ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , BigTank.HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                    ctx.fillStyle = `rgb(124,252,0)` ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                }else{
+                    ctx.fillStyle = `rgb(128,0,128)` ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , BigTank.HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                    ctx.fillStyle = `rgb(255,0,255)` ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                }
                 bigTankCount++ ;
             }
         }
