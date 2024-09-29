@@ -306,7 +306,7 @@ class BigTank extends SuperTank{
                             new Light(this.row-2,this.col,0,0);
                         }
                     }else{
-                        for (let i=0;i<1;i++){
+                        for (let i=0;i<0;i++){
                             new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
                         }
                         for (let i=0;i<4;i++){

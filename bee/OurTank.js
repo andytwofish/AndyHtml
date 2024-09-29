@@ -2,7 +2,7 @@
 class MyTank extends Entity {
     static objs = [];
     static SHIELD_HIGHEST = 20 ;
-    static HIGHEST_HP = 8 ;
+    static HIGHEST_HP = 80 ;
     hp = MyTank.HIGHEST_HP ;
     rotattion = 0 ;
     time = 0 ;
@@ -185,17 +185,34 @@ class MyTank extends Entity {
             y = ((this.row)*CELL_SIZE+1) + CELL_SIZE/2 ;
             this.rotation+= (this.parts[1].hp)*2 ;
             drawImg( "shieldImg", x, y, CELL_SIZE*8, CELL_SIZE*8, this.rotation ) ;
-        }   
-        ctx.fillStyle = `rgb(255,0,0)` ;
-        for( let i=0; i<this.hp; i++ ) {
-            ctx.fillRect( (this.col-1)*CELL_SIZE, ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
         }
-
         let bombLevel = this.getBombLevel() ;
         ctx.fillStyle = `rgb(0,255,255)` ;
         for( let i=0; i<bombLevel; i++ ) {
             ctx.fillRect( (this.col-1)*CELL_SIZE+CELL_SIZE/4, ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
         }
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        let l = 0 ; 
+        let k = Math.floor(Math.sqrt(this.hp)) ;
+        let p = this.hp-k*k ;
+        for( let j=0; j<k; j++ ) {
+            l++ ;
+            for( let i=0; i<k; i++ ) {
+                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+            }
+        }
+        for( let j=0; j<10; j++ ) {
+            l++ ;
+            for( let i=0; i<k; i++ ) {
+                if ( p==0 ){
+                    return ; ;
+                }
+                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+                p-- ;
+            }
+        }
+        
+
     }
 }
 
