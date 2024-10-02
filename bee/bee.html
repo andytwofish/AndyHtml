@@ -27,6 +27,11 @@
     <img id="diode" src="./images/icons8-led-diode-48.png" alt="Source Image" style="display:none;">
     <img id="lightImg" src="./images/—Pngtree—light effect of lightning blue_6183369.png" alt="Source Image" style="display:none;">
     <img id="shieldImg" src="./images/Lovepik_com-380121912-glowing-sphere-abstract-light-effect-decoration-effects-iridescent-color.png" alt="Source Image" style="display:none;">
+    <img id="light2" src="./images/icons8-babylon-5-vorlon-ship-96.png" alt="Source Image" style="display:none;">
+    <img id="Missile2" src="./images/icons8-cylon-raider-tos-96.png" alt="Source Image" style="display:none;">
+    <img id="SuperTank2" src="./images/icons8-star-trek-kumari-ship-96.png" alt="Source Image" style="display:none;">
+    <img id="bigTank3" src="./images/icons8-viper-mark-2-96.png" alt="Source Image" style="display:none;">
+    <img id="bigTank" src="./images/icons8-cylon-raider-96.png" alt="Source Image" style="display:none;">
 </body>
 </html>
 <script>
@@ -41,6 +46,7 @@ const TOTAL_COLS = 80 ;
 let CELL_SIZE = 10 ;
 let isRun = true ;
 let lastTime = 0 ;
+let bigTankCount = -1 ;
 let tanks = [] ; 
 let target = [] ;
 let wave = 0 ;
@@ -142,20 +148,25 @@ function run(time) {
         ctx.textAlign = "center" ;
         ctx.fillText("GAME OVER",TOTAL_COLS/2*CELL_SIZE,TOTAL_ROWS/2*CELL_SIZE);
     }
-
+    
     if ( EnemyTank.objs.length == 0 ) {
         wave++ ;
-        if (wave < 8 ) {
-            for ( let i= 0;i<wave;i++ ) {
+        if (wave < 2 ) {
+            for ( let i= 0;i<8;i++ ) {
                 new SuperTank() ;
             }
         } 
         if ( wave == 8 ) {
-            new BigTank()  ;
+            for ( let i= 0;i<1;i++ ) {
+                new BigTank() ;
+            }
+            for ( let i= 0;i<0;i++ ) {
+                new BabyTank() ;
+            }
         }
         if ( wave > 8 ) {
             ctx.fillStyle = `rgb(0,255,0)` ;
-            ctx.font = "200px Arial";
+            ctx.font = `${CELL_SIZE*TOTAL_COLS/8}px Arial`;
             ctx.textAlign = "center" ;
             ctx.fillText("WIN",TOTAL_COLS/2*CELL_SIZE,TOTAL_ROWS/2*CELL_SIZE );
         }
@@ -184,7 +195,7 @@ function gameStart() {
         new MyTank(30, TOTAL_COLS/2, new KeyController(i) );
     }
     for (let i=0;i<0;i++){
-        new AutoMyTank(Math.floor(Math.random()*TOTAL_ROWS)+TOTAL_ROWS/2,Math.floor(Math.random()*TOTAL_COLS), new KeyController(i) );
+        new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyController(i) );
     }
     run();
 }
