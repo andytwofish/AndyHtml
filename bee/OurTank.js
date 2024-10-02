@@ -2,7 +2,7 @@
 class MyTank extends Entity {
     static objs = [];
     static SHIELD_HIGHEST = 20 ;
-    static HIGHEST_HP = 8 ;
+    static HIGHEST_HP = 20 ;
     hp = MyTank.HIGHEST_HP ;
     rotattion = 0 ;
     time = 0 ;
@@ -11,6 +11,8 @@ class MyTank extends Entity {
     isShieldON = false ;
     shieldHP = MyTank.SHIELD_HIGHEST ;
     bombBeginTime = 0 ; 
+    hightBombLevel = 20 ;
+    bombLevelTime = 800 ;
     lastBulletTime = 0 ;
     lastShieldSwitchTime = 0 ;
     lastProcessTS = Date.now();
@@ -76,9 +78,9 @@ class MyTank extends Entity {
             return 0 ;
         }
         let deltaTime = Date.now() - this.bombBeginTime ;  
-        let bombLevel = Math.round( deltaTime / 1000 ) ;
-        if ( bombLevel > 8 ) {
-            bombLevel = 8 ;
+        let bombLevel = Math.round( deltaTime / this.bombLevelTime ) ;
+        if ( bombLevel > this.hightBombLevel ) {
+            bombLevel = this.hightBombLevel ;
         }
         return bombLevel ;
     }

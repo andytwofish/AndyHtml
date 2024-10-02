@@ -6,6 +6,7 @@ class EnemyTank extends Entity {
     lastMoveTS = Date.now() ;
     moveDelayTime = 100 ;
     stopTime = 1000 ; //移動完停多久
+    hp = 3 ;
     constructor() {
         super( 0, 0, 180 ) ;
         this.spaceBoundary.top = 0;
@@ -45,13 +46,37 @@ class EnemyTank extends Entity {
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "tankImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 180 ) ;
+        this.drawHp() ;
     }
 
+    drawHp(){
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        let l = 0 ; 
+        let k = Math.floor(Math.sqrt(this.hp)) ;
+        let p = this.hp-k*k ;
+        for( let j=0; j<k; j++ ) {
+            l++ ; 
+            for( let i=0; i<k; i++ ) {
+                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+            }
+        }
+        for( let j=0; j<10; j++ ) {
+            l++ ;
+            for( let i=0; i<k; i++ ) {
+                if ( p == 0 ){
+                    return ; ;
+                }
+                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+                p-- ;
+            }
+        }
+    }
+   
     move() {
         if ( this.moveDistance-- <= 0 ) {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
                 this.moveDistance = Math.floor( Math.random() * 20 ) ;
-                this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
+                this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 5 ) ];
                 //console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
             }
             return ;
@@ -93,6 +118,7 @@ class EnemyTank extends Entity {
 
 class ShieldPeople extends EnemyTank {
     lastShieldTS = 0 ;
+    hp = 1 ;
 
     init() {
         let part0 = new Part() ;
@@ -120,7 +146,8 @@ class ShieldPeople extends EnemyTank {
             x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
             y = ((this.row+2)*CELL_SIZE+1) + CELL_SIZE/2 ;
             drawImg( "E.shieldImg", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 0 ) ;
-        }   
+        }
+        this.drawHp() ;
     }
 
     attackedPart( fromEntity, partIdx) {
@@ -146,6 +173,7 @@ class ShieldPeople extends EnemyTank {
 }
 
 class SuperTank extends EnemyTank { 
+    hp = 1 ;
     init() {
 
         let part0 = new Part() ;
@@ -178,6 +206,30 @@ class SuperTank extends EnemyTank {
 
     draw(){
         this.autoDraw() ;
+        this.drawHp() ;
+    }
+
+    drawHp(){
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        let l = 0 ; 
+        let k = Math.floor(Math.sqrt(this.hp)) ;
+        let p = this.hp-k*k ;
+        for( let j=0; j<k; j++ ) {
+            l++ ; 
+            for( let i=0; i<k; i++ ) {
+                ctx.fillRect( (this.col-5)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+            }
+        }
+        for( let j=0; j<10; j++ ) {
+            l++ ;
+            for( let i=0; i<k; i++ ) {
+                if ( p == 0 ){
+                    return ; ;
+                }
+                ctx.fillRect( (this.col-5)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+                p-- ;
+            }
+        }
     }
 
     attackedPart( fromEntity, partIdx) {
@@ -278,8 +330,33 @@ class BigTank extends SuperTank{
             let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
             let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
             drawImg( "bigTank3", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
+            this.drawHp() ;
         }
     }
+
+    drawHp(){
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        let l = 0 ; 
+        let k = Math.floor(Math.sqrt(this.hp)) ;
+        let p = this.hp-k*k ;
+        for( let j=0; j<k; j++ ) {
+            l++ ; 
+            for( let i=0; i<k; i++ ) {
+                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+            }
+        }
+        for( let j=0; j<10; j++ ) {
+            l++ ;
+            for( let i=0; i<k; i++ ) {
+                if ( p == 0 ){
+                    return ; ;
+                }
+                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+                p-- ;
+            }
+        }
+    }
+
     process(){
         let wait = 0 ;
         if (this.hp>BigTank.ONETHIRD_HP){
@@ -357,6 +434,7 @@ class BabyTank extends EnemyTank {
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         drawImg( "babyTankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
+        this.drawHp() ;
     }
 
     process(){

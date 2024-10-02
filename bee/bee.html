@@ -151,10 +151,10 @@ function run(time) {
             }
         } 
         if ( wave == 8 ) {
-            for ( let i= 0;i<1;i++ ) {
+            for ( let i= 0;i<200;i++ ) {
                 new BigTank() ;
             }
-            for ( let i= 0;i<0;i++ ) {
+            for ( let i= 0;i<4;i++ ) {
                 new BabyTank() ;
             }
         }
@@ -187,7 +187,7 @@ window.onload=function() {
     }
 
     for (let i=0;i<1;i++){
-        new MyTank(30, TOTAL_COLS/2, new KeyController(i) );
+        new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(0) );
     }
     for (let i=0;i<0;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyController(i) );
