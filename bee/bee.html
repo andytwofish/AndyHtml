@@ -12,6 +12,7 @@
     <script src="./EnemyBullet.js"></script>
     <script src="./OurTank.js"></script>
     <script src="./OurBullet.js"></script>
+    <script src="./GameControl.js"></script>
 </head>
 <body>
     <canvas id="_Canvas" width="800" height="400"></canvas>
@@ -88,6 +89,11 @@ function drawBackground(){
 }
 
 function run(time) {
+    if ( gameControl.state != GameControl.STATE_RUNNING  ) {
+        requestAnimationFrame(run);
+        return ;
+    }
+
     if (lastTime === 0) {
         lastTime = time;
     }
@@ -160,15 +166,14 @@ function run(time) {
     requestAnimationFrame(run);
 }
 
-window.onload=function() {
-
+function gameStart() {
     for (let i=0;i<0;i++){
         new BigTank () ;
     }
-    for (let i=0;i<0;i++){
+    for (let i=0;i<1;i++){
         new EnemyTank() ;
     }
-    for (let i=0;i<4;i++){
+    for (let i=0;i<0;i++){
         new BabyTank () ;
     }
     for (let i=0;i<0;i++){
@@ -178,10 +183,11 @@ window.onload=function() {
     for (let i=0;i<1;i++){
         new MyTank(30, TOTAL_COLS/2, new KeyController(i) );
     }
-    for (let i=0;i<80;i++){
+    for (let i=0;i<0;i++){
         new AutoMyTank(Math.floor(Math.random()*TOTAL_ROWS)+TOTAL_ROWS/2,Math.floor(Math.random()*TOTAL_COLS), new KeyController(i) );
     }
-    requestAnimationFrame(run);
+    run();
 }
+gameControl.addEventListener("start", gameStart ) ;
 
 </script> 
