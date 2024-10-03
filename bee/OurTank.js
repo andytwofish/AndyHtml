@@ -276,10 +276,16 @@ class AutoMyTank extends MyTank {
         return col ;
     }
     whereIsEmemyCol2() {
+        if ( EnemyTank.objs.length == 0 ){
+            return this.col ;
+        }
         let idx = Math.floor(Math.random()*EnemyTank.objs.length) ;
         return EnemyTank.objs[idx].col ;
     }
     move() {
+        if ( Date.now() - this.lastMoveTS < this.moveDelayTime ) {
+            return ;
+        }
          if ( this.moveDistance-- <= 0 ) {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
                 //this.moveDistance = Math.floor( Math.random() * 20 ) ;
@@ -300,9 +306,7 @@ class AutoMyTank extends MyTank {
             }
             return ;
         }
-        if ( Date.now() - this.lastMoveTS < this.moveDelayTime ) {
-            return ;
-        }
+
         let isMove = false ;
         switch( this.moveDirection ) {
             case 0:
