@@ -194,7 +194,7 @@ function gameStart() {
     for (let i=0;i<gameControl.players;i++){
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
-    for (let i=0;i<400;i++){
+    for (let i=0;i<10;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();
