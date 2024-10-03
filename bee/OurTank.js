@@ -251,7 +251,7 @@ class AutoMyTank extends MyTank {
     lastFireBombTS = Date.now() ;
     lastMoveTS = Date.now() ;
     moveDelayTime = 100 ;
-    stopTime = 3000 ; //移動完停多久
+    stopTime = 2000 ; //移動完停多久
 
     bulletDetect(range) {
         for( let i=0; i<EnemyBullet.objs.length; i++ ) {
@@ -342,7 +342,7 @@ class AutoMyTank extends MyTank {
     }
     autoFireBomb() {
         if ( Date.now() - this.lastFireBombTS > 10000 ) {
-            this.keyController.keyPress(this.keyController.keyCodeToB, 5000 ) ;
+            this.keyController.keyPress(this.keyController.keyCodeToB, (Math.floor(Math.random()*this.hightBombLevel-1)+1)*1000) ;
             this.lastFireBombTS = Date.now() ;
         }
     }

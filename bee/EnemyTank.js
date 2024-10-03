@@ -265,6 +265,7 @@ class BigTank extends SuperTank{
     hp = BigTank.HIGHEST_HP ;
     lastFireTS = 2000 ;
     lastFireTS2 = 2000 ;
+    drawCellHp = (TOTAL_COLS-2)*CELL_SIZE/BigTank.HIGHEST_HP ;
     init() {
         let part0 = new Part() ;
         part0.add(-2,0)
@@ -411,14 +412,14 @@ class BigTank extends SuperTank{
             if ( EnemyTank.objs[i] instanceof BigTank ){
                 if (EnemyTank.objs[i].hp>BigTank.ONETHIRD_HP){
                     ctx.fillStyle = `rgb(30,85,30)` ;
-                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , BigTank.HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , BigTank.HIGHEST_HP*this.drawCellHp , CELL_SIZE/5*3 ) ;
                     ctx.fillStyle = `rgb(124,252,0)` ;
-                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*this.drawCellHp , CELL_SIZE/5*3 ) ;
                 }else{
                     ctx.fillStyle = `rgb(128,0,128)` ;
-                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , BigTank.HIGHEST_HP*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , BigTank.HIGHEST_HP*this.drawCellHp , CELL_SIZE/5*3 ) ;
                     ctx.fillStyle = `rgb(255,0,255)` ;
-                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*CELL_SIZE , CELL_SIZE/5*3 ) ;
+                    ctx.fillRect( CELL_SIZE*5 , CELL_SIZE*bigTankCount/2 , EnemyTank.objs[i].hp*this.drawCellHp , CELL_SIZE/5*3 ) ;
                 }
                 bigTankCount++ ;
             }
