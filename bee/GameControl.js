@@ -45,7 +45,7 @@ class GameControl {
         }
         this.state = GameControl.STATE_RUNNING ;
         gameMenuObj.style.display = 'none';
-        this.plays = parseInt( document.getElementById("players").value ); 
+        this.players = parseInt( document.getElementById("players").value ); 
         this.level = parseInt( document.getElementById("level").value ); 
         this.audio = parseInt( document.getElementById("audio").value ); 
         this._doCallbacks("start") ;
@@ -87,8 +87,8 @@ let html = `
                 等級：
                 <SELECT id="level">
                     <OPTION value="1" selected>Easy</OPTION>
-                    <OPTION value="2">Hard</OPTION>
-                    <OPTION value="3">Very Hard</OPTION>
+                    <OPTION value="2">Medium</OPTION>
+                    <OPTION value="3">Hard</OPTION>
                 </SELECT>
             </td></tr>
             <tr><td align="center" valign="center">
