@@ -160,7 +160,9 @@ class MyTank extends Entity {
                 }
                 this.bulletAudio.pause(); 
                 this.bulletAudio.currentTime = 0;
-                this.bulletAudio.play();
+                if (gameControl.audio == 1){
+                    this.bulletAudio.play();
+                }
                 this.lastBulletTime = Date.now() ;
             }
         }
