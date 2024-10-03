@@ -52,8 +52,8 @@ let target = [] ;
 let wave = 0 ;
 // 函數：調整 Canvas 尺寸
     function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth-32;
+        canvas.height = window.innerHeight-32;
         CELL_SIZE = window.innerWidth/85 ;
         draw(); // 重繪內容
     }
@@ -194,7 +194,7 @@ function gameStart() {
     for (let i=0;i<gameControl.players;i++){
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
-    for (let i=0;i<2;i++){
+    for (let i=0;i<4;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();
