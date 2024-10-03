@@ -69,6 +69,7 @@ class GameControl {
         }
         this.state = GameControl.STATE_RUNNING ;
         gameMenuObj.style.display = 'none';
+        this.audio = parseInt( document.getElementById("audio").value ); 
     }
 
 }
