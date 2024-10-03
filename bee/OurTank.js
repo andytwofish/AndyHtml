@@ -249,7 +249,7 @@ class AutoMyTank extends MyTank {
     lastFireBombTS = Date.now() ;
     lastMoveTS = Date.now() ;
     moveDelayTime = 100 ;
-    stopTime = 1000 ; //移動完停多久
+    stopTime = 3000 ; //移動完停多久
 
     bulletDetect(range) {
         for( let i=0; i<EnemyBullet.objs.length; i++ ) {
@@ -275,18 +275,27 @@ class AutoMyTank extends MyTank {
         }
         return col ;
     }
+    whereIsEmemyCol2() {
+        let idx = Math.floor(Math.random()*EnemyTank.objs.length) ;
+        return EnemyTank.objs[idx].col ;
+    }
     move() {
          if ( this.moveDistance-- <= 0 ) {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
                 //this.moveDistance = Math.floor( Math.random() * 20 ) ;
                 //this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
-                let col = this.whereIsEmemyCol() ;
+                let col = this.whereIsEmemyCol2() ;
                 if ( col > this.col ) {
                     this.moveDirection = 90 ;
                 } else {
                     this.moveDirection = 270 ;
                 }
                 this.moveDistance = Math.abs( this.col - col ) ;
+                
+                if ( this.row >= TOTAL_ROWS - Math.floor( Math.random() * 10 )+3 ) {
+                    this.moveDirection = 0 ;
+                    this.moveDistance = Math.floor( Math.random() * 10 ) + 3 ;
+                }
                 //console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
             }
             return ;
@@ -344,8 +353,11 @@ class AutoMyTank extends MyTank {
                     this.switchShield() ;
                 }
             }
-            this.autoFireBomb() ;
-            this.autoFireBullet() ;
+            if ( Math.floor( Math.random() * 10) == 0 ) {
+                this.autoFireBomb() ;
+            } else {
+                this.autoFireBullet() ;
+            }
         }
     }
 }
