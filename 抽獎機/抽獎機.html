@@ -23,13 +23,9 @@ let lotteryMachine = 0 ;
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    CELL_SIZE = window.innerWidth*0.9 ;
-    draw(); // 重繪內容
+    CELL_SIZE = window.innerWidth*0.9 ; 
 }
 
-function draw(){
-    drawImg( "lotteryMachine1", canvas.width/2 , canvas.height/2*1.1 , CELL_SIZE/1.5, CELL_SIZE, 0 ) ;
-}
 function drawImg(imgId, x, y, width, height, rotation) {
     ctx.save();
     ctx.translate(x, y);
@@ -50,7 +46,7 @@ class LotteryMachine {
     static rotationAngle = 20 ;
 
     draw(){
-        drawImg( "lotteryMachine2", canvas.width/2 , canvas.height/2 , CELL_SIZE/5, CELL_SIZE*0.8, LotteryMachine.rotation ) ;
+        drawImg( "lotteryMachine2", canvas.width/2 , canvas.height/2 , CELL_SIZE/10, CELL_SIZE/2.4, LotteryMachine.rotation ) ;
     }
     
 
@@ -70,12 +66,13 @@ function run(time) {
 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawImg( "lotteryMachine1", canvas.width/2 , canvas.height/2*1.1 , CELL_SIZE/1.5, CELL_SIZE, 0 ) ;
+    drawImg( "lotteryMachine1", canvas.width/2 , canvas.height/2*1.3 , CELL_SIZE/1.5, CELL_SIZE, 0 ) ;
     lotteryMachine.draw() ;
     LotteryMachine.rotation+=LotteryMachine.rotationAngle ;
 
     requestAnimationFrame(run);
 }
 requestAnimationFrame(run);
+
 lotteryMachine = new LotteryMachine() ;
 </script>

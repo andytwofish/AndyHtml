@@ -11,7 +11,7 @@ class MyTank extends Entity {
     isShieldON = false ;
     shieldHP = MyTank.SHIELD_HIGHEST ;
     bombBeginTime = 0 ; 
-    hightBombLevel = 20 ;
+    hightBombLevel = 8 ;
     bombLevelTime = 800 ;
     lastBulletTime = 0 ;
     lastShieldSwitchTime = 0 ;
@@ -66,8 +66,10 @@ class MyTank extends Entity {
         }
         if ( partIdx == 0 ) {
             this.bombBeginTime = 0 ;
-            this.audio.src = "audioFiles/y1491.mp3";
-            this.audio.play();
+            if (gameControl.audio == 1){
+                this.audio.src = "audioFiles/y1491.mp3";
+                this.audio.play();
+            }
             this.hp-- ;
         }
         this.moveInBoundary( this.row+1, this.col ) ;
@@ -153,7 +155,9 @@ class MyTank extends Entity {
         if ( this.parts[1].hp <= 0 ) {
             if ( Date.now() - this.lastBulletTime > 300 ) {
                 new OurBullet(this.row,this.col,0) ;
-                this.bulletAudio.src = "audioFiles/y2271.mp3";
+                if (gameControl.audio == 1){
+                    this.bulletAudio.src = "audioFiles/y2271.mp3";
+                }
                 this.bulletAudio.pause(); 
                 this.bulletAudio.currentTime = 0;
                 this.bulletAudio.play();
