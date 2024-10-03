@@ -240,15 +240,47 @@ class MyTank extends Entity {
 
 class AutoMyTank extends MyTank {
     lastFireTS = Date.now() ;
+    lastFireBombTS = Date.now() ;
     lastMoveTS = Date.now() ;
     moveDelayTime = 100 ;
     stopTime = 1000 ; //移動完停多久
 
+    bulletDetect(range) {
+        for( let i=0; i<EnemyBullet.objs.length; i++ ) {
+            let bullet = EnemyBullet.objs[i] ;
+            const dx = bullet.col - this.col;
+            const dy = bullet.row - this.row;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if ( dist <= range ) {
+                return true ;
+            }
+        }
+        return false ;
+    }
+    whereIsEmemyCol() {
+        let col = this.col;
+        let dist = 999 ;
+        for( let i=0; i<EnemyTank.objs.length; i++ ) {
+            let tank = EnemyTank.objs[i] ;
+            if ( Math.abs(tank.col-this.col) < dist ) {
+                dist = Math.abs(tank.col-this.col) ;
+                col = tank.col ;
+            }
+        }
+        return col ;
+    }
     move() {
          if ( this.moveDistance-- <= 0 ) {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
-                this.moveDistance = Math.floor( Math.random() * 20 ) ;
-                this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
+                //this.moveDistance = Math.floor( Math.random() * 20 ) ;
+                //this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 4 ) ];
+                let col = this.whereIsEmemyCol() ;
+                if ( col > this.col ) {
+                    this.moveDirection = 90 ;
+                } else {
+                    this.moveDirection = 270 ;
+                }
+                this.moveDistance = Math.abs( this.col - col ) ;
                 //console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
             }
             return ;
@@ -278,25 +310,37 @@ class AutoMyTank extends MyTank {
         }
 
     }
+    autoFireBullet() {
+        if ( Date.now() - this.lastFireTS > 500 ) {
+            if ( this.keyController.isButtonBPressed() ) {
+                return ;
+            }
+            this.keyController.keyPress(this.keyController.keyCodeToA, 70 ) ;
+            this.lastFireTS = Date.now() ;
+        }
+    }
+    autoFireBomb() {
+        if ( Date.now() - this.lastFireBombTS > 10000 ) {
+            this.keyController.keyPress(this.keyController.keyCodeToB, 5000 ) ;
+            this.lastFireBombTS = Date.now() ;
+        }
+    }
     process() {
-        if ( Date.now() - this.lastProcessTS < 50 ) {
-            this.draw() ;
-            this.drawBombLevel() ;
-            this.drawHp() ;
-            return ;
+        super.process();
+        this.move();
+        if ( this.bulletDetect(5) ) {
+            if ( this.isShieldON == false ) {
+                this.switchShield() ;
+            }
+        } else {
+            if ( this.isShieldON == true ) {
+                if ( !this.keyController.isButtonBPressed() ) {
+                    this.switchShield() ;
+                }
+            }
+            this.autoFireBomb() ;
+            this.autoFireBullet() ;
         }
-        this.lastProcessTS = Date.now() ;
-
-        if ( this.isShieldON == true ) {
-            this.switchShield() ;
-        }
-        this.move() ;
-        this.fireBullet() ;
-        this.switchShield() ;
-
-        this.draw() ;
-        this.drawBombLevel() ;
-        this.drawHp() ;
     }
 }
 

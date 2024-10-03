@@ -23,6 +23,9 @@ class KeyController {
             this.keyCodeToB = "KeyV" ;
             this.keyCodeToY = "KeyG" ;
         }
+        this._init() ;
+    }
+    _init() {
         document.addEventListener("keydown", this._keyDown.bind(this) );
         document.addEventListener("keyup", this._keyUp.bind(this) );
     }
@@ -121,4 +124,24 @@ class KeyController {
         return false ;
     }
 
+}
+
+class KeyControllerFake extends KeyController {
+    constructor() {
+        super(10) ;
+    }
+    _init() {}
+
+    keyPress(keyCode, ms) {
+        this._keyDown(keyCode) ;
+        setTimeout( () => {
+            this._keyUp(keyCode) ;
+        }, ms) ;
+    }
+    _keyDown(keyCode) {
+        this.keysState.set( keyCode, true ) ;
+    }
+    _keyUp(keyCode){
+        this.keysState.set( keyCode, false ) ;
+    }
 }
