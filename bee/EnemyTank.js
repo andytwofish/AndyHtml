@@ -267,7 +267,7 @@ class BigTank extends SuperTank{
     drawCellHp = (TOTAL_COLS-2)*CELL_SIZE/BigTank.HIGHEST_HP ;
     init() {
         let part0 = new Part() ;
-        part0.add(-2,0)
+        part0.add(-2,0).add(-2,-1).add(-2,1).add(-1,0).add(-3,0).add(-3,-1).add(-4,0).add(-3,1).add(-2,-2).add(-2,2).add(-1,-1).add(0,0).add(-1,1) ;
         let part1 = new Part() ;
         part1.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) .add(1,-2).add(1,2).add(2,-2).add(2,2).add(3,-2).add(3,2).add(4,-1).add(4,1) ;
         let part2 = new Part() ;
@@ -329,9 +329,10 @@ class BigTank extends SuperTank{
         if (this.parts[1].hp < 1){
             let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
             let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
-            drawImg( "bigTank3", x, y, CELL_SIZE*2, CELL_SIZE*2, 180 ) ;
+            drawImg( "bigTank3", x, y, CELL_SIZE*3, CELL_SIZE*3, 180 ) ;
             this.drawHp() ;
         }
+    // this.autoDraw() ;
     }
 
     drawHp(){

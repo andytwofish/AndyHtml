@@ -30,7 +30,7 @@
     <img id="light2" src="./images/icons8-babylon-5-vorlon-ship-96.png" alt="Source Image" style="display:none;">
     <img id="Missile2" src="./images/icons8-cylon-raider-tos-96.png" alt="Source Image" style="display:none;">
     <img id="SuperTank2" src="./images/icons8-star-trek-kumari-ship-96.png" alt="Source Image" style="display:none;">
-    <img id="bigTank3" src="./images/icons8-viper-mark-2-96.png" alt="Source Image" style="display:none;">
+    <img id="bigTank3" src="./images/點陣圖.png" alt="Source Image" style="display:none;">
     <img id="bigTank" src="./images/icons8-cylon-raider-96.png" alt="Source Image" style="display:none;">
 </body>
 </html>
@@ -193,7 +193,7 @@ function gameStart() {
     for (let i=0;i<gameControl.players;i++){
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
-    for (let i=0;i<gameControl.level*2;i++){
+    for (let i=3;i<gameControl.level*20;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();
