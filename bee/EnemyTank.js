@@ -329,7 +329,7 @@ class BigTank extends SuperTank{
         if (this.parts[1].hp < 1){
             let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
             let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
-            drawImg( "bigTank3", x, y, CELL_SIZE*4, CELL_SIZE*4, 180 ) ;
+            drawImg( "bigTank3", x, y, CELL_SIZE*5, CELL_SIZE*5, 180 ) ;
             this.drawHp() ;
         }
     // this.autoDraw() ;
@@ -343,7 +343,7 @@ class BigTank extends SuperTank{
         for( let j=0; j<k; j++ ) {
             l++ ; 
             for( let i=0; i<k; i++ ) {
-                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+                ctx.fillRect( (this.col-2)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
             }
         }
         for( let j=0; j<10; j++ ) {
@@ -352,7 +352,7 @@ class BigTank extends SuperTank{
                 if ( p == 0 ){
                     return ; ;
                 }
-                ctx.fillRect( (this.col-1)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+                ctx.fillRect( (this.col-2)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
                 p-- ;
             }
         }
