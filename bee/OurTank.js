@@ -254,6 +254,14 @@ class AutoMyTank extends MyTank {
     stopTime = 2000 ; //移動完停多久
 
     bulletDetect(range) {
+        for (let i=0;i<EnemyTank.objs.length;i++){
+            if (EnemyTank.objs[i] instanceof BigTank ){
+                let j = Math.abs(EnemyTank.objs[i].col-this.col)
+                if (j<6 && !this.keyController.isButtonBPressed()){
+                    return true ;
+                }
+            }
+        }
         for( let i=0; i<EnemyBullet.objs.length; i++ ) {
             let bullet = EnemyBullet.objs[i] ;
             const dx = bullet.col - this.col;
