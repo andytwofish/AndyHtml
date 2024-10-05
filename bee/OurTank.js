@@ -258,6 +258,7 @@ class AutoMyTank extends MyTank {
             if (EnemyTank.objs[i] instanceof BigTank ){
                 let j = Math.abs(EnemyTank.objs[i].col-this.col)
                 if (j<6 && !this.keyController.isButtonBPressed()){
+                    this.autoFireBomb() ;
                     return true ;
                 }
             }
@@ -312,7 +313,6 @@ class AutoMyTank extends MyTank {
                     this.moveDirection = 0 ;
                     this.moveDistance = Math.floor( Math.random() * 10 ) + 3 ;
                 }
-                //console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
             }
             return ;
         }
@@ -349,7 +349,7 @@ class AutoMyTank extends MyTank {
         }
     }
     autoFireBomb() {
-        if ( Date.now() - this.lastFireBombTS > 10000 ) {
+        if ( Date.now() - this.lastFireBombTS > 8000 ) {
             this.keyController.keyPress(this.keyController.keyCodeToB, (Math.floor(Math.random()*this.hightBombLevel-1)+1)*1000) ;
             this.lastFireBombTS = Date.now() ;
         }

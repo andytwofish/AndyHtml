@@ -90,7 +90,6 @@ class OurBomb extends OurBullet {
     moveDirection=0;
     constructor( row, col, bombLevel ) {
         super( row, col, 0 ) ;
-        //console.log(`OurBomb(${row}, ${col}, ${bombLevel} )`);
         this.bombLevel = bombLevel ;
         this.init2();
     }

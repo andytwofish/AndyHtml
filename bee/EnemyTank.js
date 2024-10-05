@@ -77,7 +77,6 @@ class EnemyTank extends Entity {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
                 this.moveDistance = Math.floor( Math.random() * 20 ) ;
                 this.moveDirection = Entity.DirectionMap[ Math.floor( Math.random() * 5 ) ];
-                //console.log(`新方向 ${this.moveDirection}, ${this.moveDistance}`);
             }
             return ;
         }

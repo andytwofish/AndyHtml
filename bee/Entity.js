@@ -1,4 +1,4 @@
-console.log("load Entity.js");
+
 class Coord {
     row=0;
     col=0;
