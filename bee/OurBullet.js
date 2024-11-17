@@ -126,3 +126,80 @@ class OurBomb extends OurBullet {
 
 
 }
+class MyLight extends OurBullet{
+    createFrom = 0 ;
+    lightdirection = 0 ;
+    moveCount = 0 ;
+    moveDistance = 100 ;
+    color = 0 ;
+    coord = new Coord(0,0) ;
+    constructor( row, col, rotation, color ) {
+        super( row, col, rotation) ;
+        this.moveDirection = rotation ;
+        this.color = color ;
+    }
+
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+        part0.fillStyle = "rgb(200,0,0)" ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+    }
+    draw(){
+        this.autoDraw() ;
+    }
+
+    checkAfterMoved() {
+        for( let i=0; i< EnemyTank.objs.length ; i++ ) {
+            let entity = EnemyTank.objs[i] ;
+            if ( entity.attackCheck( this ) ) {
+                this.hp-- ;
+            }
+        }
+    }
+
+    move() {
+        for(let i=0;i<4;i++){
+            if (this.moveCount<=0 ){
+                this.lightdirection = Math.floor(Math.random()*3)-1 ;
+                this.moveCount = Math.floor(Math.random()*5)+1 ;
+            }
+            this.moveCount-=1 ;
+            this.coord.row-=1 ;
+            if ( this.coord.row < TOTAL_ROWS-(TOTAL_ROWS*2) ) {
+                this.hp = 0 ;
+                return ;
+            }
+            let part = new Part() ;
+
+            part.add( this.coord.row, this.coord.col ) ;
+            let j=Math.floor(Math.random()*5) ;
+            if ( this.color == 0 ){
+                part.fillStyle = "rgb(255,255,0)"
+            }else{
+                if (j==0){
+                    part.fillStyle = "rgb(0,191,255)" ;
+                }
+                if (j==1){
+                    part.fillStyle = "rgb(255,255,0)" ;
+                }
+                if (j==2){
+                    part.fillStyle = "rgb(255,255,0)" ;
+                }
+                if (j==3){
+                    part.fillStyle = "rgb(255,255,0)" ;
+                }
+                if (j==4){
+                    part.fillStyle = "rgb(0,0,128)" ;
+                }
+            }
+            this.coord.col+=this.lightdirection ;
+            part.add( this.coord.row, this.coord.col ) ;
+
+            this.parts.push( part ) ;
+        }
+        this.checkAfterMoved() ;
+    }
+}

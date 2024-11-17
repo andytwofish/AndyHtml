@@ -31,7 +31,7 @@
     <img id="Missile2" src="./images/icons8-cylon-raider-tos-96.png" alt="Source Image" style="display:none;">
     <img id="SuperTank2" src="./images/icons8-star-trek-kumari-ship-96.png" alt="Source Image" style="display:none;">
     <img id="bigTank3" src="./images/點陣圖.png" alt="Source Image" style="display:none;">
-    <img id="bigTank" src="./images/icons8-cylon-raider-96.png" alt="Source Image" style="display:none;">
+    <img id="bigTank" src="./images/icons8-cylon-raider-96.png" alt="Source Image" style="display:none;">       
 </body>
 </html>
 <script>
@@ -151,16 +151,13 @@ function run(time) {
     if ( EnemyTank.objs.length == 0 ) {
         wave++ ;
         if (wave < 2 ) {
-            for ( let i= 0;i<gameControl.level*5;i++ ) {
+            for ( let i= 0;i<gameControl.level*8;i++ ) {
                 new SuperTank() ;
             }
         } 
         if ( wave == 8 ) {
             for ( let i= 0;i<gameControl.level;i++ ) {
                 new BigTank() ;
-            }
-            for ( let i= 0;i<gameControl.level*4;i++ ) {
-                new BabyTank() ;
             }
         }
         if ( wave > 8 ) {
@@ -170,9 +167,9 @@ function run(time) {
             ctx.fillText("WIN",TOTAL_COLS/2*CELL_SIZE,TOTAL_ROWS/2*CELL_SIZE );
         }
     }
-    //if (Math.floor(Math.random()*400) == 0){
-    //    tanks [tanks.length] = new firstAidKit () ;
-    //}
+    if (Math.floor(Math.random()*400) == 0){
+       tanks [tanks.length] = new firstAidKit () ;
+    }
     requestAnimationFrame(run);
 }
 
@@ -181,19 +178,19 @@ function gameStart() {
         new BigTank () ;
     }
     for (let i=0;i<0;i++){
+        new ShieldPeople () ;
+    }
+    for (let i=0;i<0;i++){
         new EnemyTank() ;
     }
     for (let i=0;i<gameControl.level*3;i++){
         new BabyTank () ;
     }
-    for (let i=0;i<0;i++){
-        new ShieldPeople () ;
-    }
 
     for (let i=0;i<gameControl.players;i++){
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
-    for (let i=0;i<gameControl.level*2;i++){
+    for (let i=0;i<(gameControl.level-1)*2;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();

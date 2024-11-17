@@ -259,8 +259,8 @@ class SuperTank extends EnemyTank {
 
 }
 class BigTank extends SuperTank{
-    static HIGHEST_HP = 80 ;
-    static ONETHIRD_HP = BigTank.HIGHEST_HP/3
+    static HIGHEST_HP = 200 ;
+    static ONETHIRD_HP = BigTank.HIGHEST_HP/3*1
     hp = BigTank.HIGHEST_HP ;
     lastFireTS = 2000 ;
     lastFireTS2 = 2000 ;
@@ -375,29 +375,42 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    
-                    if ( this.hp>BigTank.ONETHIRD_HP ){
-                        for (let i=0;i<4;i++){
-                        //for (let i=0;i<MyTank.objs.length*2;i++){
-                            
-                            //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
-                            new Light(this.row-2,this.col,0,0);
+                    let arms = Math.floor(Math.random()*8) ;
+                    if (arms == 0){
+                        for (let i=0;i<11;i++){
+                            new Missile(this.row-1,this.col+5-i,0,0);
                         }
-                    }else{
-                        for (let i=0;i<0;i++){
-                            new Missile(this.row+1,this.col+this.parts[0].coords[0].col,0) ;
+                    }
+                    if (arms == 1){
+                        for (let j=0;j<4;j++){
+                            for (let i=0;i<9;i++){
+                                new LaserLight(this.row-1+j,this.col+3-i,0,0);
+                            }
                         }
+                    }
+                    if (arms == 2){
+                        let e = Math.floor(Math.random()*2)+2 ;
+                        for (let i=0;i<e;i++){
+                            let enemyTank = new EnemyTank () ;
+                            enemyTank.row = this.row ;
+                            enemyTank.col = this.col ;
+                        }
+                        let p = Math.floor(Math.random()*2)+2 ; 
+                        for (let i=0;i<p;i++){
+                            let people = new ShieldPeople () ;
+                            people.row = this.row ;
+                            people.col = this.col ;
+                        }
+                    }
+                    if (arms == 3||arms == 4||arms == 5||arms == 6||arms == 7){
                         for (let i=0;i<4;i++){
-                        //for (let i=0;i<MyTank.objs.length*2;i++){
-                            
-                            //new Light(0,Math.floor(Math.random()*TOTAL_COLS),0) ;
-                            new Light(this.row-2,this.col,0,1);
+                            new Light(this.row-1,this.col,0,0);
                         }
                     }
                 }
             }
         }
-        if ( Date.now() - this.lastFireTS2 > 800 ) {
+        if ( Date.now() - this.lastFireTS2 > 1 ) {
             this.lastFireTS2 = Date.now() ;
             if ( this.parts[2].hp > 0 ) {
                 new LaserLight(this.row+1,this.col,0);

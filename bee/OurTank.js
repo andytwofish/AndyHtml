@@ -3,6 +3,8 @@ class MyTank extends Entity {
     static objs = [];
     static SHIELD_HIGHEST = 20 ;
     static HIGHEST_HP = 20 ;
+    col = [] ;
+    row = [] ;
     hp = MyTank.HIGHEST_HP ;
     rotattion = 0 ;
     time = 0 ;
@@ -44,7 +46,6 @@ class MyTank extends Entity {
     }
 
     init() {
-
         let part0 = new Part() ;
         part0.add(0,0) ;
 
@@ -98,6 +99,8 @@ class MyTank extends Entity {
     }
 
     process() {
+        // this.row[row.length] = this.row ;
+        // this.col[row.length] = this.col ;
         if ( Date.now() - this.lastProcessTS < 50 ) {
             this.draw() ;
             this.drawBombLevel() ;
@@ -120,6 +123,9 @@ class MyTank extends Entity {
         }
         if ( this.keyController.isButtonAPressed() ) {
             this.fireBullet();  
+        }
+        if ( this.keyController.isButtonYPressed() ) {
+            this.fireMyLight();  
         }
         if ( this.keyController.isButtonXPressed() ) {
             this.switchShield();  
@@ -163,6 +169,16 @@ class MyTank extends Entity {
                 if (gameControl.audio == 1){
                     this.bulletAudio.play();
                 }
+                this.lastBulletTime = Date.now() ;
+            }
+        }
+    }
+    fireMyLight() {
+        this.bombBeginTime = 0;
+        if ( this.parts[1].hp <= 0 ) {
+            if ( Date.now() - this.lastBulletTime > 20 ) {
+                new MyLight(this.row,this.col,0) ;
+
                 this.lastBulletTime = Date.now() ;
             }
         }
