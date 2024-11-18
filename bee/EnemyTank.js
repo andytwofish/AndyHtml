@@ -71,7 +71,7 @@ class EnemyTank extends Entity {
             }
         }
     }
-   
+
     move() {
         if ( this.moveDistance-- <= 0 ) {
             if (Date.now() - this.lastMoveTS > this.stopTime ) {
@@ -172,7 +172,7 @@ class ShieldPeople extends EnemyTank {
 }
 
 class SuperTank extends EnemyTank { 
-    hp = 1 ;
+    hp = 20 ;
     init() {
 
         let part0 = new Part() ;
@@ -233,10 +233,10 @@ class SuperTank extends EnemyTank {
 
     attackedPart( fromEntity, partIdx) {
         if ( partIdx == 0) {
-            this.hp = 0 ;
+            this.hp-=1 ;
             for( let i=1; i<this.parts.length; i++) {
                 if ( this.parts[i].hp > 0 ) {
-                    this.hp = 1 ;
+                    this.hp = 20 ;
                 }
             }
         } else {
@@ -375,20 +375,13 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = Math.floor(Math.random()*8) ;
+                    let arms = 2 ;
                     if (arms == 0){
                         for (let i=0;i<11;i++){
                             new Missile(this.row-1,this.col+5-i,0,0);
                         }
                     }
                     if (arms == 1){
-                        for (let j=0;j<4;j++){
-                            for (let i=0;i<9;i++){
-                                new LaserLight(this.row-1+j,this.col+3-i,0,0);
-                            }
-                        }
-                    }
-                    if (arms == 2){
                         let e = Math.floor(Math.random()*2)+2 ;
                         for (let i=0;i<e;i++){
                             let enemyTank = new EnemyTank () ;
@@ -402,7 +395,14 @@ class BigTank extends SuperTank{
                             people.col = this.col ;
                         }
                     }
-                    if (arms == 3||arms == 4||arms == 5||arms == 6||arms == 7){
+                    if (arms == 2){
+                        for (let j=0;j<8;j++){
+                            for (let i=0;i<9;i++){
+                                new LaserLight(this.row-1+j,this.col+3-i,0,0);
+                            }
+                        }
+                    }
+                    if (arms == 3||arms == 4||arms == 5||arms == 6){
                         for (let i=0;i<4;i++){
                             new Light(this.row-1,this.col,0,0);
                         }

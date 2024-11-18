@@ -151,8 +151,13 @@ function run(time) {
     if ( EnemyTank.objs.length == 0 ) {
         wave++ ;
         if (wave < 2 ) {
-            for ( let i= 0;i<gameControl.level*8;i++ ) {
+            for ( let i= 0;i<gameControl.level*20;i++ ) {
                 new SuperTank() ;
+               
+            }
+            for ( let i= 0;i<gameControl.level*20;i++ ) {
+                new EnemyTank() ;
+               
             }
         } 
         if ( wave == 8 ) {

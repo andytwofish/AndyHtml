@@ -175,13 +175,12 @@ class MyTank extends Entity {
     }
     fireMyLight() {
         this.bombBeginTime = 0;
-        if ( this.parts[1].hp <= 0 ) {
-            if ( Date.now() - this.lastBulletTime > 20 ) {
-                new MyLight(this.row,this.col,0) ;
-
+            if ( Date.now() - this.lastBulletTime > 0 ) {
+                for( let j=0; j<8; j++ ) {
+                    new MyLight(this.row,this.col,0) ;
+                }
                 this.lastBulletTime = Date.now() ;
             }
-        }
     }
     switchShield() {
         if ( Date.now() - this.lastShieldSwitchTime < 300 ) {
