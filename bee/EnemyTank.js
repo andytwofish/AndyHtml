@@ -172,7 +172,7 @@ class ShieldPeople extends EnemyTank {
 }
 
 class SuperTank extends EnemyTank { 
-    hp = 20 ;
+    hp = 8 ;
     init() {
 
         let part0 = new Part() ;
@@ -236,7 +236,7 @@ class SuperTank extends EnemyTank {
             this.hp-=1 ;
             for( let i=1; i<this.parts.length; i++) {
                 if ( this.parts[i].hp > 0 ) {
-                    this.hp = 20 ;
+                    this.hp = 8 ;
                 }
             }
         } else {
@@ -256,6 +256,65 @@ class SuperTank extends EnemyTank {
         this.move() ;
         this.draw() ;
     }
+
+}
+class LaserLightTank extends SuperTank{
+    hp = 20 ;
+    init() {
+        let part0 = new Part() ;
+        part0.add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,0).add(0,1).add(1,-1).add(1,1).add(-2,0).add(0,-2).add(0,2).add(-2,0).add(-3,-1).add(-3,0).add(-3,1) ;
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+    }
+
+    draw(){
+        this.autoDraw() ;
+        this.drawHp() ;
+    }
+
+    drawHp(){
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        let l = 0 ; 
+        let k = Math.floor(Math.sqrt(this.hp)) ;
+        let p = this.hp-k*k ;
+        for( let j=0; j<k; j++ ) {
+            l++ ; 
+            for( let i=0; i<k; i++ ) {
+                ctx.fillRect( (this.col-2)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+            }
+        }
+        for( let j=0; j<10; j++ ) {
+            l++ ;
+            for( let i=0; i<k; i++ ) {
+                if ( p == 0 ){
+                    return ; ;
+                }
+                ctx.fillRect( (this.col-2)*CELL_SIZE-(l*CELL_SIZE/4.5), ((this.row+1)*CELL_SIZE)-(CELL_SIZE*5/6)*(CELL_SIZE/70*i), CELL_SIZE/4, CELL_SIZE/5 ) ;
+                p-- ;
+            }
+        }
+    }
+
+    attackedPart( fromEntity, partIdx) {
+        if ( partIdx == 0) {
+            this.hp-=1 ;
+        } else {
+            this.parts[partIdx].hp = 0 ;
+        }
+    }
+
+    process(){
+        if ( Date.now() - this.lastFireTS > 400 ) {
+            this.lastFireTS = Date.now() ;
+            let j = Math.floor(Math.random()*4)+1 ;
+            for( let i=0; i<j; i++ ) {
+                new LaserLight(this.row+1,this.col, 180 ) ;
+            }
+        }
+        this.move() ;
+        this.draw() ;
+    }
+
 
 }
 class BigTank extends SuperTank{
@@ -375,7 +434,7 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = 2 ;
+                    let arms = Math.floor(Math.random()*7) ;
                     if (arms == 0){
                         for (let i=0;i<11;i++){
                             new Missile(this.row-1,this.col+5-i,0,0);
@@ -393,6 +452,12 @@ class BigTank extends SuperTank{
                             let people = new ShieldPeople () ;
                             people.row = this.row ;
                             people.col = this.col ;
+                        }
+                        let o = Math.floor(Math.random()*1)+2 ; 
+                        for (let i=0;i<o;i++){
+                            let laserLightTank = new LaserLightTank () ;
+                            laserLightTank.row = this.row ;
+                            laserLightTank.col = this.col ;
                         }
                     }
                     if (arms == 2){
