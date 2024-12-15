@@ -147,9 +147,8 @@ rotation = 0 ;
     hp=999;
     BlackHoleLevel = 8 ;
     moveDistance = TOTAL_ROWS ;
-    moveDirection=0;
     constructor( row, col  ) {
-        super( row, col, 0 ) ;
+        super( row, col, 180 ) ;
         this.init2();
     }
     init() {}
@@ -182,8 +181,9 @@ rotation = 0 ;
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         this.rotation+=20 ;
-        drawImg( "lightImg", x, y, CELL_SIZE*this.BlackHoleLevel*2, CELL_SIZE*this.BlackHoleLevel*2, this.rotation )
+        drawImg( "blackHole", x, y, CELL_SIZE*this.BlackHoleLevel*2, CELL_SIZE*this.BlackHoleLevel*2, this.rotation )
     }
+    
 
 }
 
