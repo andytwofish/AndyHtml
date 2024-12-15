@@ -140,14 +140,65 @@ class Missile extends EnemyBullet{
         drawImg( "diode", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, this.direction ) ;
     }
 }
+
+class BlackHole extends EnemyBullet{
+rotation = 0 ;
+    createFrom = 0 ;
+    hp=999;
+    BlackHoleLevel = 8 ;
+    moveDistance = TOTAL_ROWS ;
+    moveDirection=0;
+    constructor( row, col  ) {
+        super( row, col, 0 ) ;
+        this.init2();
+    }
+    init() {}
+    init2() {
+        console.log('g') ;
+        this.spaceBoundary.top = 0;
+        this.spaceBoundary.bottom = TOTAL_ROWS-1;
+        this.spaceBoundary.left = 0;
+        this.spaceBoundary.right = TOTAL_COLS-1;
+
+        this.parts = [] ;
+
+        let part = new Part() ;
+        part.fillStyle = "rgb(200,0,0)" ;
+        part.hp = 99 ;
+        for( let i=0; i<this.BlackHoleLevel; i++ ) {
+            for( let j=-i; j<=i; j++) {
+                part.add( i-this.BlackHoleLevel, j ) ;
+            }
+        }
+        for( let i=0; i<this.BlackHoleLevel-1; i++ ) {
+            for( let j=-i; j<=i; j++) {
+                part.add( this.BlackHoleLevel-2-i, j ) ;
+            }
+        }
+        this.parts.push(part) ;
+    }
+    draw(){
+        console.log('i') ;
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+        this.rotation+=20 ;
+        drawImg( "lightImg", x, y, CELL_SIZE*this.BlackHoleLevel*2, CELL_SIZE*this.BlackHoleLevel*2, this.rotation )
+    }
+
+}
+
+
 class LaserLight extends EnemyBullet{
     moveDistance = 100 ;
     moveDirection = 0 ;
     init() {
         let part0 = new Part() ;
         part0.add(0,0).add(-1,0).add(-2,0).add(-3,0).add(-4,0).add(-5,0).add(-6,0) ;
-        part0.fillStyle = "rgb(200,0,0)" ;
         part0.hp = 999 ;
+        let i = Math.floor(Math.random()*256) ;
+        let j = Math.floor(Math.random()*256) ;
+        let k = Math.floor(Math.random()*256) ;
+        part0.fillStyle = `rgb(${i},${j},${k})` ;
 
         this.parts = [] ;
         this.parts.push( part0 ) ;

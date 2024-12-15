@@ -319,7 +319,7 @@ class LaserLightTank extends SuperTank{
 }
 class BigTank extends SuperTank{
     static HIGHEST_HP = 200 ;
-    static ONETHIRD_HP = BigTank.HIGHEST_HP/3*1
+    static ONETHIRD_HP = BigTank.HIGHEST_HP/5*1
     hp = BigTank.HIGHEST_HP ;
     lastFireTS = 2000 ;
     lastFireTS2 = 2000 ;
@@ -434,7 +434,7 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = Math.floor(Math.random()*7) ;
+                    let arms = 7 ;
                     if (arms == 0){
                         for (let i=0;i<11;i++){
                             new Missile(this.row-1,this.col+5-i,0,0);
@@ -461,7 +461,7 @@ class BigTank extends SuperTank{
                         }
                     }
                     if (arms == 2){
-                        for (let j=0;j<8;j++){
+                        for (let j=0;j<1;j++){
                             for (let i=0;i<9;i++){
                                 new LaserLight(this.row-1+j,this.col+3-i,0,0);
                             }
@@ -471,6 +471,9 @@ class BigTank extends SuperTank{
                         for (let i=0;i<4;i++){
                             new Light(this.row-1,this.col,0,0);
                         }
+                    }
+                    if (arms == 7){
+                        new BlackHole(this.row-1,this.col);
                     }
                 }
             }
