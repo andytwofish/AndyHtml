@@ -143,9 +143,11 @@ class Missile extends EnemyBullet{
 
 class BlackHole extends EnemyBullet{
 rotation = 0 ;
+    isMove = true ;
+    isLive = true ;
     createFrom = 0 ;
     hp=999;
-    BlackHoleLevel = 8 ;
+    BlackHoleLevel = 12 ;
     moveDistance = TOTAL_ROWS ;
     constructor( row, col  ) {
         super( row, col, 180 ) ;
@@ -153,7 +155,6 @@ rotation = 0 ;
     }
     init() {}
     init2() {
-        console.log('g') ;
         this.spaceBoundary.top = 0;
         this.spaceBoundary.bottom = TOTAL_ROWS-1;
         this.spaceBoundary.left = 0;
@@ -176,8 +177,27 @@ rotation = 0 ;
         }
         this.parts.push(part) ;
     }
+    checkAfterMoved() {
+        this.isLive = false ;
+        this.isMove = true ;
+        for( let i=0; i< MyTank.objs.length ; i++ ) {
+            let entity = MyTank.objs[i] ;
+            if ( entity.attackCheck( this ) ) {
+                this.isMove = false ;
+                if (!this.isLive || MyTank.isBlackHole == 0  ){
+                    this.hp = 0 ;
+                }
+            }
+        }
+    }
+    move() {
+        if (this.isMove){
+            super.move();
+        } else {
+            this.checkAfterMoved() ;
+        }
+    }
     draw(){
-        console.log('i') ;
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         this.rotation+=20 ;

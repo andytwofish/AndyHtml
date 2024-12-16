@@ -434,7 +434,7 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = Math.floor(Math.random()*8) ;
+                    let arms = 7 ;
                     if (arms == 0){
                         for (let i=0;i<11;i++){
                             new Missile(this.row-1,this.col+5-i,0,0);
