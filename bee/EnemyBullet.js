@@ -184,7 +184,7 @@ rotation = 0 ;
             let entity = MyTank.objs[i] ;
             if ( entity.attackCheck( this ) ) {
                 this.isMove = false ;
-                if (!this.isLive || MyTank.isBlackHole == 0  ){
+                if (!this.isLive && entity.isBlackHole < 8 && entity.isBlackHole != 0 ){
                     this.hp = 0 ;
                 }
             }
