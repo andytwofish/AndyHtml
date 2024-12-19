@@ -318,7 +318,7 @@ class LaserLightTank extends SuperTank{
 
 }
 class BigTank extends SuperTank{
-    static HIGHEST_HP = 200 ;
+    static HIGHEST_HP = 400 ;
     static ONETHIRD_HP = BigTank.HIGHEST_HP/5*1
     hp = BigTank.HIGHEST_HP ;
     lastFireTS = 2000 ;
