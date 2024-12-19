@@ -147,7 +147,7 @@ rotation = 0 ;
     isLive = true ;
     createFrom = 0 ;
     hp=999;
-    BlackHoleLevel = 12 ;
+    static BlackHoleLevel = 0 ;
     moveDistance = TOTAL_ROWS ;
     constructor( row, col  ) {
         super( row, col, 180 ) ;
@@ -159,20 +159,21 @@ rotation = 0 ;
         this.spaceBoundary.bottom = TOTAL_ROWS-1;
         this.spaceBoundary.left = 0;
         this.spaceBoundary.right = TOTAL_COLS-1;
+        BlackHole.BlackHoleLevel = Math.floor(Math.random()*14)+4 ;
 
         this.parts = [] ;
 
         let part = new Part() ;
         part.fillStyle = "rgb(200,0,0)" ;
         part.hp = 99 ;
-        for( let i=0; i<this.BlackHoleLevel; i++ ) {
+        for( let i=0; i<BlackHole.BlackHoleLevel; i++ ) {
             for( let j=-i; j<=i; j++) {
-                part.add( i-this.BlackHoleLevel, j ) ;
+                part.add( i-BlackHole.BlackHoleLevel, j ) ;
             }
         }
-        for( let i=0; i<this.BlackHoleLevel-1; i++ ) {
+        for( let i=0; i<BlackHole.BlackHoleLevel-1; i++ ) {
             for( let j=-i; j<=i; j++) {
-                part.add( this.BlackHoleLevel-2-i, j ) ;
+                part.add( BlackHole.BlackHoleLevel-2-i, j ) ;
             }
         }
         this.parts.push(part) ;
@@ -201,7 +202,7 @@ rotation = 0 ;
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         this.rotation+=20 ;
-        drawImg( "blackHole", x, y, CELL_SIZE*this.BlackHoleLevel*2, CELL_SIZE*this.BlackHoleLevel*2, this.rotation )
+        drawImg( "blackHole", x, y, CELL_SIZE*BlackHole.BlackHoleLevel*3/2, CELL_SIZE*BlackHole.BlackHoleLevel*3/2, this.rotation )
     }
     
 

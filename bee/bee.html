@@ -182,7 +182,7 @@ function run(time) {
 function gameStart() {
     this.wave = 6/0 ;
     console.log(this.wave) ;
-    for (let i=0;i<1;i++){
+    for (let i=0;i<0;i++){
         new BigTank () ;
     }
     for (let i=0;i<0;i++){
@@ -194,14 +194,14 @@ function gameStart() {
     for (let i=0;i<0;i++){
         new EnemyTank() ;
     }
-    for (let i=0;i<gameControl.level*0;i++){
+    for (let i=0;i<gameControl.level*20;i++){
         new BabyTank () ;
     }
 
     for (let i=0;i<gameControl.players;i++){
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
-    for (let i=0;i<(gameControl.level*2)*0;i++){
+    for (let i=0;i<(gameControl.level*8);i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();

@@ -88,7 +88,7 @@ let html = `
                 等級：
                 <SELECT id="level">
                     <OPTION value="1" selected>Easy</OPTION>
-                    <OPTION value="2">Medium</OPTION>
+                    <OPTION value="2">normal</OPTION>
                     <OPTION value="3">Hard</OPTION>
                 </SELECT>
             </td></tr>

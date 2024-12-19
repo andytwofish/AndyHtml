@@ -8,8 +8,8 @@ class MyTank extends Entity {
     hp = MyTank.HIGHEST_HP ;
     rotattion = 0 ;
     isBlackHole = 0 ;
-    BlackHoleRow =0 ;
-    BlackHoleCol =0 ;
+    BlackHoleRow = 0 ;
+    BlackHoleCol = 0 ;
     time = 0 ;
     row = 30 ;
     col = 20 ;
@@ -63,7 +63,7 @@ class MyTank extends Entity {
     attackedPart( fromEntity, partIdx) {
         if ( partIdx == 1) {
             this.parts[partIdx].hp-- ;
-            if ( this.parts[partIdx].hp <= 0 ) {
+            if ( this.parts[partIdx].hp <= 0 || fromEntity instanceof BlackHole ) {
                 this.shieldHP = 0 ;
                 this.isShieldON = false ;
             }
@@ -143,17 +143,25 @@ class MyTank extends Entity {
             }
         }
         if ( this.keyController.isButtonAPressed() ) {
-            this.fireBullet();  
+            if (this.isBlackHole == 0 ){
+                this.fireBullet();  
+            }
         }
         if ( this.keyController.isButtonYPressed() ) {
-            this.fireMyLight();  
+            if (this.isBlackHole == 0 ){
+                this.fireMyLight();  
+            }
         }
         if ( this.keyController.isButtonXPressed() ) {
-            this.switchShield();  
+            if (this.isBlackHole == 0 ){
+                this.switchShield();  
+            }
         }
         if ( this.keyController.isButtonBPressed() ) {
-            if ( this.bombBeginTime == 0 ) {
-                this.bombBeginTime = Date.now() ;
+            if (this.isBlackHole == 0 ){
+                if ( this.bombBeginTime == 0 ) {
+                    this.bombBeginTime = Date.now() ;
+                }
             }
         } else {
             if ( this.bombBeginTime != 0 ) {
@@ -199,6 +207,10 @@ class MyTank extends Entity {
                 this.col = TOTAL_COLS-1 ;
             }
             this.isBlackHole-=1 ;
+            let i = Math.floor(Math.random()*20) ;
+            if ( i == 0 ){
+                this.hp -- ;
+            }
         }
         this.draw() ;
         this.drawBombLevel() ;
@@ -221,7 +233,9 @@ class MyTank extends Entity {
         this.bombBeginTime = 0;
         if ( this.parts[1].hp <= 0 ) {
             if ( Date.now() - this.lastBulletTime > 300 ) {
-                new OurBullet(this.row,this.col,0) ;
+                for ( let i=0;i<4;i++ ){
+                    new OurBullet(this.row,this.col,0) ;
+                }
                 if (gameControl.audio == 1){
                     this.bulletAudio.src = "audioFiles/y2271.mp3";
                 }
