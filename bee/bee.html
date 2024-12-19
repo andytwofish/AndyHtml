@@ -131,7 +131,7 @@ function run(time) {
             ctx.fillStyle = `rgb(255,255,255)` ;
             ctx.font = `${CELL_SIZE*2}px Arial`;
             ctx.textAlign = "center" ;
-            ctx.fillText(`第${wave}波`,TOTAL_COLS/2*CELL_SIZE,CELL_SIZE*2);
+            ctx.fillText(`第${wave+1}波`,TOTAL_COLS/2*CELL_SIZE,CELL_SIZE*2);
         }
     }
     ctx.fillStyle = `rgb(255,255,255)` ;
@@ -181,7 +181,6 @@ function run(time) {
 
 function gameStart() {
     this.wave = 6/0 ;
-    console.log(this.wave) ;
     for (let i=0;i<0;i++){
         new BigTank () ;
     }

@@ -147,7 +147,7 @@ rotation = 0 ;
     isLive = true ;
     createFrom = 0 ;
     hp=999;
-    static BlackHoleLevel = 0 ;
+    static BlackHoleLevel = 14 ;
     moveDistance = TOTAL_ROWS ;
     constructor( row, col  ) {
         super( row, col, 180 ) ;
@@ -159,7 +159,6 @@ rotation = 0 ;
         this.spaceBoundary.bottom = TOTAL_ROWS-1;
         this.spaceBoundary.left = 0;
         this.spaceBoundary.right = TOTAL_COLS-1;
-        BlackHole.BlackHoleLevel = Math.floor(Math.random()*14)+4 ;
 
         this.parts = [] ;
 
@@ -185,6 +184,9 @@ rotation = 0 ;
             let entity = MyTank.objs[i] ;
             if ( entity.attackCheck( this ) ) {
                 this.isMove = false ;
+                if (this.row<   TOTAL_ROWS/2){
+                    this.row+=1 ;
+                }
                 if (!this.isLive && entity.isBlackHole < 8 && entity.isBlackHole != 0 ){
                     this.hp = 0 ;
                 }
