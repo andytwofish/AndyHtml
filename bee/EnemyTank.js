@@ -6,7 +6,7 @@ class EnemyTank extends Entity {
     lastMoveTS = Date.now() ;
     moveDelayTime = 100 ;
     stopTime = 1000 ; //移動完停多久
-    hp = 3 ;
+    hp = 8 ;
     constructor() {
         super( 0, 0, 180 ) ;
         this.spaceBoundary.top = 0;
@@ -50,6 +50,10 @@ class EnemyTank extends Entity {
     }
 
     drawHp(){
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        ctx.font = `${CELL_SIZE/4*3}px Arial`;
+        ctx.textAlign = "center" ;
+        ctx.fillText(`${this.hp}`,this.col*CELL_SIZE,this.row*CELL_SIZE );
         ctx.fillStyle = `rgb(255,0,0)` ;
         let l = 0 ; 
         let k = Math.floor(Math.sqrt(this.hp)) ;
@@ -109,6 +113,7 @@ class EnemyTank extends Entity {
         super.process() ;
         if ( Date.now() - this.lastFireTS > 1000 ) {
             this.lastFireTS = Date.now() ;
+            //new LaserLight(this.row, this.col, 180) ;
             new EnemyBullet(this.row, this.col, 180) ;
         }
 
@@ -210,6 +215,10 @@ class SuperTank extends EnemyTank {
 
     drawHp(){
         ctx.fillStyle = `rgb(255,0,0)` ;
+        ctx.font = `${CELL_SIZE/4*3}px Arial`;
+        ctx.textAlign = "center" ;
+        ctx.fillText(`${this.hp}`,this.col*CELL_SIZE,(this.row-1)*CELL_SIZE );
+        ctx.fillStyle = `rgb(255,0,0)` ;
         let l = 0 ; 
         let k = Math.floor(Math.sqrt(this.hp)) ;
         let p = this.hp-k*k ;
@@ -273,6 +282,10 @@ class LaserLightTank extends SuperTank{
     }
 
     drawHp(){
+        ctx.fillStyle = `rgb(255,0,0)` ;
+        ctx.font = `${CELL_SIZE/4*3}px Arial`;
+        ctx.textAlign = "center" ;
+        ctx.fillText(`${this.hp}`,this.col*CELL_SIZE,(this.row-3)*CELL_SIZE );
         ctx.fillStyle = `rgb(255,0,0)` ;
         let l = 0 ; 
         let k = Math.floor(Math.sqrt(this.hp)) ;
@@ -396,6 +409,10 @@ class BigTank extends SuperTank{
 
     drawHp(){
         ctx.fillStyle = `rgb(255,0,0)` ;
+        ctx.font = `${CELL_SIZE/4*3}px Arial`;
+        ctx.textAlign = "center" ;
+        ctx.fillText(`${this.hp}`,this.col*CELL_SIZE,(this.row-2)*CELL_SIZE );
+        ctx.fillStyle = `rgb(255,0,0)` ;
         let l = 0 ; 
         let k = Math.floor(Math.sqrt(this.hp)) ;
         let p = this.hp-k*k ;
@@ -420,9 +437,11 @@ class BigTank extends SuperTank{
     process(){
         let wait = 0 ;
         if (this.hp>BigTank.ONETHIRD_HP){
-            wait = 2000 ;
+            let i = Math.floor(Math.random()*1200)+800 ;
+            wait = i ;
         }else{
-            wait = 800 ;
+            let i = Math.floor(Math.random()*400)+400 ;
+            wait = i ;
         }
         if ( Date.now() - this.lastFireTS > wait ) {
             this.lastFireTS = Date.now() ;
@@ -434,9 +453,9 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = Math.floor(Math.random()*9) ;
+                    let arms = Math.floor(Math.random()*12) ;
                     if (arms == 0){
-                        for (let i=0;i<11;i++){
+                        for (let i=0;i<10;i++){
                             new Missile(this.row-1,this.col+5-i,0,0);
                         }
                     }
@@ -474,6 +493,9 @@ class BigTank extends SuperTank{
                     }
                     if (arms == 7||arms == 8){
                         new BlackHole(this.row-1,this.col);
+                    }
+                    if (arms == 9||arms == 10||arms == 11){
+                        CELL_SIZE = Math.floor(Math.random()*18)+1 ;
                     }
                 }
             }

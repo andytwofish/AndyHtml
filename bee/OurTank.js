@@ -207,10 +207,8 @@ class MyTank extends Entity {
                 this.col = TOTAL_COLS-1 ;
             }
             this.isBlackHole-=1 ;
-            let i = Math.floor(Math.random()*20) ;
-            if ( i == 0 ){
-                this.hp -- ;
-            }
+            let i = Math.floor(Math.random()*3)-1 ;
+            this.hp += i ;
         }
         this.draw() ;
         this.drawBombLevel() ;
@@ -315,6 +313,9 @@ class MyTank extends Entity {
         }
     }
     drawHp(){
+        ctx.font = `${CELL_SIZE/4*3}px Arial`;
+        ctx.textAlign = "center" ;
+        ctx.fillText(`${this.hp}`,this.col*CELL_SIZE,this.row*CELL_SIZE );
         ctx.fillStyle = `rgb(255,0,0)` ;
         let l = 0 ; 
         let k = Math.floor(Math.sqrt(this.hp)) ;
@@ -433,10 +434,14 @@ class AutoMyTank extends MyTank {
     }
     autoFireBullet() {
         if ( Date.now() - this.lastFireTS > 500 ) {
-            if ( this.keyController.isButtonBPressed() ) {
-                return ;
+                if ( this.keyController.isButtonBPressed() ) {
+                    return ;
+                }  
+            if (Math.floor(Math.random()*2) == 0 ){
+                this.keyController.keyPress(this.keyController.keyCodeToA, 70 ) ;
+            }else{
+                this.keyController.keyPress(this.keyController.keyCodeToY, 70 ) ;
             }
-            this.keyController.keyPress(this.keyController.keyCodeToA, 70 ) ;
             this.lastFireTS = Date.now() ;
         }
     }

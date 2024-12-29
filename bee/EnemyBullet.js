@@ -194,6 +194,7 @@ rotation = 0 ;
         }
     }
     move() {
+        new Energy(this.row-1,this.col,0) ;
         if (this.isMove){
             super.move();
         } else {
