@@ -6,13 +6,13 @@
   <style>
     canvas { border: 1px solid #000; }
   </style>
+    <script src="./GameControl.js"></script>
     <script src="./KeyController.js"></script>
     <script src="./Entity.js"></script>
     <script src="./EnemyTank.js"></script>
     <script src="./EnemyBullet.js"></script>
     <script src="./OurTank.js"></script>
     <script src="./OurBullet.js"></script>
-    <script src="./GameControl.js"></script>
     <script src="./SpecialEffects.js"></script>
 </head>
 <body>
@@ -153,17 +153,17 @@ function run(time) {
     if ( EnemyTank.objs.length == 0 ) {
         wave++ ;
         if (wave < 2 ) {
-            for ( let i= 0;i<gameControl.level*20;i++ ) {
+            for ( let i= 0;i<8;i++ ) {
                 new SuperTank() ;
                
             }
-            for ( let i= 0;i<gameControl.level*4;i++ ) {
+            for ( let i= 0;i<4;i++ ) {
                 new LaserLightTank() ;
                
             }
         } 
         if ( wave == 8 ) {
-            for ( let i= 0;i<gameControl.level;i++ ) {
+            for ( let i= 0;i<1;i++ ) {
                 new BigTank() ;
             }
         }
@@ -182,7 +182,7 @@ function run(time) {
 
 function gameStart() {
     this.wave = 6/0 ;
-    for (let i=0;i<0;i++){
+    for (let i=0;i<1;i++){
         new BigTank () ;
     }
     for (let i=0;i<0;i++){
@@ -194,14 +194,14 @@ function gameStart() {
     for (let i=0;i<0;i++){
         new EnemyTank() ;
     }
-    for (let i=0;i<gameControl.level*20;i++){
+    for (let i=0;i<8;i++){
         new BabyTank () ;
     }
 
     for (let i=0;i<gameControl.players;i++){
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
-    for (let i=0;i<(gameControl.level*8);i++){
+    for (let i=0;i<0;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();

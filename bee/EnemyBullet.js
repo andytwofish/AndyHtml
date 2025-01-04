@@ -142,7 +142,7 @@ class Missile extends EnemyBullet{
 }
 
 class BlackHole extends EnemyBullet{
-rotation = 0 ;
+    rotation = 0 ;
     isMove = true ;
     isLive = true ;
     createFrom = 0 ;

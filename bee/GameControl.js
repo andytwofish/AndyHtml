@@ -4,6 +4,7 @@ class GameControl {
     static STATE_PAUSE = 3 ;
     state = GameControl.STATE_STOP ;
     callbacks = [] ;
+    level = 1 ;
 
     constructor() {
         document.addEventListener('keydown', this.keydown.bind(this) );

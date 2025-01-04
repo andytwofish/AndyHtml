@@ -4,7 +4,7 @@ class KeyController {
     keysState = new Map() ;
     constructor( padIdx ) {
         this.padIdx = padIdx ;
-        if ( this.id != 0 ) {
+        if ( this.id == 0 ) {
             this.keyCodeLeft = "ArrowLeft" ;
             this.keyCodeRight = "ArrowRight" ;
             this.keyCodeDown = "ArrowDown" ;

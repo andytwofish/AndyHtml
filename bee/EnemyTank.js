@@ -6,7 +6,7 @@ class EnemyTank extends Entity {
     lastMoveTS = Date.now() ;
     moveDelayTime = 100 ;
     stopTime = 1000 ; //移動完停多久
-    hp = 8 ;
+    hp = gameControl.level*3 ;
     constructor() {
         super( 0, 0, 180 ) ;
         this.spaceBoundary.top = 0;
@@ -122,7 +122,7 @@ class EnemyTank extends Entity {
 
 class ShieldPeople extends EnemyTank {
     lastShieldTS = 0 ;
-    hp = 1 ;
+    hp = gameControl.level*1 ;
 
     init() {
         let part0 = new Part() ;
@@ -177,7 +177,7 @@ class ShieldPeople extends EnemyTank {
 }
 
 class SuperTank extends EnemyTank { 
-    hp = 8 ;
+    hp = gameControl.level*5 ;
     init() {
 
         let part0 = new Part() ;
@@ -268,7 +268,7 @@ class SuperTank extends EnemyTank {
 
 }
 class LaserLightTank extends SuperTank{
-    hp = 20 ;
+    hp = gameControl.level*8 ;
     init() {
         let part0 = new Part() ;
         part0.add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,0).add(0,1).add(1,-1).add(1,1).add(-2,0).add(0,-2).add(0,2).add(-2,0).add(-3,-1).add(-3,0).add(-3,1) ;
@@ -331,8 +331,8 @@ class LaserLightTank extends SuperTank{
 
 }
 class BigTank extends SuperTank{
-    static HIGHEST_HP = 400 ;
-    static ONETHIRD_HP = BigTank.HIGHEST_HP/5*1
+    static HIGHEST_HP = gameControl.level*140 ;
+    static ONETHIRD_HP = BigTank.HIGHEST_HP/5*1 ;
     hp = BigTank.HIGHEST_HP ;
     lastFireTS = 2000 ;
     lastFireTS2 = 2000 ;
@@ -357,6 +357,10 @@ class BigTank extends SuperTank{
         this.parts.push( part2 ) ;
         this.parts.push( part3 ) ;
         this.parts.push( part4 ) ;
+        BigTank.HIGHEST_HP = gameControl.level*140 ;
+        BigTank.ONETHIRD_HP = BigTank.HIGHEST_HP/5*1 ;
+        this.hp = BigTank.HIGHEST_HP ;
+        this.drawCellHp = (TOTAL_COLS-2)*CELL_SIZE/BigTank.HIGHEST_HP ;
     }
     attackedPart( fromEntity, partIdx) {
         if ( partIdx == 0) {
@@ -453,7 +457,7 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = Math.floor(Math.random()*12) ;
+                    let arms = Math.floor(Math.random()*9) ;
                     if (arms == 0){
                         for (let i=0;i<10;i++){
                             new Missile(this.row-1,this.col+5-i,0,0);
@@ -495,7 +499,7 @@ class BigTank extends SuperTank{
                         new BlackHole(this.row-1,this.col);
                     }
                     if (arms == 9||arms == 10||arms == 11){
-                        CELL_SIZE = Math.floor(Math.random()*18)+1 ;
+                        CELL_SIZE = Math.floor(Math.random()*17)+1 ;
                     }
                 }
             }
