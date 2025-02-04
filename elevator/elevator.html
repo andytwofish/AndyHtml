@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>bee</title>
+  <title>elevator</title>
   <style>
     canvas { border: 1px solid #000; }
   </style>
     <script src="./GameControl.js"></script>
     <script src="./KeyController.js"></script>
+    <script src="./elevator.js"></script>
 </head>
 <body>
     <canvas id="_Canvas" width="800" height="400"></canvas>
@@ -15,9 +16,9 @@
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');  
 let lastTime = 0 ;
-
+let elevator = new Elevator(10) ;
 function everyRound() {
-    console.log("a");
+    elevator.next();
 }
 
 //------------------------------------------------------------

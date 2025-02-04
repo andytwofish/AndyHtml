@@ -16,6 +16,7 @@ class MyTank extends Entity {
     isShieldON = false ;
     shieldHP = MyTank.SHIELD_HIGHEST ;
     bombBeginTime = 0 ; 
+    lastFireTS = 0 ;
     hightBombLevel = 8 ;
     bombLevelTime = 800 ;
     lastBulletTime = 0 ;
@@ -54,7 +55,7 @@ class MyTank extends Entity {
 
         let part1 = new Part() ;
         part1.add(-2,0).add(-2,-1).add(-2,1).add(-1,-2).add(-1,2).add(0,-2).add(0,2).add(2,0).add(2,-1).add(2,1).add(1,-2).add(1,2).add(-1,-1).add(-1,).add(-1,1).add(0,2).add(0,1).add(1,-1).add(1,0).add(1,1) ;
-        part1.hp=0 ;
+        part1.hp = 0 ;
         this.parts = [] ;
         this.parts.push( part0 ) ;
         this.parts.push( part1 ) ;
@@ -88,7 +89,17 @@ class MyTank extends Entity {
             this.moveInBoundary( this.row+1, this.col ) ;
         }
     }
+    hpReply() {
+        if ( Date.now() - this.lastFireTS > 2000 ) {
+            this.lastFireTS = Date.now() ;
+            if ( this.hp <20 ) {
+                this.hp += 1 ;
+                // this.hp = MyTank.HIGHEST_HP ;
+            }
+        }
+    }
 
+    
     getBombLevel() {
         if ( this.bombBeginTime == 0 ) {
             return 0 ;
@@ -121,7 +132,7 @@ class MyTank extends Entity {
             return ;
         }
         this.lastProcessTS = Date.now() ;
-
+        this.hpReply() ;
         if ( this.keyController.isArrowRightPressed() ) {
             if (this.isBlackHole == 0 ){
                 this.moveInBoundary( this.row, this.col+1 ) ;
