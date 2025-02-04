@@ -38,7 +38,6 @@ class EnemyTank extends Entity {
 
         this.parts = [] ;
         this.parts.push( part0 ) ;
-        //this.parts.push( part1 ) ;
 
     }
 
@@ -111,7 +110,7 @@ class EnemyTank extends Entity {
     }
     process() {
         super.process() ;
-        if ( Date.now() - this.lastFireTS > 1000 ) {
+        if ( Date.now() - this.lastFireTS > 1000/gameControl.level ) {
             this.lastFireTS = Date.now() ;
             //new LaserLight(this.row, this.col, 180) ;
             new EnemyBullet(this.row, this.col, 180) ;
@@ -122,7 +121,7 @@ class EnemyTank extends Entity {
 
 class ShieldPeople extends EnemyTank {
     lastShieldTS = 0 ;
-    hp = gameControl.level*1 ;
+    hp = gameControl.level*2 ;
 
     init() {
         let part0 = new Part() ;
@@ -166,7 +165,7 @@ class ShieldPeople extends EnemyTank {
         if (this.parts[1].hp > 0 ){
             this.lastShieldTS = Date.now() ;
         } else {
-            if ( Date.now() - this.lastShieldTS > 3000 ) {
+            if ( Date.now() - this.lastShieldTS > 3000/gameControl.level ) {
                 this.parts[1].hp = 1 ;
             }
         }
@@ -254,7 +253,7 @@ class SuperTank extends EnemyTank {
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 2800 ) {
+        if ( Date.now() - this.lastFireTS > 2800/gameControl.level ) {
             this.lastFireTS = Date.now() ;
             for( let i=1; i<this.parts.length; i++ ) {
                 if ( this.parts[i].hp > 0 ) {
@@ -317,7 +316,7 @@ class LaserLightTank extends SuperTank{
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 400 ) {
+        if ( Date.now() - this.lastFireTS > 800/gameControl.level ) {
             this.lastFireTS = Date.now() ;
             let j = Math.floor(Math.random()*4)+1 ;
             for( let i=0; i<j; i++ ) {
@@ -441,10 +440,10 @@ class BigTank extends SuperTank{
     process(){
         let wait = 0 ;
         if (this.hp>BigTank.ONETHIRD_HP){
-            let i = Math.floor(Math.random()*1200)+800 ;
+            let i = (Math.floor(Math.random()*1200)+900)/gameControl.level ;
             wait = i ;
         }else{
-            let i = Math.floor(Math.random()*400)+400 ;
+            let i = (Math.floor(Math.random()*400)+500)/gameControl.level ;
             wait = i ;
         }
         if ( Date.now() - this.lastFireTS > wait ) {
@@ -457,7 +456,7 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = Math.floor(Math.random()*9) ;
+                    let arms = Math.floor(Math.random()*8) ;
                     if (arms == 0){
                         for (let i=0;i<10;i++){
                             new Missile(this.row-1,this.col+5-i,0,0);
@@ -491,14 +490,14 @@ class BigTank extends SuperTank{
                         }
                     }
                     if (arms == 3||arms == 4||arms == 5||arms == 6){
-                        for (let i=0;i<4;i++){
+                        for (let i=0;i<8;i++){
                             new Light(this.row-1,this.col,0,0);
                         }
                     }
-                    if (arms == 7||arms == 8){
+                    if (arms == 7 ){
                         new BlackHole(this.row-1,this.col);
                     }
-                    if (arms == 9||arms == 10||arms == 11){
+                    if (arms == 8||arms == 9||arms == 10){
                         CELL_SIZE = Math.floor(Math.random()*17)+1 ;
                     }
                 }
@@ -537,7 +536,7 @@ class BigTank extends SuperTank{
     }
 }
 class BabyTank extends EnemyTank {
-    hp=2;
+    hp= gameControl.level*4 ;
     draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
@@ -546,12 +545,12 @@ class BabyTank extends EnemyTank {
     }
 
     process(){
-        if ( Math.floor(Math.random()*100)<=0 ) {
+        if ( Math.floor(Math.random()*200/gameControl.level)<=0 ) {
             let enemyTank = new EnemyTank () ;
             enemyTank.row = this.row ;
             enemyTank.col = this.col ;
         }
-        if ( Math.floor(Math.random()*100)<=0 ) {
+        if ( Math.floor(Math.random()*200/gameControl.level)<=0 ) {
             let people = new ShieldPeople () ;
             people.row = this.row ;
             people.col = this.col ;

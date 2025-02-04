@@ -230,7 +230,7 @@ class MyTank extends Entity {
     fireBullet() {
         this.bombBeginTime = 0;
         if ( this.parts[1].hp <= 0 ) {
-            if ( Date.now() - this.lastBulletTime > 300 ) {
+            if ( Date.now() - this.lastBulletTime > 200 ) {
                 for ( let i=0;i<4;i++ ){
                     new OurBullet(this.row,this.col,0) ;
                 }

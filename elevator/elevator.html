@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>bee</title>
+  <style>
+    canvas { border: 1px solid #000; }
+  </style>
+    <script src="./GameControl.js"></script>
+    <script src="./KeyController.js"></script>
+</head>
+<body>
+    <canvas id="_Canvas" width="800" height="400"></canvas>
+<script>
+const canvas = document.getElementById('_Canvas');
+const ctx = canvas.getContext('2d');  
+let lastTime = 0 ;
+
+function everyRound() {
+    console.log("a");
+}
+
+//------------------------------------------------------------
+
+function gameLoop(time) {
+    if ( gameControl.state != GameControl.STATE_RUNNING  ) {
+        requestAnimationFrame(gameLoop);
+        return ;
+    }
+
+    if (lastTime === 0) {
+        lastTime = time;
+    }
+
+    // 計算自上次更新以來經過的時間
+    const deltaTime = time - lastTime
+    if ( deltaTime <= 40 ) {
+        requestAnimationFrame(gameLoop);
+        return ;
+    }
+    lastTime = time ;
+
+    everyRound();
+ 
+    requestAnimationFrame(gameLoop);
+}
+
+function gameStart() {
+    gameLoop();
+}
+gameControl.addEventListener("start", gameStart ) ;
+
+
+</script>

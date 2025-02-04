@@ -147,7 +147,7 @@ class BlackHole extends EnemyBullet{
     isLive = true ;
     createFrom = 0 ;
     hp=999;
-    static BlackHoleLevel = 14 ;
+    static BlackHoleLevel = 10 ;
     moveDistance = TOTAL_ROWS ;
     constructor( row, col  ) {
         super( row, col, 180 ) ;
