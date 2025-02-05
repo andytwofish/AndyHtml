@@ -170,7 +170,7 @@ class ShieldPeople extends EnemyTank {
             this.lastShieldTS = Date.now() ;
         } else {
             if ( Date.now() - this.lastShieldTS > 3000/gameControl.level ) {
-                part1.hp = gameControl.level*40 ;
+                part1.hp = gameControl.level*14 ;
             }
         }
         this.move() ;
@@ -189,6 +189,7 @@ class SuperTank extends EnemyTank {
 
         let part1 = new Part() ;
         part1.add(1,-4) ;
+
 
         let part2 = new Part() ;
         part2.add(1,-2) ;
@@ -209,6 +210,7 @@ class SuperTank extends EnemyTank {
         this.parts.push( part3 ) ;
         this.parts.push( part4 ) ;
         this.parts.push( part5 ) ;
+
     }
 
     draw(){
@@ -257,11 +259,13 @@ class SuperTank extends EnemyTank {
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 2800/gameControl.level ) {
+        if ( Date.now() - this.lastFireTS > 800/gameControl.level ) {
             this.lastFireTS = Date.now() ;
             for( let i=1; i<this.parts.length; i++ ) {
                 if ( this.parts[i].hp > 0 ) {
-                    new EnemyBullet(this.row+1,this.col+this.parts[i].coords[0].col, 180 ) ;
+                    for( let j=1; j<4; j++ ) {
+                        new EnemyBullet(this.row+1,this.col+this.parts[i].coords[0].col, 180 ) ;
+                    }
                 }
             }
         }
@@ -271,7 +275,7 @@ class SuperTank extends EnemyTank {
 
 }
 class LaserLightTank extends SuperTank{
-    hp = gameControl.level*8 ;
+    hp = gameControl.level*14 ;
     init() {
         let part0 = new Part() ;
         part0.add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,0).add(0,1).add(1,-1).add(1,1).add(-2,0).add(0,-2).add(0,2).add(-2,0).add(-3,-1).add(-3,0).add(-3,1) ;
@@ -320,7 +324,7 @@ class LaserLightTank extends SuperTank{
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 800/gameControl.level ) {
+        if ( Date.now() - this.lastFireTS > 400/gameControl.level ) {
             this.lastFireTS = Date.now() ;
             let j = Math.floor(Math.random()*4)+1 ;
             for( let i=0; i<j; i++ ) {
@@ -462,8 +466,8 @@ class BigTank extends SuperTank{
                 if (this.parts[1].hp <= 0){
                     let arms = Math.floor(Math.random()*8) ;
                     if (arms == 0){
-                        for (let i=0;i<10;i++){
-                            new Missile(this.row-1,this.col+5-i,0,0);
+                        for (let i=0;i<80;i++){
+                            new Missile(this.row-1,this.col,0,0);
                         }
                     }
                     if (arms == 1){
@@ -549,12 +553,12 @@ class BabyTank extends EnemyTank {
     }
 
     process(){
-        if ( Math.floor(Math.random()*200/gameControl.level)<=0 ) {
+        if ( Math.floor(Math.random()*250/gameControl.level)<=0 ) {
             let enemyTank = new EnemyTank () ;
             enemyTank.row = this.row ;
             enemyTank.col = this.col ;
         }
-        if ( Math.floor(Math.random()*200/gameControl.level)<=0 ) {
+        if ( Math.floor(Math.random()*250/gameControl.level)<=0 ) {
             let people = new ShieldPeople () ;
             people.row = this.row ;
             people.col = this.col ;

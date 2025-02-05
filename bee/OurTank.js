@@ -90,9 +90,9 @@ class MyTank extends Entity {
         }
     }
     hpReply() {
-        if ( Date.now() - this.lastFireTS > 2000 ) {
+        if ( Date.now() - this.lastFireTS > 200 ) {
             this.lastFireTS = Date.now() ;
-            if ( this.hp <20 ) {
+            if ( this.hp <MyTank.HIGHEST_HP ) {
                 this.hp += 1 ;
                 // this.hp = MyTank.HIGHEST_HP ;
             }

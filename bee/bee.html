@@ -153,6 +153,11 @@ function run(time) {
     if ( EnemyTank.objs.length == 0 ) {
         wave++ ;
         if (wave < 2 ) {
+            for ( let i=0;i<TOTAL_COLS;i++ ) {
+                for ( let j=0;j<gameControl.level*20;j++ ) {
+                    new LaserLight(0,i) ;
+                }
+            }
             for ( let i= 0;i<8;i++ ) {
                 new SuperTank() ;
                
@@ -163,6 +168,11 @@ function run(time) {
             }
         } 
         if ( wave == 8 ) {
+            for ( let i=0;i<TOTAL_COLS;i++ ) {
+                for ( let j=0;j<gameControl.level*20;j++ ) {
+                    new LaserLight(0,i) ;
+                }
+            }
             for ( let i= 0;i<1;i++ ) {
                 new BigTank() ;
             }
@@ -201,8 +211,8 @@ function gameStart() {
     for (let i=0;i<gameControl.players;i++){
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
-
-    for (let i=0;i<gameControl.level*6;i++){
+     
+    for (let i=0;i<3;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();
