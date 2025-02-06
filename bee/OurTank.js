@@ -1,7 +1,7 @@
 
 class MyTank extends Entity {
     static objs = [];
-    static SHIELD_HIGHEST = 20 ;
+    static SHIELD_HIGHEST = 80 ;
     static HIGHEST_HP = 20 ;
     col = [] ;
     row = [] ;
@@ -82,9 +82,16 @@ class MyTank extends Entity {
                     this.isBlackHole = 80 ;
                 }
             }else{
-                this.hp-- ;
+                if (fromEntity instanceof Missile){
+                    if (this.isBlackHole == 0 ){
+                        this.hp-= 19 ;
+                    }
+                }else{
+                    this.hp-- ;
+                }
             }
         }
+        
         if (!fromEntity instanceof BlackHole){
             this.moveInBoundary( this.row+1, this.col ) ;
         }
@@ -220,6 +227,9 @@ class MyTank extends Entity {
             this.isBlackHole-=1 ;
             let i = Math.floor(Math.random()*3)-1 ;
             this.hp += i ;
+            if (this.isBlackHole < 2 ){
+                this.hp = 1 ;
+            }
         }
         this.draw() ;
         this.drawBombLevel() ;
@@ -465,7 +475,7 @@ class AutoMyTank extends MyTank {
     process() {
         super.process();
         this.move();
-        if ( this.bulletDetect(5) ) {
+        if ( this.bulletDetect(3) ) {
             if ( this.isShieldON == false ) {
                 this.switchShield() ;
             }

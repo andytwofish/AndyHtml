@@ -154,7 +154,7 @@ function run(time) {
         wave++ ;
         if (wave < 2 ) {
             for ( let i=0;i<TOTAL_COLS;i++ ) {
-                for ( let j=0;j<gameControl.level*20;j++ ) {
+                for ( let j=0;j<gameControl.level*5;j++ ) {
                     new LaserLight(0,i) ;
                 }
             }
@@ -169,7 +169,7 @@ function run(time) {
         } 
         if ( wave == 8 ) {
             for ( let i=0;i<TOTAL_COLS;i++ ) {
-                for ( let j=0;j<gameControl.level*20;j++ ) {
+                for ( let j=0;j<gameControl.level*5;j++){
                     new LaserLight(0,i) ;
                 }
             }
@@ -212,7 +212,7 @@ function gameStart() {
         new MyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2), Math.floor(Math.random()*TOTAL_COLS) , new KeyController(i) );
     }
      
-    for (let i=0;i<3;i++){
+    for (let i=0;i<gameControl.level*3;i++){
         new AutoMyTank(Math.floor(Math.random()*(TOTAL_ROWS/2))+(TOTAL_ROWS/2),Math.floor(Math.random()*TOTAL_COLS), new KeyControllerFake(i) );
     }
     run();
