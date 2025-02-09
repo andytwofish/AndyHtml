@@ -7,9 +7,13 @@ class MyTank extends Entity {
     row = [] ;
     hp = MyTank.HIGHEST_HP ;
     rotattion = 0 ;
+    isGravityBomb = 0 ;
+    fromEntityCage = 0 ;
     isBlackHole = 0 ;
+    isCage = 0 ;
     BlackHoleRow = 0 ;
     BlackHoleCol = 0 ;
+    isMove = true ;
     time = 0 ;
     row = 30 ;
     col = 20 ;
@@ -17,6 +21,7 @@ class MyTank extends Entity {
     shieldHP = MyTank.SHIELD_HIGHEST ;
     bombBeginTime = 0 ; 
     lastFireTS = 0 ;
+    lastFireTS2 = 0 ;
     hightBombLevel = 8 ;
     bombLevelTime = 800 ;
     lastBulletTime = 0 ;
@@ -64,9 +69,15 @@ class MyTank extends Entity {
     attackedPart( fromEntity, partIdx) {
         if ( partIdx == 1) {
             this.parts[partIdx].hp-- ;
-            if ( this.parts[partIdx].hp <= 0 || fromEntity instanceof BlackHole ) {
+            if ( this.parts[partIdx].hp <= 0 || fromEntity instanceof BlackHole || fromEntity instanceof CageBomb ) {
                 this.shieldHP = 0 ;
                 this.isShieldON = false ;
+            }
+            if (fromEntity instanceof GravityBomb){
+                this.isGravityBomb = 8 ;
+            }
+            if (fromEntity instanceof CageBomb){
+                this.fromEntityCage = fromEntity ;
             }
         }
         if ( partIdx == 0 ) {
@@ -74,6 +85,12 @@ class MyTank extends Entity {
             if (gameControl.audio == 1){
                 this.audio.src = "audioFiles/y1491.mp3";
                 this.audio.play();
+            }
+            if (fromEntity instanceof CageBomb){
+                this.fromEntityCage = fromEntity ;
+            }
+            if (fromEntity instanceof GravityBomb){
+                this.isGravityBomb = 8 ;
             }
             if (fromEntity instanceof BlackHole){
                     this.BlackHoleRow = fromEntity.row ;
@@ -84,7 +101,7 @@ class MyTank extends Entity {
             }else{
                 if (fromEntity instanceof Missile){
                     if (this.isBlackHole == 0 ){
-                        this.hp-= 19 ;
+                        this.hp-= 5 ;
                     }
                 }else{
                     this.hp-- ;
@@ -97,8 +114,8 @@ class MyTank extends Entity {
         }
     }
     hpReply() {
-        if ( Date.now() - this.lastFireTS > 200 ) {
-            this.lastFireTS = Date.now() ;
+        if ( Date.now() - this.lastFireTS2 > 200 ) {
+            this.lastFireTS2 = Date.now() ;
             if ( this.hp <MyTank.HIGHEST_HP ) {
                 this.hp += 1 ;
                 // this.hp = MyTank.HIGHEST_HP ;
@@ -140,43 +157,54 @@ class MyTank extends Entity {
         }
         this.lastProcessTS = Date.now() ;
         this.hpReply() ;
+        if (this.isCage){
+            if (this.fromEntityCage.isCage != 80 && this.fromEntityCage.isCage != 0 ){
+                this.isMove = false ;
+            }else{
+                if (this.fromEntityCage.isCage != 0 ){
+                    this.fromEntityCage = 0 ;
+                }
+            }
+        }else{
+            this.fromEntityCage.isCage != 80 ;
+        }
         if ( this.keyController.isArrowRightPressed() ) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 this.moveInBoundary( this.row, this.col+1 ) ;
             }
         }
         if ( this.keyController.isArrowLeftPressed() ) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 this.moveInBoundary( this.row, this.col-1 ) ;
             }
         }
         if ( this.keyController.isArrowDownPressed() ) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 this.moveInBoundary( this.row+1, this.col ) ;
             }
         }
         if ( this.keyController.isArrowUpPressed()) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 this.moveInBoundary( this.row-1, this.col ) ;
             }
         }
         if ( this.keyController.isButtonAPressed() ) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 this.fireBullet();  
             }
         }
         if ( this.keyController.isButtonYPressed() ) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 this.fireMyLight();  
             }
         }
         if ( this.keyController.isButtonXPressed() ) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 this.switchShield();  
             }
         }
         if ( this.keyController.isButtonBPressed() ) {
-            if (this.isBlackHole == 0 ){
+            if (this.isBlackHole == 0 && this.isMove ){
                 if ( this.bombBeginTime == 0 ) {
                     this.bombBeginTime = Date.now() ;
                 }
@@ -185,6 +213,13 @@ class MyTank extends Entity {
             if ( this.bombBeginTime != 0 ) {
                 this.fireBomb() ;
             }
+        }
+        if (this.isGravityBomb > 0 ){
+            this.row += 4 ;
+            if (this.isGravityBomb <  2 ){ 
+                this.hp = 1 ;
+            }
+            this.isGravityBomb -= 1 ;  
         }
         if (this.isBlackHole != 0 ){
             if (this.isBlackHole > 8 ){
@@ -201,28 +236,16 @@ class MyTank extends Entity {
             }else{
                 if (this.isBlackHole < 8 ){
                     if (this.row > this.BlackHoleRow){
-                    this.row+=4 ;
-                }else{
-                    this.row-=4 ;
+                        this.row+=4 ;
+                    }else{
+                        this.row-=4 ;
+                    }
+                    if (this.col > this.BlackHoleCol){
+                        this.col+=4 ;
+                    }else{
+                        this.col-=4 ;
+                    }
                 }
-                if (this.col > this.BlackHoleCol){
-                    this.col+=4 ;
-                }else{
-                    this.col-=4 ;
-                }
-                }
-            }
-            if (this.row < TOTAL_ROWS/2 ){
-                this.row = TOTAL_ROWS/2+1 ;
-            }
-            if (this.row > TOTAL_ROWS ){
-                this.row = TOTAL_ROWS-1 ;
-            }
-            if (this.col < 0 ){
-                this.col = 1 ;
-            }
-            if (this.col > TOTAL_COLS ){
-                this.col = TOTAL_COLS-1 ;
             }
             this.isBlackHole-=1 ;
             let i = Math.floor(Math.random()*3)-1 ;
@@ -230,6 +253,18 @@ class MyTank extends Entity {
             if (this.isBlackHole < 2 ){
                 this.hp = 1 ;
             }
+        }
+        if (this.row < TOTAL_ROWS/2 ){
+            this.row = TOTAL_ROWS/2+1 ;
+        }
+        if (this.row > TOTAL_ROWS ){
+            this.row = TOTAL_ROWS-1 ;
+        }
+        if (this.col < 0 ){
+            this.col = 1 ;
+        }
+        if (this.col > TOTAL_COLS ){
+            this.col = TOTAL_COLS-1 ;
         }
         this.draw() ;
         this.drawBombLevel() ;

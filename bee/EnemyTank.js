@@ -114,7 +114,9 @@ class EnemyTank extends Entity {
             this.lastFireTS = Date.now() ;
             //new LaserLight(this.row, this.col, 180) ;
             for( let j=0; j<gameControl.level; j++ ) {
-                new EnemyBullet(this.row, this.col, 180) ;
+                new EnemyBullet( this.row , this.col , 180 ) ;
+                //new CageBomb(this.row, this.col, 180) ;
+                //new GravityBomb(this.row, this.col, 180) ;
             }
         }
 
@@ -468,7 +470,7 @@ class BigTank extends SuperTank{
             }
             if (this.parts[0].hp > 0 ){
                 if (this.parts[1].hp <= 0){
-                    let arms = Math.floor(Math.random()*8) ;
+                    let arms = Math.floor(Math.random()*12) ;
                     if (arms == 0){
                         for (let i=0;i<5;i++){
                             new Missile(this.row-1,this.col,0,0);
@@ -497,7 +499,7 @@ class BigTank extends SuperTank{
                     if (arms == 2){
                         for (let j=0;j<1;j++){
                             for (let i=0;i<9;i++){
-                                new LaserLight(this.row-1+j,this.col+3-i,0,0);
+                                new LaserLight(this.row-1+j,this.col+3-i,180);
                             }
                         }
                     }
@@ -509,8 +511,14 @@ class BigTank extends SuperTank{
                     if (arms == 7 ){
                         new BlackHole(this.row-1,this.col);
                     }
-                    if (arms == 8||arms == 9||arms == 10){
-                        CELL_SIZE = Math.floor(Math.random()*17)+1 ;
+                    if (arms == 8 ){
+                        for (let j=0;j<10;j++){
+                            new GravityBomb(this.row+4,this.col-10+j*2,180,0) ;
+                            new CageBomb(this.row+3,this.col-9+j*2,180,0) ;
+                        }
+                    }
+                    if (arms == 9||arms == 10||arms == 11){
+                        CELL_SIZE = Math.floor(Math.random()*10)+8 ;
                     }
                 }
             }
@@ -518,7 +526,7 @@ class BigTank extends SuperTank{
         if ( Date.now() - this.lastFireTS2 > 1 ) {
             this.lastFireTS2 = Date.now() ;
             if ( this.parts[2].hp > 0 ) {
-                new LaserLight(this.row+1,this.col,0);
+                new LaserLight(this.row+1,this.col,180);
             }
         }
         ctx.fillStyle = `rgb(255,0,0)` ;

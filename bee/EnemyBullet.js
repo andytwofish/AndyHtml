@@ -69,9 +69,167 @@ class EnemyBullet extends Entity {
         }
 
     }
+}
+class CageBomb extends EnemyBullet {
+    static objs = [] ;
+    createFrom = 0 ;
+    moveDistance = 100 ;
+    isCage = 80 ;
+    constructor( row, col, rotation ) {
+        super( row, col, rotation ) ;
+        this.moveDirection = rotation ;
+        EnemyBullet.objs.push(this) ;
+    }
+
+    static process() {
+        for( let i=0; i<EnemyBullet.objs.length; i++ ) {
+            if ( EnemyBullet.objs[i].hp <= 0 ) {
+                EnemyBullet.objs.splice( i--, 1 ) ;
+            } else {
+                EnemyBullet.objs[i].process() ;
+            }
+        }
+    }
+
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+        part0.fillStyle = "rgb(255, 0, 255)" ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+    }
+    draw(){
+        if (this.parts[0].hp > 0){
+            this.autoDraw() ;
+        }else{
+            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "Cage", x, y, CELL_SIZE*3, CELL_SIZE*3, 180 ) ;
+        }
+    }
+
+    checkAfterMoved() {
+        for( let i=0; i< MyTank.objs.length ; i++ ) {
+            let entity = MyTank.objs[i] ;
+            if ( entity.attackCheck( this ) ) {
+                if (this.isCage < 80){
+                    this.hp-- ;
+                    if (this.isCage < 2){
+                        entity.hp = MyTank.HIGHEST_HP ;
+                        entity.isMove = true ;
+                        
+                    }
+                }else{
+                    let part1 = new Part() ;
+                    part1.add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,1).add(1,-1).add(1,0).add(1,1) ;
+                    part1.fillStyle = "rgb(0,0,255)" ;
+                    this.parts.push( part1 ) ;
+                    this.parts[0].hp = 0 ;
+                    entity.isCage = true ;
+                    this.row = entity.row ;
+                    this.col = entity.col ;
+                    this.isCage = 79 ;
+                }
+            }
+        }
+    }
+
+    move() {
+        if (this.isCage == 80 || this.isCage == 0 ){
+            if ( this.moveDistance-- > 0 )  {
+                let isMove = false ;
+                switch( this.moveDirection ) {
+                    case 0:
+                        isMove = this.moveOutBoundary( this.row-1, this.col ) ;
+                        break;
+                    case 90:
+                        isMove = this.moveOutBoundary( this.row, this.col+1 ) ;
+                        break;
+                    case 180:
+                        isMove = this.moveOutBoundary( this.row+1, this.col ) ;
+                        break;
+                    case 270:
+                        isMove = this.moveOutBoundary( this.row, this.col-1 ) ;
+                        break;
+                }
+                if ( isMove ) {
+                    this.checkAfterMoved() ;
+                } else {
+                    this.hp = 0 ;
+                }
+
+            } else {
+                this.hp = 0 ;
+            }
+        }else{
+            this.isCage-- ;
+        }
+
+    }
+}
+class GravityBomb extends EnemyBullet {
+    static objs = [] ;
+    createFrom = 0 ;
+    moveDistance = 100 ;
+    constructor( row, col, rotation ) {
+        super( row, col, rotation ) ;
+        this.moveDirection = rotation ;
+        EnemyBullet.objs.push(this) ;
+    }
+    init() {
+        let part0 = new Part() ;
+        part0.add(0,0) ;
+        part0.fillStyle = "rgb(200,0,255)" ;
+
+        this.parts = [] ;
+        this.parts.push( part0 ) ;
+    }
+    draw(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
+        drawImg( "bigTank3", x, y, CELL_SIZE, CELL_SIZE, 180 ) ;
+    }
+
+    checkAfterMoved() {
+        for( let i=0; i< MyTank.objs.length ; i++ ) {
+            let entity = MyTank.objs[i] ;
+            if ( entity.attackCheck( this ) ) {
+                this.hp-- ;
+            }
+        }
+    }
+
+    move() {
+        if ( this.moveDistance-- > 0 )  {
+            let isMove = false ;
+            switch( this.moveDirection ) {
+                case 0:
+                    isMove = this.moveOutBoundary( this.row-1, this.col ) ;
+                    break;
+                case 90:
+                    isMove = this.moveOutBoundary( this.row, this.col+1 ) ;
+                    break;
+                case 180:
+                    isMove = this.moveOutBoundary( this.row+1, this.col ) ;
+                    break;
+                case 270:
+                    isMove = this.moveOutBoundary( this.row, this.col-1 ) ;
+                    break;
+            }
+            if ( isMove ) {
+                this.checkAfterMoved() ;
+            } else {
+                this.hp = 0 ;
+            }
+
+        } else {
+            this.hp = 0 ;
+        }
+
+    }
 
 }
-
 class Missile extends EnemyBullet{
     direction = 0 ;
     lastMovedTS = 0 ;

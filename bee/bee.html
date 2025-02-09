@@ -33,7 +33,9 @@
     <img id="SuperTank2" src="./images/icons8-star-trek-kumari-ship-96.png" alt="Source Image" style="display:none;">
     <img id="bigTank3" src="./images/點陣圖.png" alt="Source Image" style="display:none;">
     <img id="bigTank" src="./images/icons8-cylon-raider-96.png" alt="Source Image" style="display:none;">       
-    <img id="blackHole" src="./images/—Pngtree—swirl black hole_4491990.png" alt="Source Image" style="display:none;">       
+    <img id="blackHole" src="./images/—Pngtree—swirl black hole_4491990.png" alt="Source Image" style="display:none;">
+    <img id="Cage" src="./images/icons8-prison-64.png" alt="Source Image" style="display:none;">
+
 </body>
 </html>
 <script>
@@ -154,15 +156,15 @@ function run(time) {
         wave++ ;
         if (wave < 2 ) {
             for ( let i=0;i<TOTAL_COLS;i++ ) {
-                for ( let j=0;j<gameControl.level*5;j++ ) {
-                    new LaserLight(0,i) ;
+                for ( let j=0;j<gameControl.level*5;j++){
+                    new CageBomb(0,i,180) ;
                 }
             }
-            for ( let i= 0;i<8;i++ ) {
+            for ( let i= 0;i<16;i++ ) {
                 new SuperTank() ;
                
             }
-            for ( let i= 0;i<4;i++ ) {
+            for ( let i= 0;i<8;i++ ) {
                 new LaserLightTank() ;
                
             }
@@ -170,7 +172,7 @@ function run(time) {
         if ( wave == 8 ) {
             for ( let i=0;i<TOTAL_COLS;i++ ) {
                 for ( let j=0;j<gameControl.level*5;j++){
-                    new LaserLight(0,i) ;
+                    new CageBomb(0,i,180) ;
                 }
             }
             for ( let i= 0;i<1;i++ ) {
