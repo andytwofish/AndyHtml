@@ -19,8 +19,25 @@ class Elevator {
     next() {
         //console.log(this.tasks) ;
         //openEvent(this.elevatorId) ;
-        console.log(this.elevatorPos+1) ;
         if (this.tasks.length == 0){
+            this.state = STATE_STOP ;
+            return ;
+        }
+        if (this.state == STATE_UP){
+            this.elevatorPos++ ;
+        }
+        if (this.state == STATE_DOWN){
+            this.elevatorPos-- ;
+        }   
+        console.log(this.elevatorPos+1) ;
+        for (let i=0;i<this.tasks.length;i++){
+            if (this.elevatorPos == this.tasks[i].toFloor ){
+                this.tasks.splice( i--, 1 ) ;
+                console.log('到了盯~') ;
+            }
+        }
+        if (this.tasks.length == 0){
+            this.state = STATE_STOP ;
             return ;
         }
         if (this.state == STATE_STOP ){
@@ -29,38 +46,7 @@ class Elevator {
             }else{
                 this.state = STATE_DOWN ;   
             }
-            
         }
-        if (this.state == STATE_UP){
-            this.elevatorPos++ ;
-        }
-        if (this.state == STATE_DOWN){
-            this.elevatorPos-- ;
-        }       
-        for (let i=0;i<this.tasks.length;i++){
-            if (this.elevatorPos == this.tasks[i].toFloor ){
-                this.tasks.splice( i--, 1 ) ;
-            }
-        }
-        for (let i=0;i<this.tasks.length;i++){
-            if (this.state == STATE_UP){
-                if (this.elevatorPos < this.tasks[i].toFloor ){
-                    return ;
-                }
-            }
-            if (this.state == STATE_DOWN){
-                if (this.elevatorPos > this.tasks[i].toFloor ){
-                    return ;
-                }
-            }
-        }
-        if (this.state == STATE_UP){
-            this.state = STATE_DOWN ;
-        }
-        if (this.state == STATE_DOWN){
-            this.state = STATE_UP ;
-        }
-
     }
     up(fromFloor) {
         let task = new Task() ;

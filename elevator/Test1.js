@@ -15,10 +15,11 @@ class Test1 {
     lastMoveTime = 0 ;
     elevator = new Elevator(10) ;
     constructor(){
-        this.addTask(5, 1, CONDITION_UP ) ;
-        this.addTask(6, 3, CONDITION_ANY ) ;
-        this.addTask(7, 5, CONDITION_UP ) ;
-        this.addTask(8, 8, CONDITION_ANY ) ;
+        this.addTask(2, 1, CONDITION_UP ) ;
+        this.addTask(2.2, 5, CONDITION_ANY ) ;
+        this.addTask(2.3, 8, CONDITION_ANY ) ;
+        this.addTask(3, 3, CONDITION_DOWN ) ;
+        this.addTask(3.2, 1, CONDITION_ANY ) ;
     }
     addTask( seconds, toFloor, condition ) {
         let obj = new Object() ;
