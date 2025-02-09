@@ -36,7 +36,9 @@
     <img id="blackHole" src="./images/—Pngtree—swirl black hole_4491990.png" alt="Source Image" style="display:none;">
     <img id="Cage" src="./images/icons8-prison-64.png" alt="Source Image" style="display:none;">
     <img id="CageBomb" src="./images/icons8-bullet-4 (1).png" alt="Source Image" style="display:none;">
-
+    <img id="M.tankImg2" src="./images/icons8-viper-mark-2-96.png" alt="Source Image" style="display:none;">
+    <img id="SuperTank" src="./images/icons8-star-trek-kumari-ship-9.png" alt="Source Image" style="display:none;">
+    <img id="SuperTank3" src="./images/icons8-star-trek-kumari-ship-6.png" alt="Source Image" style="display:none;">
 </body>
 </html>
 <script>
@@ -161,11 +163,11 @@ function run(time) {
                     new CageBomb(0,i,180) ;
                 }
             }
-            for ( let i= 0;i<16;i++ ) {
+            for ( let i= 0;i<1;i++ ) {
                 new SuperTank() ;
                
             }
-            for ( let i= 0;i<8;i++ ) {
+            for ( let i= 0;i<12*gameControl.level;i++ ) {
                 new LaserLightTank() ;
                
             }
@@ -197,6 +199,9 @@ function gameStart() {
     this.wave = 6/0 ;
     for (let i=0;i<0;i++){
         new BigTank () ;
+    }
+    for (let i=0;i<0;i++){
+        new SuperTank () ;
     }
     for (let i=0;i<0;i++){
         new LaserLightTank () ;
