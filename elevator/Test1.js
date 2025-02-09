@@ -11,14 +11,14 @@ class Test1 {
     tasks = [] ;
     index=-1;
     beginTime = 0 ;
-    elevatorMoveTime = 2000 ;
+    elevatorMoveTime = 800 ;
     lastMoveTime = 0 ;
     elevator = new Elevator(10) ;
     constructor(){
         this.addTask(5, 1, CONDITION_UP ) ;
-        this.addTask(6, 8, CONDITION_ANY ) ;
+        this.addTask(6, 3, CONDITION_ANY ) ;
         this.addTask(7, 5, CONDITION_UP ) ;
-        this.addTask(8, 10, CONDITION_ANY ) ;
+        this.addTask(8, 8, CONDITION_ANY ) ;
     }
     addTask( seconds, toFloor, condition ) {
         let obj = new Object() ;
@@ -27,7 +27,7 @@ class Test1 {
         this.tasks.push(obj) ;
     }
     start() {
-        console.log(this.tasks) ;
+        //console.log(this.tasks) ;
         this.beginTime = Date.now() ;
         this.index=0;
     }
@@ -41,7 +41,7 @@ class Test1 {
         }
         if ( Date.now()-this.beginTime >= this.tasks[this.index].ms ) {
             let userKey = this.tasks[this.index].userKey ;
-            //console.log(userKey) ;
+            console.log(userKey) ;
             switch( userKey.condition ) {
                 case CONDITION_ANY:
                     this.elevator.goTo( userKey.toFloor ) ;
