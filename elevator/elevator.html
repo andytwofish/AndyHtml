@@ -9,6 +9,7 @@
     <script src="./GameControl.js"></script>
     <script src="./KeyController.js"></script>
     <script src="./elevator.js"></script>
+    <script src="./Test1.js"></script>
 </head>
 <body>
     <canvas id="_Canvas" width="800" height="400"></canvas>
@@ -16,10 +17,11 @@
 const canvas = document.getElementById('_Canvas');
 const ctx = canvas.getContext('2d');  
 let lastTime = 0 ;
-let elevator = new Elevator(10) ;
-function everyRound() {
-    elevator.next();
-}
+
+const CONDITION_ANY = 0 ;
+const CONDITION_UP = 1 ;
+const CONDITION_DOWN = 2 ;  
+let test = new Test1() ;  
 
 //------------------------------------------------------------
 
@@ -41,12 +43,13 @@ function gameLoop(time) {
     }
     lastTime = time ;
 
-    everyRound();
+    test.next() ;
  
     requestAnimationFrame(gameLoop);
 }
 
 function gameStart() {
+    test.start();
     gameLoop();
 }
 gameControl.addEventListener("start", gameStart ) ;
