@@ -34,7 +34,7 @@ class OurBullet extends Entity {
     draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-        drawImg( "M.bulletImg", x, y, CELL_SIZE, CELL_SIZE, this.rotation ) ;
+        drawImg( "lightImg", x, y, CELL_SIZE, CELL_SIZE, this.rotation ) ;
     }
     checkAfterMoved() {
         for( let i=0; i<EnemyTank.objs.length; i++ ) {
@@ -121,7 +121,7 @@ class OurBomb extends OurBullet {
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
         this.rotation+=20 ;
-        drawImg( "lightImg", x, y, CELL_SIZE*this.bombLevel*2, CELL_SIZE*this.bombLevel*2, this.rotation )
+        drawImg( "lightImg", x, y, CELL_SIZE*this.bombLevel*2, CELL_SIZE*this.bombLevel*2, this.rotation ) ;
     }
 
 

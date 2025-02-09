@@ -100,12 +100,12 @@ class CageBomb extends EnemyBullet {
         this.parts.push( part0 ) ;
     }
     draw(){
+        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+        let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
         if (this.parts[0].hp > 0){
-            this.autoDraw() ;
+            drawImg( "CageBomb", x, y, CELL_SIZE, CELL_SIZE, 90 ) ;
         }else{
-            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-            let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-            drawImg( "Cage", x, y, CELL_SIZE*3, CELL_SIZE*3, 180 ) ;
+            drawImg( "Cage", x-2, y, CELL_SIZE*3, CELL_SIZE*2, 90 ) ;
         }
     }
 
@@ -403,7 +403,16 @@ class LaserLight extends EnemyBullet{
     }
 
     draw(){
-        this.autoDraw() ;
+        for( let partIdx=0; partIdx<this.parts.length; partIdx++ ) {
+            if ( this.parts[partIdx].hp <= 0 ) {
+                continue ;
+            }
+            ctx.fillStyle = this.parts[partIdx].fillStyle ;
+            for ( let i=0; i<this.parts[partIdx].coords.length; i++ ) {
+                let coord = this.parts[partIdx].coords[i] ;
+                ctx.fillRect( (this.col+coord.col)*CELL_SIZE+5, (this.row+coord.row)*CELL_SIZE+1, CELL_SIZE-8, CELL_SIZE-2 ) ;
+            }
+        }
     }
 }
 class Light extends EnemyBullet {
