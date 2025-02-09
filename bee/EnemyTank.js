@@ -182,7 +182,7 @@ class ShieldPeople extends EnemyTank {
 }
 
 class SuperTank extends EnemyTank { 
-    hp = gameControl.level*5 ;
+    hp = gameControl.level*30 ;
     init() {
 
         let part0 = new Part() ;
@@ -190,20 +190,24 @@ class SuperTank extends EnemyTank {
         part0.add(-1,0).add(-1,-1).add(-1,1) ;
 
         let part1 = new Part() ;
-        part1.add(1,-4) ;
-
+        part1.add(1,-4) ;         
+        part1.hp = 20 ;
 
         let part2 = new Part() ;
         part2.add(1,-2) ;
+        part2.hp = 20 ;
 
         let part3 = new Part() ;
         part3.add(1,0) ;
+        part3.hp = 20 ;
 
         let part4 = new Part() ;
         part4.add(1,2) ;
+        part4.hp = 20 ;
 
         let part5 = new Part() ;
         part5.add(1,4) ;
+        part5.hp = 20 ;
 
         this.parts = [] ;
         this.parts.push( part0 ) ;
@@ -216,7 +220,18 @@ class SuperTank extends EnemyTank {
     }
 
     draw(){
-        this.autoDraw() ;
+        if (this.parts[0].hp != 0){
+            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "SuperTank3", x, y, CELL_SIZE*6, CELL_SIZE*6, 0 ) ;
+        }
+        for( let i=1; i<this.parts.length; i++ ) {
+            if (this.parts[i].hp != 0){
+                let x = ((this.col-6+i*2)*CELL_SIZE+1) + CELL_SIZE/2 ;
+                let y = ((this.row+2)*CELL_SIZE+1) + CELL_SIZE/2 ;
+                drawImg( "SuperTank", x, y, CELL_SIZE*3/2, CELL_SIZE*3/2, 0 ) ;
+            }
+        }
         this.drawHp() ;
     }
 
@@ -256,19 +271,27 @@ class SuperTank extends EnemyTank {
                 }
             }
         } else {
-            this.parts[partIdx].hp = 0 ;
+            this.parts[partIdx].hp-- ;
         }
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 800/gameControl.level ) {
+        if ( Date.now() - this.lastFireTS > 400/gameControl.level ) {
             this.lastFireTS = Date.now() ;
-            for( let i=1; i<this.parts.length; i++ ) {
-                if ( this.parts[i].hp > 0 ) {
-                    for( let j=1; j<4; j++ ) {
-                        new EnemyBullet(this.row+1,this.col+this.parts[i].coords[0].col, 180 ) ;
-                    }
-                }
+            if ( this.parts[1].hp > 0 ) {
+                new CageBomb(this.row+1,this.col+this.parts[1].coords[0].col, 180 ) ;
+            }
+            if ( this.parts[2].hp > 0 ) {
+                new GravityBomb(this.row+1,this.col+this.parts[2].coords[0].col, 180 ) ;
+            }
+            if ( this.parts[3].hp > 0 ) {
+                new CageBomb(this.row+1,this.col+this.parts[3].coords[0].col, 180 ) ;
+            }
+            if ( this.parts[4].hp > 0 ) {
+                new GravityBomb(this.row+1,this.col+this.parts[4].coords[0].col, 180 ) ;
+            }
+            if ( this.parts[5].hp > 0 ) {
+                new CageBomb(this.row+1,this.col+this.parts[5].coords[0].col, 180 ) ;
             }
         }
         this.move() ;
@@ -513,7 +536,7 @@ class BigTank extends SuperTank{
                     }
                     if (arms == 8 ){
                         for (let j=0;j<10;j++){
-                            new GravityBomb(this.row+4,this.col-10+j*2,180,0) ;
+                            new GravityBomb(this.row+3,this.col-10+j*2,180,0) ;
                             new CageBomb(this.row+3,this.col-9+j*2,180,0) ;
                         }
                     }

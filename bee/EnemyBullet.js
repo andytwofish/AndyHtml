@@ -100,12 +100,14 @@ class CageBomb extends EnemyBullet {
         this.parts.push( part0 ) ;
     }
     draw(){
-        let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
-        let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
         if (this.parts[0].hp > 0){
+            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = ((this.row-1)*CELL_SIZE+1) + CELL_SIZE/2 ;
             drawImg( "CageBomb", x, y, CELL_SIZE, CELL_SIZE, 90 ) ;
         }else{
-            drawImg( "Cage", x-2, y, CELL_SIZE*3, CELL_SIZE*2, 90 ) ;
+            let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
+            let y = ((this.row)*CELL_SIZE+1) + CELL_SIZE/2 ;
+            drawImg( "Cage", x, y, CELL_SIZE*3, CELL_SIZE*2, 90 ) ;
         }
     }
 

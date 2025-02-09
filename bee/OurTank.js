@@ -336,7 +336,7 @@ class MyTank extends Entity {
     draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-        drawImg( "M.tankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
+        drawImg( "M.tankImg2", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
         if (this.isShieldON  ){
             let color = 50+10*this.parts[1].hp ;
             x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
@@ -371,7 +371,7 @@ class MyTank extends Entity {
     drawHp(){
         ctx.font = `${CELL_SIZE/4*3}px Arial`;
         ctx.textAlign = "center" ;
-        ctx.fillText(`${this.hp}`,this.col*CELL_SIZE,this.row*CELL_SIZE );
+        ctx.fillText(`${this.hp}`,this.col*CELL_SIZE+CELL_SIZE/2,(this.row+2)*CELL_SIZE );
         ctx.fillStyle = `rgb(255,0,0)` ;
         let l = 0 ; 
         let k = Math.floor(Math.sqrt(this.hp)) ;
