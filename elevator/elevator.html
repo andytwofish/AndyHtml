@@ -11,6 +11,7 @@
     <script src="./elevator.js"></script>
     <script src="./Test1.js"></script>
 </head>
+    <img id="people" src="./images/icons8-employee-50.png" alt="Source Image" style="display:none;">
 <body>
     <canvas id="_Canvas" width="800" height="400"></canvas>
 <script>
@@ -21,11 +22,25 @@ let lastTime = 0 ;
 const CONDITION_ANY = 0 ;
 const CONDITION_UP = 1 ;
 const CONDITION_DOWN = 2 ;  
-const TOTAL_FLOORS = 10 ;
+const TOTAL_FLOORS = 8 ;
+let CELL_SIZE = 18 ;
 let test = new Test1() ;  
 
 //------------------------------------------------------------
-
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空畫布
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width , canvas.height );
+}
+function drawImg(imgId, x, y, width, height, rotation) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(( rotation * Math.PI) / 180);
+        ctx.translate( -x, -y);
+        let imgObj = document.getElementById( imgId) ;
+        ctx.drawImage(imgObj, x-width/2, y-height/2, width, height ) ;
+        ctx.restore();    
+}
 function gameLoop(time) {
     // if ( gameControl.state != GameControl.STATE_RUNNING  ) {
     //     requestAnimationFrame(gameLoop);

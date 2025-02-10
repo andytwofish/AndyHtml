@@ -4,6 +4,7 @@ class PeopleState {
     static ENTERED=2;
     static ASSIGNED=3;
     static EXITED=4;
+    static END=5;
 
     static getPeopleStateName(stateNumber) {
         for (const [key, value] of Object.entries(PeopleState)) {
@@ -32,7 +33,7 @@ class People {
         }
     }
     nextState() {
-        if ( this.state != PeopleState.EXITED ) {
+        if ( this.state != PeopleState.END ) {
             this.state++ ;
         }
         switch( this.state ) {
@@ -55,9 +56,9 @@ class Test1 {
     peoples = [] ;
     index=-1;
     beginTime = 0 ;
-    elevatorMoveTime = 800 ;
+    elevatorMoveTime = 400 ;
     lastMoveTime = 0 ;
-    static TOTAL_PEOPLES = 40 ;
+    static TOTAL_PEOPLES = 101 ;
     elevator = new Elevator( TOTAL_FLOORS, this ) ;
     constructor(){
         for( let i=0; i<Test1.TOTAL_PEOPLES; i++ ) {
@@ -67,7 +68,7 @@ class Test1 {
             } while ( people.fromFloor === people.toFloor ) ;
             this.peoples.push( people ) ;
         }
-    }
+    }index
     start() {
         this.beginTime = Date.now() ;
         this.index=0;
@@ -86,7 +87,7 @@ class Test1 {
             }
             if ( people.state === PeopleState.ASSIGNED && people.toFloor === floor ) {
                 console.log( "(" + people.id + ") 在" + (people.toFloor+1) + "樓離開電梯" ) ;
-                people.nextState();
+                people.nextState() ;
             }
         }
     }
@@ -99,7 +100,7 @@ class Test1 {
         if ( this.index >= this.peoples.length ) {
             return ;
         }
-        if ( Date.now()-this.beginTime >= this.index*1000 ) {
+        if ( Date.now()-this.beginTime >= this.index*400 ) {
             let people = this.peoples[this.index] ;
             if ( people.state == PeopleState.INIT ) {
                 if ( people.direction == 1 ) {
