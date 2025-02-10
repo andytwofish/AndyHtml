@@ -4,7 +4,7 @@ class Task {
 }
 const STATE_STOP = 0 ;
 const STATE_UP = 1 ;
-const STATE_DOWN = 2 ; 
+const STATE_DOWN = -1 ; 
 class Elevator {
     numberOfFloors = 0 ;
     elevatorPos = 0 ; 
@@ -34,11 +34,7 @@ class Elevator {
         for (let i=0;i<this.tasks.length;i++){
             if (this.elevatorPos == this.tasks[i].toFloor ){
                 console.log('到了盯~') ;
-                if (this.state == STATE_UP) {
-                    this.eventHandler.arrivedEvent( true, this.elevatorPos ) ;
-                } else {
-                    this.eventHandler.arrivedEvent( false, this.elevatorPos ) ;
-                }
+                this.eventHandler.arrivedEvent( this.state, this.elevatorPos ) ;
                 this.tasks.splice( i--, 1 ) ;
             }
         }

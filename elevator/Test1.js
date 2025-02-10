@@ -26,9 +26,9 @@ class People {
         this.fromFloor = fromFloor ;
         this.toFloor = toFloor ;
         if ( toFloor > fromFloor ) {
-            this.isUp = true ;
+            this.direction = 1 ;
         } else {
-            this.isUp = false ;
+            this.direction = -1 ;
         }
     }
     nextState() {
@@ -72,11 +72,11 @@ class Test1 {
         this.beginTime = Date.now() ;
         this.index=0;
     }
-    arrivedEvent(isUp, floor) {
+    arrivedEvent(direction, floor) {
         for( let i=0; i<Test1.TOTAL_PEOPLES; i++ ) {
             let people = this.peoples[i] ;
             if ( people.state === PeopleState.PRESSED && people.fromFloor === floor ) {
-                if ( isUp === people.isUp ) {
+                if ( direction == 0 || direction === people.direction ) {
                     console.log( "(" + people.id + ") 在" + people.fromFloor + "進了電梯" ) ;
                     people.nextState();
                     console.log( "(" + people.id + ") 按下了" + people.toFloor + "樓" ) ;
@@ -102,7 +102,7 @@ class Test1 {
         if ( Date.now()-this.beginTime >= this.index*1000 ) {
             let people = this.peoples[this.index] ;
             if ( people.state == PeopleState.INIT ) {
-                if ( people.isUp ) {
+                if ( people.direction == 1 ) {
                     console.log( "(" + people.id + ") 在" + people.fromFloor + "按下了往上" ) ;
                     this.elevator.up( people.fromFloor ) ;
                 } else {
