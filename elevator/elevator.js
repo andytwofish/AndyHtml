@@ -83,8 +83,8 @@ class Elevator {
                 z[this.eventHandler.peoples[i].fromFloor-1]++ ;
             }
         } 
-        for (let i=0;i<this.eventHandler.peoples.length;i++){
-            for (let j=0;j<z[this.eventHandler.peoples[i].fromFloor-1];j++){
+        for (let i=0;i<z.length;i++){
+            for (let j=0;j<z[i];j++){
                 let x = 720-CELL_SIZE+CELL_SIZE/2+1-j*CELL_SIZE ;
                 let y = 380-(this.eventHandler.peoples[i].fromFloor+1)*CELL_SIZE+CELL_SIZE/2+1 ;
                 drawImg( "people", x, y, CELL_SIZE, CELL_SIZE, 0 ) ;
@@ -101,8 +101,8 @@ class Elevator {
                 this.eventHandler.peoples[i].nextState() ;
             }
         } 
-        for (let i=0;i<this.eventHandler.peoples.length;i++){
-            for (let j=0;j<k[this.eventHandler.peoples[i].toFloor-1];j++){
+        for (let i=0;i<k.length;i++){
+            for (let j=0;j<k[i];j++){
                 let x = 780 ;
                 let y = 380-(this.eventHandler.peoples[i].toFloor+1)*CELL_SIZE+CELL_SIZE/2+1 ;
                 drawImg( "people", x, y, CELL_SIZE, CELL_SIZE, 0 ) ;
