@@ -33,9 +33,12 @@ class Elevator {
         console.log(this.elevatorPos+1) ;
         for (let i=0;i<this.tasks.length;i++){
             if (this.elevatorPos == this.tasks[i].toFloor ){
-                console.log('到了盯~') ;
+                console.log('叮~') ;
                 this.eventHandler.arrivedEvent( this.state, this.elevatorPos ) ;
                 this.tasks.splice( i--, 1 ) ;
+                this.state = STATE_STOP ;
+                this.eventHandler.arrivedEvent( this.state, this.elevatorPos ) ;
+
             }
         }
         if (this.tasks.length == 0){

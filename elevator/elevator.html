@@ -6,7 +6,7 @@
   <style>
     canvas { border: 1px solid #000; }
   </style>
-    <script src="./GameControl.js"></script>
+    <!--<script src="./GameControl.js"></script>-->
     <script src="./KeyController.js"></script>
     <script src="./elevator.js"></script>
     <script src="./Test1.js"></script>
@@ -27,10 +27,10 @@ let test = new Test1() ;
 //------------------------------------------------------------
 
 function gameLoop(time) {
-    if ( gameControl.state != GameControl.STATE_RUNNING  ) {
-        requestAnimationFrame(gameLoop);
-        return ;
-    }
+    // if ( gameControl.state != GameControl.STATE_RUNNING  ) {
+    //     requestAnimationFrame(gameLoop);
+    //     return ;
+    // }
 
     if (lastTime === 0) {
         lastTime = time;
@@ -53,7 +53,7 @@ function gameStart() {
     test.start();
     gameLoop();
 }
-gameControl.addEventListener("start", gameStart ) ;
-
+// gameControl.addEventListener("start", gameStart ) ;
+gameStart();
 
 </script>
