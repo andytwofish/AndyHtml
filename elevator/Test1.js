@@ -58,7 +58,7 @@ class Test1 {
     beginTime = 0 ;
     elevatorMoveTime = 400 ;
     lastMoveTime = 0 ;
-    static TOTAL_PEOPLES = 101 ;
+    static TOTAL_PEOPLES = 8 ;
     elevator = new Elevator( TOTAL_FLOORS, this ) ;
     constructor(){
         for( let i=0; i<Test1.TOTAL_PEOPLES; i++ ) {
