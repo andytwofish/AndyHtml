@@ -52,14 +52,21 @@ class Elevator {
         ctx.closePath();
         ctx.stroke();
 
+        for (let i=0;i<this.tasks.length;i++){
+            if (this.elevatorPos == this.tasks[i].toFloor ){
+                console.log('叮 ~') ;
+                this.tasks.splice( i--, 1 ) ;
+                this.state = STATE_STOP ;
+                this.eventHandler.arrivedEvent( this.state, this.elevatorPos ) ;
+            }
+        }
+
         let m = 0 ;
         for (let i=0;i<this.eventHandler.peoples.length;i++){
             if (this.eventHandler.peoples[i].state == PeopleState.ENTERED || this.eventHandler.peoples[i].state == PeopleState.ASSIGNED){
                 m++ ;
             }
         }
-
-
         ctx.beginPath() ;
         ctx.fillStyle = `rgb(0, 0, 0)` ;
         ctx.fillRect( 720, n, CELL_SIZE, CELL_SIZE ) ;
@@ -70,14 +77,6 @@ class Elevator {
         ctx.closePath();
         ctx.stroke();
 
-        for (let i=0;i<this.tasks.length;i++){
-            if (this.elevatorPos == this.tasks[i].toFloor ){
-                console.log('叮 ~') ;
-                this.tasks.splice( i--, 1 ) ;
-                this.state = STATE_STOP ;
-                this.eventHandler.arrivedEvent( this.state, this.elevatorPos ) ;
-            }
-        }
 
         let z = [] ;
         for (let i=0;i<TOTAL_FLOORS;i++){
@@ -116,7 +115,7 @@ class Elevator {
         ctx.fillStyle = `rgb(255, 0, 0)` ;
         for (let i=0;i<k.length;i++){
             for (let j=0;j<k[i];j++){
-                let x = 780 ;
+                let x = 725+CELL_SIZE ;
                 let y = 380-i*CELL_SIZE-CELL_SIZE/2 ;
                 drawImg( "people", x, y, CELL_SIZE, CELL_SIZE, 0 ) ;
             }
