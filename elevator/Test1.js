@@ -1,64 +1,117 @@
-class UserKey {
+class PeopleState {
+    static INIT=0;
+    static PRESSED=1;
+    static ENTERED=2;
+    static ASSIGNED=3;
+    static EXITED=4;
+
+    static getPeopleStateName(stateNumber) {
+        for (const [key, value] of Object.entries(PeopleState)) {
+            if (value === stateNumber) {
+                return key;
+            }
+        }
+        return null; // or any other fallback value
+    }
+
+} 
+
+class People {
+    static numberOfPeople = 0 ;
+    id = People.numberOfPeople++ ;
+    fromFloor = 0 ;
     toFloor = 0 ;
-    condition = CONDITION_ANY ;
-    constructor( toFloor, condition ){
+    state = PeopleState.INIT ;
+    constructor( fromFloor, toFloor ) {
+        this.fromFloor = fromFloor ;
         this.toFloor = toFloor ;
-        this.condition = condition ;
+        if ( toFloor > fromFloor ) {
+            this.isUp = true ;
+        } else {
+            this.isUp = false ;
+        }
+    }
+    nextState() {
+        if ( this.state != PeopleState.EXITED ) {
+            this.state++ ;
+        }
+        switch( this.state ) {
+            case PeopleState.INIT:
+                break;
+            case PeopleState.PRESSED:
+                break;
+            case PeopleState.ENTERED:
+                break;
+            case PeopleState.ASSIGNED:
+                break;
+            case PeopleState.EXITED:
+                break;
+        }
+        //console.log( "(" + this.id + ") " + PeopleState.getPeopleStateName(this.state) ) ;
     }
 }
 
 class Test1 {
-    tasks = [] ;
+    peoples = [] ;
     index=-1;
     beginTime = 0 ;
     elevatorMoveTime = 800 ;
     lastMoveTime = 0 ;
-    elevator = new Elevator(10) ;
+    static TOTAL_PEOPLES = 1 ;
+    elevator = new Elevator( TOTAL_FLOORS, this ) ;
     constructor(){
-        this.addTask(2, 1, CONDITION_UP ) ;
-        this.addTask(2.2, 5, CONDITION_ANY ) ;
-        this.addTask(2.3, 8, CONDITION_ANY ) ;
-        this.addTask(3, 3, CONDITION_DOWN ) ;
-        this.addTask(3.2, 1, CONDITION_ANY ) ;
-    }
-    addTask( seconds, toFloor, condition ) {
-        let obj = new Object() ;
-        obj.ms = seconds*1000 ;
-        obj.userKey = new UserKey( toFloor, condition ) ;
-        this.tasks.push(obj) ;
+        for( let i=0; i<Test1.TOTAL_PEOPLES; i++ ) {
+            let people = null ;
+            do {
+                people = new People( Math.floor(Math.random()*TOTAL_FLOORS), Math.floor(Math.random()*TOTAL_FLOORS) ) ;
+            } while ( people.fromFloor === people.toFloor ) ;
+            this.peoples.push( people ) ;
+        }
     }
     start() {
-        //console.log(this.tasks) ;
         this.beginTime = Date.now() ;
         this.index=0;
     }
+    arrivedEvent(isUp, floor) {
+        for( let i=0; i<Test1.TOTAL_PEOPLES; i++ ) {
+            let people = this.peoples[i] ;
+            if ( people.state === PeopleState.PRESSED && people.fromFloor === floor ) {
+                if ( isUp === people.isUp ) {
+                    console.log( "(" + people.id + ") 在" + people.fromFloor + "進了電梯" ) ;
+                    people.nextState();
+                    console.log( "(" + people.id + ") 按下了" + people.toFloor + "樓" ) ;
+                    this.elevator.goTo( people.toFloor ) ;
+                    people.nextState() ;
+                }
+            }
+            if ( people.state === PeopleState.ASSIGNED && people.toFloor === floor ) {
+                console.log( "(" + people.id + ") 在" + people.toFloor + "離開電梯" ) ;
+                people.nextState();
+            }
+        }
+    }
+
     next() {
         if ( Date.now() - this.lastMoveTime > this.elevatorMoveTime ) {
             this.lastMoveTime = Date.now() ;
             this.elevator.next();
         }
-        if ( this.index == -1 ) {
+        if ( this.index >= this.peoples.length ) {
             return ;
         }
-        if ( Date.now()-this.beginTime >= this.tasks[this.index].ms ) {
-            let userKey = this.tasks[this.index].userKey ;
-            console.log(userKey) ;
-            switch( userKey.condition ) {
-                case CONDITION_ANY:
-                    this.elevator.goTo( userKey.toFloor ) ;
-                    break;
-                case CONDITION_UP:
-                    this.elevator.up( userKey.toFloor ) ;
-                    break;
-                case CONDITION_DOWN:
-                    this.elevator.down( userKey.toFloor ) ;
-                    break;
+        if ( Date.now()-this.beginTime >= this.index*1000 ) {
+            let people = this.peoples[this.index] ;
+            if ( people.state == PeopleState.INIT ) {
+                if ( people.isUp ) {
+                    console.log( "(" + people.id + ") 在" + people.fromFloor + "按下了往上" ) ;
+                    this.elevator.up( people.fromFloor ) ;
+                } else {
+                    console.log( "(" + people.id + ") 在" + people.fromFloor + "按下了往下" ) ;
+                    this.elevator.down( people.fromFloor ) ;
+                }
+                people.nextState() ;
             }
-            if ( ++this.index >= this.tasks.length ) {
-                this.index = -1 ;
-                return ;
-            }
-            this.next() ;
+            this.index++;
         }
     }
 }

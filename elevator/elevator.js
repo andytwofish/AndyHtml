@@ -13,8 +13,9 @@ class Elevator {
     
     
     tasks = [] ;
-    constructor(numberOfFloors){
+    constructor(numberOfFloors, eventHandler ){
         this.numberOfFloors = numberOfFloors ;
+        this.eventHandler = eventHandler ;
     }
     next() {
         //console.log(this.tasks) ;
@@ -32,8 +33,13 @@ class Elevator {
         console.log(this.elevatorPos+1) ;
         for (let i=0;i<this.tasks.length;i++){
             if (this.elevatorPos == this.tasks[i].toFloor ){
-                this.tasks.splice( i--, 1 ) ;
                 console.log('到了盯~') ;
+                if (this.state == STATE_UP) {
+                    this.eventHandler.arrivedEvent( true, this.elevatorPos ) ;
+                } else {
+                    this.eventHandler.arrivedEvent( false, this.elevatorPos ) ;
+                }
+                this.tasks.splice( i--, 1 ) ;
             }
         }
         if (this.tasks.length == 0){
