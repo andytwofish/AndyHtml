@@ -77,15 +77,15 @@ class Test1 {
             let people = this.peoples[i] ;
             if ( people.state === PeopleState.PRESSED && people.fromFloor === floor ) {
                 if ( direction == 0 || direction === people.direction ) {
-                    console.log( "(" + people.id + ") 在" + people.fromFloor+1 + "進了電梯" ) ;
+                    console.log( "(" + people.id + ") 在" + (people.fromFloor+1) + "樓進了電梯" ) ;
                     people.nextState();
-                    console.log( "(" + people.id + ") 按下了" + people.toFloor+1 + "樓" ) ;
+                    console.log( "(" + people.id + ") 按下了" + (people.toFloor+1) + "樓" ) ;
                     this.elevator.goTo( people.toFloor ) ;
                     people.nextState() ;
                 }
             }
             if ( people.state === PeopleState.ASSIGNED && people.toFloor === floor ) {
-                console.log( "(" + people.id + ") 在" + people.toFloor+1 + "離開電梯" ) ;
+                console.log( "(" + people.id + ") 在" + (people.toFloor+1) + "樓離開電梯" ) ;
                 people.nextState();
             }
         }
@@ -103,10 +103,10 @@ class Test1 {
             let people = this.peoples[this.index] ;
             if ( people.state == PeopleState.INIT ) {
                 if ( people.direction == 1 ) {
-                    console.log( "(" + people.id + ") 在" + people.fromFloor+ + "按下了往上" ) ;
+                    console.log( "(" + people.id + ") 在" + (people.fromFloor+1) + "樓按下了往上" ) ;
                     this.elevator.up( people.fromFloor ) ;
                 } else {
-                    console.log( "(" + people.id + ") 在" + people.fromFloor+ + "按下了往下" ) ;
+                    console.log( "(" + people.id + ") 在" + (people.fromFloor+1) + "樓按下了往下" ) ;
                     this.elevator.down( people.fromFloor ) ;
                 }
                 people.nextState() ;

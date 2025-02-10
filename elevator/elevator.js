@@ -34,7 +34,7 @@ class Elevator {
         for (let i=0;i<this.tasks.length;i++){
             if (this.elevatorPos == this.tasks[i].toFloor ){
                 console.log('到了盯~') ;
-                this.eventHandler.arrivedEvent( 0, this.elevatorPos ) ;
+                this.eventHandler.arrivedEvent( this.state, this.elevatorPos ) ;
                 this.tasks.splice( i--, 1 ) ;
             }
         }
