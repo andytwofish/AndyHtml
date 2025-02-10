@@ -98,7 +98,7 @@ class Elevator {
             }
         }
         ctx.closePath();
-        ctx.stroke();
+        ctx.stroke(); 
 
         let k = [] ;
         for (let i=0;i<TOTAL_FLOORS;i++){
