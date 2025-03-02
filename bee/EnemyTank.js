@@ -274,24 +274,23 @@ class SuperTank extends EnemyTank {
             this.parts[partIdx].hp-- ;
         }
     }
-
     process(){
         if ( Date.now() - this.lastFireTS > 400/gameControl.level ) {
             this.lastFireTS = Date.now() ;
             if ( this.parts[1].hp > 0 ) {
-                new CageBomb(this.row+1,this.col+this.parts[1].coords[0].col, 180 ) ;
+                new LaserLight(this.row+1,this.col+this.parts[1].coords[0].col, 180 ) ;
             }
             if ( this.parts[2].hp > 0 ) {
-                new GravityBomb(this.row+1,this.col+this.parts[2].coords[0].col, 180 ) ;
+                new LaserLight(this.row+1,this.col+this.parts[2].coords[0].col, 180 ) ;
             }
             if ( this.parts[3].hp > 0 ) {
-                new CageBomb(this.row+1,this.col+this.parts[3].coords[0].col, 180 ) ;
+                new GravityBomb(this.row+1,this.col+this.parts[3].coords[0].col, 180 ) ;
             }
             if ( this.parts[4].hp > 0 ) {
-                new GravityBomb(this.row+1,this.col+this.parts[4].coords[0].col, 180 ) ;
+                new LaserLight(this.row+1,this.col+this.parts[4].coords[0].col, 180 ) ;
             }
             if ( this.parts[5].hp > 0 ) {
-                new CageBomb(this.row+1,this.col+this.parts[5].coords[0].col, 180 ) ;
+                new LaserLight   (this.row+1,this.col+this.parts[5].coords[0].col, 180 ) ;
             }
         }
         this.move() ;

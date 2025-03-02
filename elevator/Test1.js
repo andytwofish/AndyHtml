@@ -5,6 +5,7 @@ class PeopleState {
     static ASSIGNED=3;
     static EXITED=4;
     static END=5;
+    static END2=6;
 
     static getPeopleStateName(stateNumber) {
         for (const [key, value] of Object.entries(PeopleState)) {
@@ -33,7 +34,7 @@ class People {
         }
     }
     nextState() {
-        if ( this.state != PeopleState.END ) {
+        if ( this.state != PeopleState.END2 ) {
             this.state++ ;
         }
         switch( this.state ) {
@@ -58,7 +59,7 @@ class Test1 {
     beginTime = 0 ;
     elevatorMoveTime = 400 ;
     lastMoveTime = 0 ;
-    static TOTAL_PEOPLES = 8 ;
+    static TOTAL_PEOPLES = 30 ;
     elevator = new Elevator( TOTAL_FLOORS, this ) ;
     constructor(){
         for( let i=0; i<Test1.TOTAL_PEOPLES; i++ ) {

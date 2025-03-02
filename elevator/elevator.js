@@ -30,7 +30,7 @@ class Elevator {
         draw() ;
         //openEvent(this.elevatorId) ;
         ctx.beginPath() ;
-        ctx.lineWidth = 2 ;
+        ctx.lineWidth = 1 ;
         //ctx.fillStyle = 'black';
         ctx.fillStyle = `rgb(0, 0, 0)` ;
         ctx.fillRect( 0, 380, 800, 200 ) ;
@@ -74,6 +74,8 @@ class Elevator {
         ctx.font = `${CELL_SIZE/2}px Arial`;
         ctx.textAlign = "center" ;
         ctx.fillText(m,730,n);
+        ctx.font = `${CELL_SIZE*2}px Arial`;
+        ctx.fillText(m,400,CELL_SIZE*2);
         ctx.closePath();
         ctx.stroke();
 
@@ -105,7 +107,7 @@ class Elevator {
             k[i] = 0 ;
         }
         for (let i=0;i<this.eventHandler.peoples.length;i++){
-            if (this.eventHandler.peoples[i].state == PeopleState.EXITED){
+            if (this.eventHandler.peoples[i].state == PeopleState.EXITED || this.eventHandler.peoples[i].state == PeopleState.END){
                 k[this.eventHandler.peoples[i].toFloor]++ ;
                 this.eventHandler.peoples[i].nextState() ;
             }
