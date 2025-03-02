@@ -448,7 +448,9 @@ class Game {
     }
 
     run() {
-        World.nextDay() ;
+        for  (let i=0; i<4;i++) {
+            World.nextDay() ;
+        }
         World.drawWorld();
         if ( this.isRunning ) {
             this.runCountObj.value = --this.runCount ;
