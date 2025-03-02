@@ -448,6 +448,7 @@ class Game {
     }
 
     run() {
+        //1
         for  (let i=0; i<4;i++) {
             World.nextDay() ;
         }
@@ -456,7 +457,8 @@ class Game {
             this.runCountObj.value = --this.runCount ;
         }
         this.worldDays++;
-        if (this.worldDays==400){
+        //400
+        if (this.worldDays==100){
             for  (let i=0; i<40;i++) {
                 new Deer(Math.floor( 1+Math.random()*49 ) , Math.floor( 1+Math.random()*49 ) )  ;
             }
