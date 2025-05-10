@@ -33,9 +33,6 @@ class EnemyTank extends Entity {
         part0.add(0,0) ;
         part0.fillStyle = "rgb(100,0,0)" ;
 
-        let part1 = new Part() ;
-        part1.add(0,-1).add(0,1).add(0,2).add(0,-2) ;
-
         this.parts = [] ;
         this.parts.push( part0 ) ;
 
@@ -191,23 +188,23 @@ class SuperTank extends EnemyTank {
 
         let part1 = new Part() ;
         part1.add(1,-4) ;         
-        part1.hp = 20 ;
+        part1.hp = 8 ;
 
         let part2 = new Part() ;
         part2.add(1,-2) ;
-        part2.hp = 20 ;
+        part2.hp = 8 ;
 
         let part3 = new Part() ;
         part3.add(1,0) ;
-        part3.hp = 20 ;
+        part3.hp = 8 ;
 
         let part4 = new Part() ;
         part4.add(1,2) ;
-        part4.hp = 20 ;
+        part4.hp = 8 ;
 
         let part5 = new Part() ;
         part5.add(1,4) ;
-        part5.hp = 20 ;
+        part5.hp = 8 ;
 
         this.parts = [] ;
         this.parts.push( part0 ) ;
@@ -578,21 +575,29 @@ class BigTank extends SuperTank{
     }
 }
 class BabyTank extends EnemyTank {
-    hp = gameControl.level*30 ;
+    hp = gameControl.level*80 ;
+        init() {
+            let part0 = new Part() ;
+            part0.add(0,0).add(-1,-1).add(-1,0).add(-1,1).add(0,-1).add(0,0).add(0,1).add(1,-1).add(1,0).add(1,1) ;
+            part0.fillStyle = "rgb(100,0,0)" ;
+
+            this.parts = [] ;
+            this.parts.push( part0 ) ;
+        }
     draw(){
         let x = (this.col*CELL_SIZE+1) + CELL_SIZE/2 ;
         let y = (this.row*CELL_SIZE+1) + CELL_SIZE/2 ;
-        drawImg( "babyTankImg", x, y, CELL_SIZE*2, CELL_SIZE*2, 0 ) ;
+        drawImg( "babyTankImg", x, y, CELL_SIZE*4, CELL_SIZE*4, 0 ) ;
         this.drawHp() ;
     }
 
     process(){
-        if ( Math.floor(Math.random()*250/gameControl.level)<=0 ) {
+        if ( Math.floor(Math.random()*100/gameControl.level)<=0 ) {
             let enemyTank = new EnemyTank () ;
             enemyTank.row = this.row ;
             enemyTank.col = this.col ;
         }
-        if ( Math.floor(Math.random()*250/gameControl.level)<=0 ) {
+        if ( Math.floor(Math.random()*100/gameControl.level)<=0 ) {
             let people = new ShieldPeople () ;
             people.row = this.row ;
             people.col = this.col ;

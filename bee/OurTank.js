@@ -11,6 +11,7 @@ class MyTank extends Entity {
     fromEntityCage = 0 ;
     isBlackHole = 0 ;
     isCage = 0 ;
+    sleep = 0 ;
     BlackHoleRow = 0 ;
     BlackHoleCol = 0 ;
     isMove = true ;
@@ -72,6 +73,7 @@ class MyTank extends Entity {
             if ( this.parts[partIdx].hp <= 0 || fromEntity instanceof BlackHole || fromEntity instanceof CageBomb ) {
                 this.shieldHP = 0 ;
                 this.isShieldON = false ;
+                this.sleep = 40 ;
             }
             if (fromEntity instanceof GravityBomb){
                 this.isGravityBomb = 8 ;
@@ -200,7 +202,11 @@ class MyTank extends Entity {
         }
         if ( this.keyController.isButtonXPressed() ) {
             if (this.isBlackHole == 0 && this.isMove ){
-                this.switchShield();  
+                if (this.sleep == 0 ){                
+                    this.switchShield();  
+                }else{
+                    this.sleep-- ;
+                }
             }
         }
         if ( this.keyController.isButtonBPressed() ) {
@@ -217,7 +223,7 @@ class MyTank extends Entity {
         if (this.isGravityBomb > 0 ){
             this.row += 4 ;
             if (this.isGravityBomb <  2 ){ 
-                this.hp = 1 ;
+                this.hp -= 8 ;
             }
             this.isGravityBomb -= 1 ;  
         }
@@ -251,7 +257,7 @@ class MyTank extends Entity {
             let i = Math.floor(Math.random()*3)-1 ;
             this.hp += i ;
             if (this.isBlackHole < 2 ){
-                this.hp = 1 ;
+                this.hp -= 1 ;
             }
         }
         if (this.row < TOTAL_ROWS/2 ){
@@ -512,7 +518,11 @@ class AutoMyTank extends MyTank {
         this.move();
         if ( this.bulletDetect(3) ) {
             if ( this.isShieldON == false ) {
-                this.switchShield() ;
+                if (this.sleep == 0 ){                
+                    this.switchShield();  
+                }else{
+                    this.sleep-- ;
+                }
             }
         } else {
             if ( this.isShieldON == true ) {
