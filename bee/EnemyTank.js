@@ -345,7 +345,7 @@ class LaserLightTank extends SuperTank{
     }
 
     process(){
-        if ( Date.now() - this.lastFireTS > 400/gameControl.level ) {
+        if ( Date.now() - this.lastFireTS > 600/gameControl.level ) {
             this.lastFireTS = Date.now() ;
             let j = Math.floor(Math.random()*4)+1 ;
             for( let i=0; i<j; i++ ) {
@@ -531,9 +531,8 @@ class BigTank extends SuperTank{
                         new BlackHole(this.row-1,this.col);
                     }
                     if (arms == 8 ){
-                        for (let j=0;j<10;j++){
-                            new GravityBomb(this.row+3,this.col-10+j*2,180,0) ;
-                            new CageBomb(this.row+3,this.col-9+j*2,180,0) ;
+                        for (let j=0;j<11;j++){
+                            new GravityBomb(this.row+3,this.col+j-5,180,0) ;
                         }
                     }
                     if (arms == 9||arms == 10||arms == 11){
